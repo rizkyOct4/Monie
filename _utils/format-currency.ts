@@ -3,4 +3,4 @@ export const FormatCurrency = (value: number) =>
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(value).replace(/\s/g, "");

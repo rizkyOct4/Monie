@@ -1,0 +1,29 @@
+Prioritas test:
+
+Tinggi ---
+FormatCurrency
+Kalkulasi DP
+Kalkulasi cicilan
+Validasi form
+API create/update property
+Authentication
+Upload gambar
+
+Sedang ---
+Modal   
+Filter dan pencarian
+Pagination
+Loading state
+
+Rendah ---
+Komponen presentasional sederhana
+Icon
+Wrapper component
+
+
+npm run test -- -> masukkan sumber
+
+it -> digunakan untuk membuat satu skenario pengujian.
+.safeParse(...) => ini bawaan method dari zod !! 
+expect(...) => ekpektasinya bagaimana ?
+.tobe(false/true) => ini menyesuaikan kondisi

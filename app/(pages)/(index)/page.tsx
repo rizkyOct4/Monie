@@ -24,210 +24,91 @@ const transactions = [
 
 export default function DashboardPage() {
   return (
-    <main className="flex flex-col gap-6 px-6 py-4">
+    <main className="flex flex-col px-6 py-4 w-full">
       {/* Header */}
-      <section className="flex flex-col">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
-          Dashboard
-        </h1>
+      <section className="mb-8">
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
 
         <p className="mt-1 text-sm text-zinc-500">
           Ringkasan keuangan bulan ini
         </p>
       </section>
 
-      {/* Hero Card */}
-      <section
-        className="
-          relative
-          overflow-hidden
-          rounded-[32px]
-          bg-zinc-900
-          p-8
-          text-white
-          shadow-lg
-        "
-      >
-        <div className="flex flex-col gap-2">
-          <span className="text-sm text-zinc-400">Total Saldo</span>
+      {/* Saldo */}
+      <section className="border-b border-zinc-200 py-6">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          Saldo Saat Ini
+        </h2>
 
-          <h2 className="text-5xl font-bold tracking-tight">Rp 3.000.000</h2>
+        <div className="flex items-end justify-between">
+          <div>
+            <h3 className="text-4xl font-bold text-white">Rp 3.000.000</h3>
 
-          <div className="mt-2 flex items-center gap-2">
-            <span
-              className="
-                rounded-full
-                bg-emerald-500/20
-                px-3
-                py-1
-                text-xs
-                font-medium
-                text-emerald-300
-              "
-            >
-              +12%
-            </span>
-
-            <span className="text-sm text-zinc-400">dibanding bulan lalu</span>
+            <p className="mt-2 text-sm text-emerald-600">
+              +12% dibanding bulan lalu
+            </p>
           </div>
         </div>
-
-        <div
-          className="
-            absolute
-            -top-10
-            -right-10
-            h-40
-            w-40
-            rounded-full
-            bg-white/5
-          "
-        />
       </section>
 
-      {/* Summary */}
-      <section className="flex flex-wrap gap-4">
-        <div
-          className="
-            min-w-56
-            flex-1
-            rounded-3xl
-            border
-            border-zinc-200
-            bg-white
-            p-5
-            shadow-sm
-          "
-        >
-          <p className="text-sm text-zinc-500">Total Pemasukan</p>
+      {/* Ringkasan */}
+      <section className="border-b border-zinc-200 py-6">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          Ringkasan Bulan Ini
+        </h2>
 
-          <h3 className="mt-2 text-2xl font-bold text-emerald-600">
-            Rp 500.000
-          </h3>
-        </div>
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between">
+            <span>Total Pemasukan</span>
 
-        <div
-          className="
-            min-w-56
-            flex-1
-            rounded-3xl
-            border
-            border-zinc-200
-            bg-white
-            p-5
-            shadow-sm
-          "
-        >
-          <p className="text-sm text-zinc-500">Total Pengeluaran</p>
+            <span className="font-semibold text-emerald-600">Rp 500.000</span>
+          </div>
 
-          <h3 className="mt-2 text-2xl font-bold text-red-500">Rp 2.500.000</h3>
+          <div className="flex justify-between">
+            <span>Total Pengeluaran</span>
+
+            <span className="font-semibold text-red-500">Rp 2.500.000</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Sisa Saldo</span>
+
+            <span className="font-semibold text-blue-600">Rp 3.000.000</span>
+          </div>
         </div>
       </section>
 
-      {/* Target Tabungan */}
-      <section
-        className="
-          rounded-3xl
-          border
-          border-zinc-200
-          bg-white
-          p-6
-          shadow-sm
-        "
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-zinc-900">Target Tabungan</h2>
+      {/* Target */}
+      <section className="border-b border-zinc-200 py-6">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          Target Tabungan
+        </h2>
 
-          <span className="text-sm font-medium text-zinc-700">60%</span>
+        <div className="flex justify-between">
+          <span>Pencapaian</span>
+
+          <span className="font-medium">60%</span>
         </div>
 
-        <div className="mt-5 h-2 overflow-hidden rounded-full bg-zinc-100">
-          <div className="h-full w-[60%] rounded-full bg-zinc-900" />
-        </div>
-
-        <div className="mt-3 flex items-center justify-between text-sm text-zinc-500">
+        <div className="mt-3 flex justify-between text-sm text-zinc-500">
           <span>Rp 3.000.000</span>
+
           <span>Target Rp 5.000.000</span>
         </div>
       </section>
 
       {/* Insight */}
-      <section
-        className="
-          rounded-3xl
-          border
-          border-amber-200
-          bg-amber-50
-          p-5
-        "
-      >
-        <h2 className="font-semibold text-amber-900">Insight Bulan Ini</h2>
+      <section className="py-6">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          Insight
+        </h2>
 
-        <p className="mt-2 text-sm leading-relaxed text-amber-700">
-          Pengeluaran Anda masih berada di bawah 50% dari total pemasukan.
-          Kondisi keuangan saat ini cukup sehat dan target tabungan masih berada
-          pada jalur yang baik.
-        </p>
-      </section>
+        <div className="flex flex-col gap-2 text-sm text-zinc-600">
+          <p>Pengeluaran masih berada di bawah 50% dari total pemasukan.</p>
 
-      {/* Recent Transaction */}
-      <section
-        className="
-          rounded-3xl
-          border
-          border-zinc-200
-          bg-white
-          p-6
-          shadow-sm
-        "
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-zinc-900">Transaksi Terakhir</h2>
+          <p>Target tabungan masih berada pada jalur yang baik.</p>
 
-          <button
-            className="
-              text-sm
-              font-medium
-              text-zinc-500
-              transition
-              hover:text-zinc-900
-            "
-          >
-            Lihat Semua
-          </button>
-        </div>
-
-        <div className="mt-5 flex flex-col gap-3">
-          {transactions.map((item) => (
-            <div
-              key={item.id}
-              className="
-                flex
-                items-center
-                justify-between
-                rounded-2xl
-                border
-                border-zinc-200
-                p-4
-                transition
-                hover:bg-zinc-50
-              "
-            >
-              <div className="flex flex-col">
-                <h3 className="font-medium text-zinc-900">{item.title}</h3>
-
-                <span className="text-xs text-zinc-500">{item.date}</span>
-              </div>
-
-              <span
-                className={`font-semibold ${
-                  item.type === "income" ? "text-emerald-600" : "text-red-500"
-                }`}
-              >
-                {item.type === "income" ? "+" : "-"} Rp {item.amount}
-              </span>
-            </div>
-          ))}
+          <p>Kondisi keuangan bulan ini tergolong sehat.</p>
         </div>
       </section>
     </main>

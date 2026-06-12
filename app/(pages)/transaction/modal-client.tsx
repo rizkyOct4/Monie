@@ -9,58 +9,60 @@ const ModalClient = () => {
   // const [isPost, setIsPost] = useState(false);
 
   return (
-    <div className="mx-auto flex w-full flex-col">
+    <main className="flex flex-col px-6 w-full">
       <TransactionHeader />
-
-      {/* Riwayat */}
-      <section className="overflow-hidden bg-white">
-        <div className="border-b border-zinc-100 p-5">
-          <h2 className="text-lg font-semibold text-zinc-900">
+      <section>
+        <div className="pb-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
             Riwayat Transaksi
           </h2>
         </div>
 
         <div className="flex flex-col">
-          <div className="flex items-center justify-between p-5">
-            <div className="flex flex-col">
-              <h3 className="font-medium text-zinc-900">Makan Siang</h3>
+          <div className="flex items-center justify-between border-b border-zinc-100 py-4">
+            <div>
+              <h3 className="font-medium text-black">Makan Siang</h3>
 
-              <span className="text-sm text-zinc-500">Rabu, 11 Juni 2026</span>
+              <p className="mt-1 text-xs text-zinc-500">Rabu, 11 Juni 2026</p>
             </div>
 
-            <span className="font-semibold text-red-500">- Rp 25.000</span>
+            <div className="text-right">
+              <p className="font-medium text-red-500">- Rp 25.000</p>
+
+              <p className="text-xs text-zinc-500">Makanan</p>
+            </div>
           </div>
 
-          <div className="border-t border-zinc-100" />
+          <div className="flex items-center justify-between border-b border-zinc-100 py-4">
+            <div>
+              <h3 className="font-medium text-black">Freelance Website</h3>
 
-          <div className="flex items-center justify-between p-5">
-            <div className="flex flex-col">
-              <h3 className="font-medium text-zinc-900">Freelance Website</h3>
-
-              <span className="text-sm text-zinc-500">
-                Selasa, 10 Juni 2026
-              </span>
+              <p className="mt-1 text-xs text-zinc-500">Selasa, 10 Juni 2026</p>
             </div>
 
-            <span className="font-semibold text-emerald-500">+ Rp 500.000</span>
+            <div className="text-right">
+              <p className="font-medium text-emerald-600">+ Rp 500.000</p>
+
+              <p className="text-xs text-zinc-500">Pemasukan</p>
+            </div>
           </div>
 
-          <div className="border-t border-zinc-100" />
+          <div className="flex items-center justify-between py-4">
+            <div>
+              <h3 className="font-medium text-black">Bensin</h3>
 
-          <div className="flex items-center justify-between p-5">
-            <div className="flex flex-col">
-              <h3 className="font-medium text-zinc-900">Bensin</h3>
-
-              <span className="text-sm text-zinc-500">Senin, 09 Juni 2026</span>
+              <p className="mt-1 text-xs text-zinc-500">Senin, 09 Juni 2026</p>
             </div>
 
-            <span className="font-semibold text-red-500">- Rp 50.000</span>
+            <div className="text-right">
+              <p className="font-medium text-red-500">- Rp 50.000</p>
+
+              <p className="text-xs text-zinc-500">Transportasi</p>
+            </div>
           </div>
         </div>
       </section>
-
-
-    </div>
+    </main>
   );
 };
 

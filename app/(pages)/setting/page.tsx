@@ -42,7 +42,7 @@ export default function SettingPage() {
         </h2>
 
         <div className="flex flex-col">
-          <button className="flex items-center justify-between py-4">
+          {/* <button className="flex items-center justify-between py-4">
             <span>Gaji Bulanan</span>
             <span className="text-zinc-500">
               Rp 5.000.000
@@ -54,7 +54,7 @@ export default function SettingPage() {
             <span className="text-zinc-500">
               Rp 10.000.000
             </span>
-          </button>
+          </button> */}
 
           <button className="flex items-center justify-between py-4">
             <span>Mata Uang</span>

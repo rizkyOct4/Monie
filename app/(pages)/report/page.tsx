@@ -39,18 +39,24 @@ export default function ReportPage() {
       {/* Header */}
       <section className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">
-            Laporan
-          </h1>
+          <h1 className="text-3xl font-bold text-white">Laporan</h1>
 
-          <p className="mt-1 text-sm text-zinc-500">
-            Analisis keuangan bulan Juni 2026
-          </p>
+          <p className="mt-1 text-sm text-zinc-400">Analisis keuangan</p>
         </div>
 
-        <button className="border border-zinc-200 px-3 py-2 text-sm text-white">
-          Juni 2026
-        </button>
+        <input
+          type="month"
+          className="
+      border
+      border-zinc-800
+      bg-white
+      px-3
+      py-2
+      text-sm
+      text-black
+      outline-none
+    "
+        />
       </section>
 
       {/* Kesehatan Finansial */}
@@ -63,25 +69,19 @@ export default function ReportPage() {
           <div className="flex justify-between">
             <span>Persentase Tabungan</span>
 
-            <span className="font-medium text-black">
-              55%
-            </span>
+            <span className="font-medium text-blue-500">55%</span>
           </div>
 
           <div className="flex justify-between">
             <span>Persentase Pengeluaran</span>
 
-            <span className="font-medium text-black">
-              45%
-            </span>
+            <span className="font-medium text-red-500">45%</span>
           </div>
 
           <div className="flex justify-between">
             <span>Status</span>
 
-            <span className="font-medium text-emerald-600">
-              Baik
-            </span>
+            <span className="font-medium text-emerald-600">Baik</span>
           </div>
         </div>
       </section>
@@ -99,16 +99,14 @@ export default function ReportPage() {
               className="flex items-center justify-between"
             >
               <div>
-                <p className="text-black">
-                  {category.name}
-                </p>
+                <p className="text-white">{category.name}</p>
 
                 <p className="text-xs text-zinc-500 bg-white">
                   {category.percentage}%
                 </p>
               </div>
 
-              <span className="font-medium text-black">
+              <span className="font-medium text-red-500">
                 {formatCurrency(category.amount)}
               </span>
             </div>
@@ -126,25 +124,19 @@ export default function ReportPage() {
           <div className="flex justify-between">
             <span>Pemasukan</span>
 
-            <span className="text-emerald-600">
-              +10%
-            </span>
+            <span className="text-emerald-600">+10%</span>
           </div>
 
           <div className="flex justify-between">
             <span>Pengeluaran</span>
 
-            <span className="text-red-500">
-              +18%
-            </span>
+            <span className="text-red-500">+18%</span>
           </div>
 
           <div className="flex justify-between">
             <span>Tabungan</span>
 
-            <span className="text-blue-600">
-              -5%
-            </span>
+            <span className="text-blue-600">-5%</span>
           </div>
         </div>
       </section>
@@ -156,20 +148,15 @@ export default function ReportPage() {
         </h2>
 
         <div className="flex flex-col gap-3 text-sm text-zinc-600">
-          <p>
-            Pengeluaran makan & minum menjadi kategori terbesar bulan ini.
-          </p>
+          <p>Pengeluaran makan & minum menjadi kategori terbesar bulan ini.</p>
+
+          <p>Pengeluaran meningkat 18% dibanding bulan lalu.</p>
+
+          <p>Rasio tabungan berada di angka 55% dan masih tergolong sehat.</p>
 
           <p>
-            Pengeluaran meningkat 18% dibanding bulan lalu.
-          </p>
-
-          <p>
-            Rasio tabungan berada di angka 55% dan masih tergolong sehat.
-          </p>
-
-          <p>
-            Pertahankan rasio tabungan di atas 50% untuk mencapai target lebih cepat.
+            Pertahankan rasio tabungan di atas 50% untuk mencapai target lebih
+            cepat.
           </p>
         </div>
       </section>

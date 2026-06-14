@@ -122,7 +122,7 @@ export const {
       },
     },
   },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_TOKEN,
 });
 
 // ? TOKEN DARI AUTH.js ??? user -> users sendiri ???

@@ -58,19 +58,19 @@ export default function DashboardPage() {
         </h2>
 
         <div className="flex flex-col gap-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between text-white">
             <span>Total Pemasukan</span>
 
             <span className="font-semibold text-emerald-600">Rp 500.000</span>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between text-white">
             <span>Total Pengeluaran</span>
 
             <span className="font-semibold text-red-500">Rp 2.500.000</span>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between text-white">
             <span>Sisa Saldo</span>
 
             <span className="font-semibold text-blue-600">Rp 3.000.000</span>
@@ -84,10 +84,10 @@ export default function DashboardPage() {
           Target Tabungan
         </h2>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between text-white">
           <span>Pencapaian</span>
 
-          <span className="font-medium">60%</span>
+          <span className="font-medium text-emerald-600">60%</span>
         </div>
 
         <div className="mt-3 flex justify-between text-sm text-zinc-500">

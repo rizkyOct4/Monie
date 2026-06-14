@@ -1,0 +1,23 @@
+pnpm install -> put all the dependency then install all of them
+
+pnpm prisma migrate dev -> then -> pnpm prisma migrate deploy
+
+migrate dev -> development local (hanya boleh ketika masa pengembangan saja !!!)
+
+!!! * ketika sudah development tidak boleh migrate dev ! harus langsung migrate deploy 
+
+
+// jika sudah ada migration -> prisma migrate reset
+
+// buat baru history migration -> pnpm prisma migrate dev --name init
+
+///// !! PRODUCTION ==========
+alur -> 1. update schema,
+        2. pnpm prisma migrate dev --name add_new_colomn -> prisma membuat migration file
+        3. pnpm prisma migrate deploy
+
+
+
+// !! id          String    @id @default(cuid())
+
+pnpm dotenv -e .env.production -- prisma migrate deploy

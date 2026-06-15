@@ -11,6 +11,7 @@ export const OAuthRegister = async ({
   role,
   fullname,
   imageUrl,
+  createdAt,
 }: {
   firstName: string;
   lastName: string;
@@ -19,6 +20,7 @@ export const OAuthRegister = async ({
   role?: string | undefined;
   fullname?: string | undefined;
   imageUrl?: string | undefined;
+  createdAt?: Date;
 }) => {
   const queryCheck = await prisma.$queryRaw<{ email: string }[]>`
       SELECT email from users WHERE email = ${email}
@@ -38,14 +40,14 @@ export const OAuthRegister = async ({
       } else {
         // * OAuth
         await tx.$executeRaw`
-        INSERT INTO users (name, email, image_url, public_id)
-        VALUES (${fullname}, ${email}, ${imageUrl}, ${publicId})`;
+        INSERT INTO users (name, email, image_url, public_id, created_at)
+        VALUES (${fullname}, ${email}, ${imageUrl}, ${publicId}, ${createdAt}::timestamp)`;
       }
     });
   }
 
   const result = await prisma.$queryRaw<any>`
-      SELECT name, createdAt, public_id, image_url
+      SELECT name, created_at, public_id, image_url
       FROM users WHERE email = ${email}`;
 
   return camelcaseKeys(result);

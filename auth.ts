@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+// import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { OAuthRegister } from "./_lib/services/auth/services-auth";
-import type { User, Session } from "next-auth";
+import type { Session } from "next-auth";
 
 export const {
   handlers: { GET, POST },
@@ -52,8 +52,8 @@ export const {
     //   },
     // }),
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.NEXTGOOGLE_ID,
+      clientSecret: process.env.NEXTGOOGLE_SECRET,
       authorization: {
         params: {
           prompt: "consent",
@@ -90,6 +90,7 @@ export const {
           email: email,
           fullname: fullname,
           imageUrl: profilePicture,
+          createdAt: new Date(),
         });
 
         token.publicId = fetch[0].publicId;
@@ -122,7 +123,7 @@ export const {
       },
     },
   },
-  secret: process.env.NEXT_AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
 });
 
 // ? TOKEN DARI AUTH.js ??? user -> users sendiri ???

@@ -3,26 +3,24 @@ import GetSession from "./_lib/session";
 
 const proxy = async (req: NextRequest) => {
   const pathname = req.nextUrl.pathname;
-  const { publicId } = await GetSession();
 
-  const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0] ||
-    req.headers.get("x-real-ip") ||
-    "127.0.0.1";
-
-  if (pathname.startsWith("/auth")) {
+  if (
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/api/auth")
+  ) {
     return NextResponse.next();
   }
 
+  const { publicId } = await GetSession();
+
   if (!publicId) {
     return NextResponse.redirect(
-      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url),
+      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url)
     );
   }
 
   return NextResponse.next();
 };
-
 export default proxy;
 
 export const config = {

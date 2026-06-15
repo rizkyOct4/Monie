@@ -52,8 +52,8 @@ export const {
     //   },
     // }),
     Google({
-      clientId: process.env.NEXTGOOGLE_ID,
-      clientSecret: process.env.NEXTGOOGLE_SECRET,
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
       authorization: {
         params: {
           prompt: "consent",
@@ -123,7 +123,7 @@ export const {
       },
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
 });
 
 // ? TOKEN DARI AUTH.js ??? user -> users sendiri ???

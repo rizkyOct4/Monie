@@ -4,10 +4,7 @@ import GetSession from "./_lib/session";
 const proxy = async (req: NextRequest) => {
   const pathname = req.nextUrl.pathname;
 
-  if (
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/api/auth")
-  ) {
+  if (pathname.startsWith("/auth") || pathname.startsWith("/api/auth")) {
     return NextResponse.next();
   }
 
@@ -15,7 +12,7 @@ const proxy = async (req: NextRequest) => {
 
   if (!publicId) {
     return NextResponse.redirect(
-      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url)
+      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url),
     );
   }
 
@@ -26,5 +23,6 @@ export default proxy;
 export const config = {
   matcher: [
     "/((?!auth|api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json).*)",
+    // `/((?!|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)`,
   ],
 };

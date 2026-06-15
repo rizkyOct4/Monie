@@ -92,7 +92,7 @@ export const {
           imageUrl: profilePicture,
           createdAt: new Date(),
         });
-git st
+
         token.publicId = fetch[0].publicId;
         token.name = profile.name;
         // token.role = fetch[0].role;
@@ -115,7 +115,7 @@ git st
   // ! TARGET COOKIES KAU !!! -> Ini yang memastikan user login tetap hidup, dan memastikan token tidak dicuri lewat JavaScript.
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: `authjs.session-token`,
       options: {
         httpOnly: true, // ? cookie TIDAK bisa diakses JavaScript browser
         secure: process.env.NODE_ENV === "production", // ? `secure` harus true pada HTTPS

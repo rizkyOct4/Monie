@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import camelcaseKeys from "camelcase-keys";
 import { nanoid } from "nanoid";
 
+// * OAuth =================
 export const OAuthRegister = async ({
   firstName,
   lastName,
@@ -22,11 +23,29 @@ export const OAuthRegister = async ({
   imageUrl?: string | undefined;
   createdAt?: Date;
 }) => {
+  const queryCheck = await prisma.$queryRaw<{ email: string }[]>`
+      SELECT email from users WHERE email = ${email}
+    `;
   const publicId = nanoid(8);
-  // * OAuth
-  await prisma.$executeRaw`
+
+  if (queryCheck.length < 1) {
+    // * Credential
+    prisma.$transaction(async (tx: { $executeRaw: any }) => {
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        await tx.$executeRaw`
+        INSERT INTO users (name, email, password, public_id)
+        VALUES (${firstName}, ${lastName}, ${email}, ${passwordHash}, ${role}::role_user, ${publicId})`;
+      } else {
+        // * OAuth
+        await tx.$executeRaw`
         INSERT INTO users (name, email, image_url, public_id, created_at)
         VALUES (${fullname}, ${email}, ${imageUrl}, ${publicId}, ${createdAt}::timestamp)`;
+      }
+    });
+  }
 
   const result = await prisma.$queryRaw<any>`
       SELECT name, created_at, public_id, image_url
@@ -35,52 +54,60 @@ export const OAuthRegister = async ({
   return camelcaseKeys(result);
 };
 
-// export const OAuthRegister = async ({
-//   firstName,
-//   lastName,
-//   email,
-//   password,
-//   role,
-//   fullname,
-//   imageUrl,
-//   createdAt,
-// }: {
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   password?: string | undefined;
-//   role?: string | undefined;
-//   fullname?: string | undefined;
-//   imageUrl?: string | undefined;
-//   createdAt?: Date;
-// }) => {
-//   const queryCheck = await prisma.$queryRaw<{ email: string }[]>`
-//       SELECT email from users WHERE email = ${email}
-//     `;
-//   const publicId = nanoid(8);
+// * Credential ============
+export const CredentialRegister = async ({
+  name,
+  email,
+  password,
+  userType,
+}: {
+  name: string;
+  email: string;
+  password: string;
+  userType: string;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+    const publicId = nanoid(8);
 
-//   if (queryCheck.length < 1) {
-//     // * Credential
-//     prisma.$transaction(async (tx: { $executeRaw: any; }) => {
-//       if (password) {
-//         const salt = await bcrypt.genSalt(10);
-//         const passwordHash = await bcrypt.hash(password, salt);
+    await tx.$executeRaw`
+      INSERT INTO users (public_id, name, email, password, user_type) 
+        VALUES 
+      (${publicId}, ${name}, ${email}, ${passwordHash}, ${userType}::"UserType")`;
+  });
+};
 
-//         await tx.$executeRaw`
-//         INSERT INTO users (first_name, last_name, email, password, role, public_id)
-//         VALUES (${firstName}, ${lastName}, ${email}, ${passwordHash}, ${role}::role_user, ${publicId})`;
-//       } else {
-//         // * OAuth
-//         await tx.$executeRaw`
-//         INSERT INTO users (name, email, image_url, public_id, created_at)
-//         VALUES (${fullname}, ${email}, ${imageUrl}, ${publicId}, ${createdAt}::timestamp)`;
-//       }
-//     });
-//   }
+export const CredentialsLogin = async ({
+  email,
+  password,
+}: {
+  email: any;
+  password: any;
+}) => {
+  const userCheck: any[] = await prisma.$queryRaw`
+    SELECT public_id, email, password, name, created_at 
+    FROM users
+    WHERE email = ${email}`;
 
-//   const result = await prisma.$queryRaw<any>`
-//       SELECT name, created_at, public_id, image_url
-//       FROM users WHERE email = ${email}`;
+  const passwordMatch = await bcrypt.compare(password, userCheck[0].password);
 
-//   return camelcaseKeys(result);
-// };
+  if (userCheck.length === 0) {
+    throw new Error("Invalid email or password");
+  }
+  if (!passwordMatch) {
+    throw new Error("Invalid password");
+  }
+
+  const rawData = {
+    publicId: userCheck[0].public_id,
+    email: userCheck[0].email,
+    name: userCheck[0].name,
+    createdAt: userCheck[0].created_at,
+  };
+
+  return {
+    success: true,
+    user: camelcaseKeys(rawData),
+  };
+};

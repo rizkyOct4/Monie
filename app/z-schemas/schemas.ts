@@ -1,7 +1,12 @@
 import { z } from "zod";
+import { ForbiddenRegex } from "@/_utils/Regex";
 
 export const FormPostSchema = z.object({
-  date: z.string().min(1, "Tanggal wajib diisi"),
+  nameTransaction: z.string().refine((val) => !ForbiddenRegex().test(val), {
+    message: `* Contains invalid characters`,
+  }),
+
+  date: z.date(),
 
   images: z
     .array(
@@ -10,18 +15,11 @@ export const FormPostSchema = z.object({
         path: z.string(),
       }),
     )
-    .min(1, "Minimal 1 gambar"),
+    .optional(),
 
-  description: z
-    .string()
-    .min(3, "Keterangan minimal 3 karakter")
-    .max(500, "Keterangan maksimal 500 karakter"),
+  information: z.string().optional(),
 
-  nominal: z
-    .number({
-      error: "Nominal wajib diisi",
-    })
-    .positive("Nominal harus lebih dari 0"),
+  nominal: z.string()
 });
 
 export type FormPostType = z.infer<typeof FormPostSchema>;

@@ -1,11 +1,11 @@
 import NextAuth from "next-auth";
-// import Credentials from "next-auth/providers/credentials";
+import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import { OAuthRegister } from "./_lib/services/auth/services-auth";
-import type { Session } from "next-auth";
+import { OAuthRegister, CredentialsLogin } from "./_lib/services/auth/services-auth";
+import type { User, Session } from "next-auth";
 
 export const {
-  handlers: { GET, POST },
+  handlers,
   auth,
   signIn,
   signOut,
@@ -16,41 +16,41 @@ export const {
     // updateAge: 60 * 60 * 12, // ? refreshh login
   },
   providers: [
-    // Credentials({
-    //   name: "Credentials",
-    //   credentials: {
-    //     email: {
-    //       type: "email",
-    //       label: "Email",
-    //       placeholder: "m@example.com",
-    //     },
-    //     password: {
-    //       type: "password",
-    //       label: "Password",
-    //       placeholder: "*****",
-    //     },
-    //   },
-    //   async authorize(credentials) {
-    //     if (!credentials.email || !credentials.password) {
-    //       return null;
-    //     }
-    //     const res = await CredentialsLogin({
-    //       email: credentials.email,
-    //       password: credentials.password,
-    //     });
+    Credentials({
+      name: "Credentials",
+      credentials: {
+        email: {
+          type: "email",
+          label: "Email",
+          placeholder: "m@example.com",
+        },
+        password: {
+          type: "password",
+          label: "Password",
+          placeholder: "*****",
+        },
+      },
+      async authorize(credentials) {
+        if (!credentials.email || !credentials.password) {
+          return null;
+        }
+        const res = await CredentialsLogin({
+          email: credentials.email,
+          password: credentials.password,
+        });
 
-    //     const user: User = {
-    //       id: String(res.user.publicId),
-    //       publicId: res.user.publicId,
-    //       name: res.user.name,
-    //       role: res.user.role,
-    //     };
+        const user: User = {
+          id: String(res.user.publicId),
+          publicId: res.user.publicId,
+          name: res.user.name,
+          // role: res.user.role,
+        };
 
-    //     return user;
+        return user;
 
-    //     // ? CARI sama kau RETURN value dari credentials
-    //   },
-    // }),
+        // ? CARI sama kau RETURN value dari credentials
+      },
+    }),
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
@@ -63,16 +63,17 @@ export const {
       },
     }),
   ],
+  // debug: true, // This prints exact errors in the server logs
   // ? jwt -> INI DATA SECRET YG AKAN DIKIRIM KE COOKIES !!!
   callbacks: {
     async jwt({ token, user, account, profile }) {
       // ! user -> credential, profile -> OAuth
       // ? credentials login → user berisi data dari authorize
-    //   if (user) {
-    //     token.publicId = user.publicId;
-    //     token.name = user.name;
-    //     token.role = user.role;
-    //   }
+        if (user) {
+          token.publicId = user.publicId;
+          token.name = user.name;
+          // token.role = user.role;
+        }
 
       // ? OAuth login → user hanya berisi data dasar
       if (account && profile) {
@@ -113,16 +114,16 @@ export const {
   },
 
   // ! TARGET COOKIES KAU !!! -> Ini yang memastikan user login tetap hidup, dan memastikan token tidak dicuri lewat JavaScript.
-  cookies: {
-    sessionToken: {
-      name: `authjs.session-token`,
-      options: {
-        httpOnly: true, // ? cookie TIDAK bisa diakses JavaScript browser
-        secure: process.env.NODE_ENV === "production", // ? `secure` harus true pada HTTPS
-        path: "/", // ? semua route bisa membaca session
-      },
-    },
-  },
+  // cookies: {
+  //   sessionToken: {
+  //     name: `next-auth.session-token`,
+  //     options: {
+  //       httpOnly: true, // ? cookie TIDAK bisa diakses JavaScript browser
+  //       secure: process.env.NODE_ENV === "production", // ? `secure` harus true pada HTTPS
+  //       path: "/", // ? semua route bisa membaca session
+  //     },
+  //   },
+  // },
   secret: process.env.AUTH_SECRET,
 });
 

@@ -1,7 +1,7 @@
-import Register from "./register"
+import ModalAuth from "./modal";
 
 const page = () => {
-  return <Register />
-}
+  return <ModalAuth />;
+};
 
-export default page
+export default page;

@@ -12,8 +12,8 @@ declare module "next-auth" {
   interface User {
     id: string;
     publicId: string;
-    name?: string | null;
-    role: string;
+    name?: string;
+    role?: string;
   }
 
   interface Token {

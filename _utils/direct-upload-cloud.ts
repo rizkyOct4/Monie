@@ -46,7 +46,7 @@ export const uploadToCloudinary = async ({
   }
 
   formData.append("file", file);
-  formData.append("upload_preset", `nextprototype_${type}`);
+  formData.append("upload_preset", `Agung_project`);
   formData.append("folder", `${isModel}`);
   const URL = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/auto/upload`;
 
@@ -65,12 +65,12 @@ export const uploadMultipleToCloudinary = async ({
   files,
   publicId,
   type,
-  publicIdProject,
+  id,
 }: {
   files: any;
   publicId?: string;
   type: "images" | "videos";
-  publicIdProject: string | string[];
+  id: string | string[];
 }) => {
   const URL = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/auto/upload`;
 
@@ -78,8 +78,8 @@ export const uploadMultipleToCloudinary = async ({
     const formData = new FormData();
 
     formData.append("file", file);
-    formData.append("upload_preset", `nextprototype_${type}`);
-    formData.append("folder", `admin/${publicId}/${type}/${publicIdProject}`);
+    formData.append("upload_preset", `Agung_project`);
+    formData.append("folder", `users/${publicId}/${type}/${id}`);
 
     return axios.post(URL, formData, {
       timeout: 0,

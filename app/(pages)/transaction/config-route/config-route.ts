@@ -1,26 +1,17 @@
+
+type GetProps = {
+  key: "searchTransactions";
+  currentPath: string;
+  date: string;
+  pageParam: number;
+  limit: number;
+}
+
 export const ROUTES_TRANSACTION = {
-  GET_INDEX: ({
-    key,
-    year,
-    limit,
-    pageParam,
-    currentPath,
-    id,
-    type,
-    publicIdProject,
-    searchQuery,
-  }: any) => {
+  GET: ({ key, currentPath, date, pageParam, limit }: GetProps) => {
     switch (key) {
-      case "searchProject":
-        return `/admin/${currentPath}/api?key=${key}&search=${searchQuery}`;
-      case "projectYear":
-        return `/admin/${currentPath}/api?key=${key}&limit=${limit}&pageParam=${pageParam}`;
-      case "projectList":
-        return `/admin/${currentPath}/api?key=${key}&year=${year}&limit=${limit}&pageParam=${pageParam}`;
-      case "projectDescription":
-        return `/admin/${currentPath}/api?key=${key}&id=${id}&type=${type}`;
-      case "projectUpdate":
-        return `/admin/${currentPath}/api?key=${key}&year=${year}&publicIdProject=${publicIdProject}`;
+      case "searchTransactions":
+        return `${currentPath}/api?key=${key}&search-transaction=${date}&page-param=${pageParam}&limit=${limit}`;
       default:
         return "";
     }

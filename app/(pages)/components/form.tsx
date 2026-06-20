@@ -9,6 +9,7 @@ import { nanoid } from "nanoid";
 import { uploadMultipleToCloudinary } from "@/_utils/direct-upload-cloud";
 import { useSessionClient } from "@/_lib/c-session";
 import { TransactionContext } from "@/app/context/context";
+import { Spokes } from "@/components/ui/spokes";
 
 type FormPostProps = {
   onBack: () => void;
@@ -33,6 +34,8 @@ const FormPost = ({ onBack }: FormPostProps) => {
   });
 
   const [isNewTransaction, setIsNewTransaction] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   // * IMAGES =================
   const images =
@@ -68,6 +71,7 @@ const FormPost = ({ onBack }: FormPostProps) => {
 
   const submit = handleSubmit(async (values) => {
     try {
+      setIsSubmitLoading(true);
       const id = nanoId;
 
       let cloudImage;
@@ -94,12 +98,19 @@ const FormPost = ({ onBack }: FormPostProps) => {
 
       const post = {
         ...values,
+        typeTransaction: isNewTransaction,
         id: id,
+        initialNominal: Number(values.initialNominal),
         nominal: Number(values.nominal),
         images: images.length > 0 ? cloudImage : [],
       };
-      console.log(post);
+
+      await postTransaction(post);
+      // console.log(post);
+      setIsSubmitLoading(false);
+      onBack();
     } catch (err) {
+      setIsSubmitLoading(false);
       console.error(err);
     }
   });
@@ -130,35 +141,103 @@ const FormPost = ({ onBack }: FormPostProps) => {
 
         <form className="flex flex-col gap-6" onSubmit={submit}>
           {isNewTransaction ? (
-            <div className="flex-1 flex flex-col gap-1.5">
+            <div>
+              {/* LABEL + INFO BUTTON */}
               <span className="flex items-center justify-between gap-2">
-                <label htmlFor="name" className="text-xs text-gray-400">
-                  Name
-                </label>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="name" className="text-xs text-gray-400">
+                    Name *
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowInfo((prev) => !prev)}
+                    className="
+              flex h-4 w-4 items-center justify-center
+              rounded-full border border-gray-500
+              text-[10px] text-gray-400
+              transition
+              hover:border-emerald-500 hover:text-emerald-400
+            "
+                  >
+                    ?
+                  </button>
+                </div>
+
                 {errors.nameTransaction && (
-                  <p className="text-red-400 text-[11px]">
+                  <p className="text-[11px] text-red-400">
                     {errors.nameTransaction.message}
                   </p>
                 )}
               </span>
 
+              {/* INPUT */}
               <input
                 id="name"
                 type="text"
                 placeholder="January 2026"
                 className="
-                rounded-md
-                border border-white/10
-                bg-black/40
-                px-3 py-2
-                text-sm text-gray-200
-                placeholder:text-gray-500
-                outline-none
-                focus:border-emerald-500/40
-              "
+          mt-2
+          w-full
+          rounded-md
+          border border-white/10
+          bg-black/40
+          px-3 py-2
+          text-sm text-gray-200
+          placeholder:text-gray-500
+          outline-none
+          focus:border-emerald-500/40
+        "
                 required
                 {...register("nameTransaction")}
               />
+
+              {/* POPUP INFO + FADE ANIMATION */}
+              <div
+                className={`
+          relative mt-2
+          transition-all duration-300 ease-out
+          ${
+            showInfo
+              ? "opacity-100 translate-y-0"
+              : "pointer-events-none opacity-0 -translate-y-2"
+          }
+        `}
+              >
+                <div
+                  className="
+            absolute z-10 w-full
+            rounded-md border border-white/10
+            bg-zinc-900 p-3 text-xs text-gray-300
+            shadow-lg
+          "
+                >
+                  <p>
+                    <b>Name Transaction</b> adalah ID atau judul unik untuk
+                    setiap transaksi.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  Inisial Nominal
+                </label>
+
+                <input
+                  {...register("initialNominal")}
+                  type="number"
+                  placeholder="Rp. 100"
+                  className="
+            w-full
+            border-b
+            border-zinc-300
+            pb-2
+            text-black
+            outline-none
+          "
+                />
+              </div>
             </div>
           ) : (
             <div className="flex-1 flex flex-col gap-1.5">
@@ -166,7 +245,7 @@ const FormPost = ({ onBack }: FormPostProps) => {
                 htmlFor="transactionName"
                 className="text-xs text-gray-400"
               >
-                Tipe Transaksi
+                Id Transaksi
               </label>
               <select
                 id="transactionName"
@@ -182,12 +261,12 @@ const FormPost = ({ onBack }: FormPostProps) => {
               "
                 {...register("nameTransaction")}
               >
-                <option value="REGULAR" className="bg-black text-white">
+                <option value="" className="bg-black text-white">
                   Regular
                 </option>
-                <option value="PREMIUM" className="bg-black text-white">
+                {/* <option value="PREMIUM" className="bg-black text-white">
                   Premium
-                </option>
+                </option> */}
               </select>
             </div>
           )}
@@ -199,8 +278,11 @@ const FormPost = ({ onBack }: FormPostProps) => {
             </label>
 
             <input
-              {...register("date")}
-              type="date"
+              // {...register("date")}
+              {...register("date", {
+                valueAsDate: true,
+              })}
+              type="datetime-local"
               className=" w-full border-b border-zinc-300 pb-2 text-black outline-none"
             />
           </div>
@@ -353,8 +435,25 @@ const FormPost = ({ onBack }: FormPostProps) => {
 
           {/* Action */}
           <div className="flex justify-end gap-6 border-t border-zinc-200 pt-6">
-            <button type="submit" className="font-medium text-black">
-              Simpan
+            <button
+              type="submit"
+              disabled={isSubmitLoading}
+              className="
+                        flex h-12 items-center justify-center gap-2
+                        rounded-2xl bg-black px-5
+                        text-sm font-medium text-white
+                        transition hover:opacity-90
+                        disabled:cursor-not-allowed disabled:opacity-70
+                      "
+            >
+              {isSubmitLoading ? (
+                <>
+                  <Spokes className="size-4 animate-spin" />
+                  <span>Dalam Progres...</span>
+                </>
+              ) : (
+                "Submit"
+              )}
             </button>
           </div>
         </form>

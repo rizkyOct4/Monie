@@ -1,16 +1,14 @@
 "use client";
 
-import {
-  useQuery,
-  useInfiniteQuery,
-  keepPreviousData,
-} from "@tanstack/react-query";
-import axios from "axios";
+import { useQueryTransactions } from "./query/query-index";
 import { useMutationTransaction } from "./mutation/mutation-index";
 
 export const useTransactionHook = (publicId: string, currentPath: string) => {
+  // * QUERY =======
+  const QGet = useQueryTransactions({ publicId, currentPath });
+
   // * MUTATION =======
   const MPost = useMutationTransaction();
 
-  return { ...MPost };
+  return { ...QGet, ...MPost };
 };

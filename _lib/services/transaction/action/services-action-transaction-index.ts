@@ -1,16 +1,16 @@
 import { prisma } from "@/_lib/prisma/prisma-client";
-import camelcaseKeys from "camelcase-keys";
-import { nanoid } from "nanoid";
 
-type PostTransactionProps = {
+type PostNewTransactionProps = {
+  publicId: string;
+  initialNominal: number;
   id: string;
   nominal: number;
   images:
     | {
         id: string;
         imageName: string;
-        imageId: any;
-        imageUrl: any;
+        imageId: string;
+        imageUrl: string;
       }[]
     | [];
   nameTransaction: string;
@@ -18,28 +18,31 @@ type PostTransactionProps = {
   information?: string | undefined;
 };
 
-export const PostTransaction = async ({
+export const PostNewTransaction = async ({
+  publicId,
+  initialNominal,
   id,
   nominal,
   images,
   nameTransaction,
   date,
   information,
-}: PostTransactionProps) => {
+}: PostNewTransactionProps) => {
   return prisma.$transaction(async (tx) => {
-    // ? TRANSACTION_DB =========
+    // ? TRANSACTIONS DB =========
     await tx.$executeRaw`
-        INSERT INTO transactions (id, name_transaction, created_at)
+        INSERT INTO transactions (ref_id, id, name_transaction, information, nominal, created_at)
             VALUES
-        (${id}, ${nameTransaction}, ${date}::date)`;
+        ((SELECT id FROM users WHERE public_id = ${publicId}), ${id}, ${nameTransaction}, ${information}, ${nominal} ,${date}::timestamp)`;
 
-    // ? VALUE TRANSACTION_DB =========
+    // ? INITIAL SALARY DB
     await tx.$executeRaw`
-        INSERT INTO value_transaction (ref_id, information, nominal, created_at)
-        VALUES
-        (${id}, ${information}, ${nominal}, ${date}::date)`;
+        INSERT INTO initial_salary (ref_id_user, ref_id_transaction, salary_income, salary_remaining, created_at)
+          VALUES
+        ((SELECT id FROM users WHERE public_id = ${publicId}), ${id}, ${initialNominal}, ${initialNominal - nominal}, ${date}::timestamp)
+      `;
 
-    // ! PROJECT_TEXT_DESCRITION DB
+    // * TRANSACTION IMAGES DB
     if (images.length > 0) {
       await Promise.all(
         images.map(
@@ -47,6 +50,62 @@ export const PostTransaction = async ({
             tx.$executeRaw`
             INSERT INTO value_transaction_images
               (ref_id, image_id, image_name, image_url, id) 
+            VALUES
+              (${id}, ${i.imageId}, ${i.imageName}, ${i.imageUrl}, ${i.id})`,
+        ),
+      );
+    }
+  });
+};
+
+type PostCurrentTransactionProps = {
+  publicId: string;
+  currentId: string;
+  id: string;
+  nominal: number;
+  images:
+    | {
+        id: string;
+        imageName: string;
+        imageId: string;
+        imageUrl: string;
+      }[]
+    | [];
+  nameTransaction: string;
+  date: Date;
+  information?: string | undefined;
+};
+
+export const PostCurrentTransaction = async ({
+  publicId,
+  currentId,
+  id,
+  nominal,
+  images,
+  nameTransaction,
+  date,
+  information,
+}: PostCurrentTransactionProps) => {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`
+      UPDATE initial_salary
+        SET salary_remaining = salary_remaining - ${nominal}, updated_at = ${date}::timestamp
+      WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND ref_id_transaction = ${currentId}`;
+
+    // ? TRANSACTIONS DB =========
+    await tx.$executeRaw`
+        INSERT INTO transactions (ref_id, id, name_transaction, information, nominal, created_at)
+            VALUES
+        ((SELECT id FROM users WHERE public_id = ${publicId}), ${id}, ${nameTransaction}, ${information}, ${nominal} ,${date}::timestamp)`;
+
+    // * TRANSACTION IMAGES DB
+    if (images.length > 0) {
+      await Promise.all(
+        images.map(
+          (i) =>
+            tx.$executeRaw`
+            INSERT INTO value_transaction_images
+              (ref_id, image_id, image_name, image_url, id)
             VALUES
               (${id}, ${i.imageId}, ${i.imageName}, ${i.imageUrl}, ${i.id})`,
         ),

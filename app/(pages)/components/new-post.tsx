@@ -3,6 +3,7 @@
 import { Plus } from "lucide-react";
 import FormPost from "./form";
 import { useState } from "react";
+import TransactionProvider from "../transaction/context/context";
 
 const NewPostBtn = () => {
   const [isPost, setIsPost] = useState(false);
@@ -15,7 +16,9 @@ const NewPostBtn = () => {
       >
         <Plus size={24} />
       </button>
-      {isPost && <FormPost onBack={() => setIsPost(false)} />}
+      <TransactionProvider>
+        {isPost && <FormPost onBack={() => setIsPost(false)} />}
+      </TransactionProvider>
     </>
   );
 };

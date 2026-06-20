@@ -5,6 +5,7 @@ export const FormPostSchema = z.object({
   nameTransaction: z.string().refine((val) => !ForbiddenRegex().test(val), {
     message: `* Contains invalid characters`,
   }),
+  initialNominal: z.string(),
 
   date: z.date(),
 

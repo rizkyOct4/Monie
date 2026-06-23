@@ -1,17 +1,36 @@
-
 type GetProps = {
-  key: "searchTransactions";
+  key:
+    | "transactions"
+    | "searchTransactions"
+    | "idTransactions"
+    | "PutIdTransactions";
   currentPath: string;
-  date: string;
-  pageParam: number;
-  limit: number;
-}
+  date?: string;
+  search?: string;
+  pageParam?: number;
+  limit?: number;
+  idTransaction?: string;
+};
 
 export const ROUTES_TRANSACTION = {
-  GET: ({ key, currentPath, date, pageParam, limit }: GetProps) => {
+  GET: ({
+    key,
+    currentPath,
+    date,
+    search,
+    pageParam,
+    limit,
+    idTransaction,
+  }: GetProps) => {
     switch (key) {
+      case "transactions":
+        return `${currentPath}/api?key=${key}&date-transaction=${date}&page-param=${pageParam}&limit=${limit}`;
       case "searchTransactions":
-        return `${currentPath}/api?key=${key}&search-transaction=${date}&page-param=${pageParam}&limit=${limit}`;
+        return `${currentPath}/api?key=${key}&search-transaction=${search}`;
+      case "idTransactions":
+        return `${currentPath}/api?key=${key}&page-param=${pageParam}&limit=${limit}`;
+      case "PutIdTransactions":
+        return `${currentPath}/api?key=${key}&id-transaction=${idTransaction}`;
       default:
         return "";
     }
@@ -20,28 +39,29 @@ export const ROUTES_TRANSACTION = {
     key,
     currentPath,
   }: {
-    key: "postTransaction" | "uploadNewProject";
+    key: "newPostTransaction" | "postTransaction";
     currentPath?: string;
   }) => {
     switch (key) {
+      case "newPostTransaction":
       case "postTransaction":
         return `/transaction/api/action?key=${key}`;
       default:
         return "";
     }
   },
-  UPDATE_ACTION: ({
+  PUT: ({
     key,
     currentPath,
-    year,
+    idTranscation,
   }: {
-    key: "updateImage";
+    key: "putTransaction";
     currentPath: string;
-    year: string;
+    idTranscation: string;
   }) => {
     switch (key) {
-      case "updateImage":
-        return `/admin/${currentPath}/api/action?key=${key}&year=${year}`;
+      case "putTransaction":
+        return `/${currentPath}/api/action?key=${key}&idTranscation=${idTranscation}`;
       default:
         return "";
     }

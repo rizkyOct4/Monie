@@ -12,48 +12,43 @@ export async function POST(req: NextRequest) {
     const { publicId } = await GetSession();
 
     const {
-      typeTransaction,
-      initialNominal,
-      currentId,
       id,
+      existId,
+      nameTransaction,
+      initialNominal,
+      date,
       nominal,
       images,
-      nameTransaction,
-      date,
       information,
     } = await req.json();
 
     switch (key) {
+      case "newPostTransaction": {
+        await PostNewTransaction({
+          publicId,
+          initialNominal,
+          id,
+          nameTransaction,
+          date,
+        });
+        return NextResponse.json({
+          message: "New Transaction Success",
+        });
+      }
       case "postTransaction": {
-        if (typeTransaction) {
-          await PostNewTransaction({
-            publicId,
-            initialNominal,
-            id,
-            nominal,
-            images,
-            nameTransaction,
-            date,
-            information,
-          });
-          return NextResponse.json({
-            message: "New Transaction Success",
-          });
-        } else {
-          await PostCurrentTransaction({
-            publicId,
-            currentId,
-            id,
-            nominal,
-            images,
-            nameTransaction,
-            date,
-            information,
-          });
-          return NextResponse.json({
-            message: "Transaction Success",
-          });
-        }
+        await PostCurrentTransaction({
+          publicId,
+          id,
+          existId,
+          nominal,
+          images,
+          nameTransaction,
+          date,
+          information,
+        });
+        return NextResponse.json({
+          message: "Transaction Success",
+        });
       }
     }
   } catch (err: any) {

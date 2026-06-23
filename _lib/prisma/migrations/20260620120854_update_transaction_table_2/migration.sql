@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "transactions" ALTER COLUMN "created_at" SET DATA TYPE TIMESTAMP(6),
-ALTER COLUMN "updated_at" SET DATA TYPE TIMESTAMP(6);

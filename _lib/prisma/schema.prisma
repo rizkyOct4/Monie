@@ -49,11 +49,26 @@ model Account {
   @@map("accounts")
 }
 
+model InitialSalary {
+  ref_id_user          String   @db.Uuid     
+  id   String          @id
+  initial_name    String   @db.VarChar(255)
+  salary_income        Int
+  salary_remaining     Int?
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
+
+  user      User     @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
+  transaction  Transaction[]
+
+
+  @@map("initial_salary")
+}
 
 model Transaction {
-  ref_id          String   @db.Uuid     
-
-  id              String    @unique
+  id   String  @id
+  ref_id_user         String   @db.Uuid     
+  ref_id              String   
   name_transaction      String      @db.VarChar(255)
   information   String?     @db.VarChar(255)
   nominal       Int
@@ -61,17 +76,17 @@ model Transaction {
   updated_at DateTime? @updatedAt
 
 
-  user      User     @relation(fields: [ref_id], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
+  initialSalary      InitialSalary     @relation(fields: [ref_id], references: [id], onDelete: Cascade)
 
   transactionImage  TransactionImages[]
-  initialSalary  InitialSalary?
   
   @@map("transactions")
 }
 
 
 model TransactionImages {
-  ref_id    String
+  ref_id      String
   id          String      @unique
   image_id        String
   image_name      String
@@ -84,16 +99,3 @@ model TransactionImages {
 }
 
 
-model InitialSalary {
-  ref_id_user          String   @db.Uuid     
-  ref_id_transaction   String   @unique
-  salary_income        Int
-  salary_remaining     Int?
-  created_at DateTime @default(now())
-  updated_at DateTime? @updatedAt
-
-  user      User     @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
-  transaction      Transaction     @relation(fields: [ref_id_transaction], references: [id], onDelete: Cascade)
-
-  @@map("initial_salary")
-}

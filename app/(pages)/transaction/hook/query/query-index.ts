@@ -6,19 +6,119 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 import axios from "axios";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ROUTES_TRANSACTION } from "../../config-route/config-route";
+import type {
+  IdTransactionsDataType,
+  TransactionsDataType,
+} from "../../types/types";
 
+// * ID TRANSACTIONS ======================
+export const useQueryIdTransactions = ({
+  publicId,
+  currentPath,
+}: UseQueryTransactionsProps) => {
+  const [isOpenIdTransaction, setIsOpenIdTransaction] = useState(false);
+
+  const { data: fIdTransactionsList, refetch: idTransactionsListRefetch } =
+    useInfiniteQuery({
+      queryKey: ["keyIdTransactionsList", publicId],
+      queryFn: async ({ pageParam = 1 }) => {
+        const limit = 15;
+        const URL = ROUTES_TRANSACTION.GET({
+          key: "idTransactions",
+          currentPath: "/transaction",
+          pageParam: pageParam,
+          limit: limit,
+        });
+        const { data } = await axios.get(URL);
+        return data;
+      },
+      getNextPageParam: (lastPage, allPages) => {
+        return lastPage?.hasMore ? allPages.length + 1 : undefined;
+      },
+      staleTime: 1000 * 60 * 10,
+      gcTime: 1000 * 60 * 60,
+      initialPageParam: 1,
+      enabled: isOpenIdTransaction,
+      placeholderData: keepPreviousData,
+      refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+      refetchOnMount: false, // "always" => refetch jika stale saja
+      retry: false,
+    });
+
+  const IdTransactionsListData: IdTransactionsDataType[] = useMemo(
+    () => fIdTransactionsList?.pages.flatMap((page) => page.data) ?? [],
+    [fIdTransactionsList?.pages],
+  );
+
+  return {
+    IdTransactionsListData,
+    idTransactionsListRefetch,
+    queryKeyIdTransactions: ["keyIdTransactionsList", publicId],
+    isOpenIdTransaction,
+    setIsOpenIdTransaction,
+  };
+};
+
+// * SEARCH ID TRANSACTIONS ======================
+export const useQuerySearchIdTransactions = ({
+  publicId,
+}: {
+  publicId: string;
+}) => {
+  const [search, setSearch] = useState("");
+  const [debounceSearch, setDebounceSearch] = useState("");
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebounceSearch(search);
+    }, 600);
+    return () => clearTimeout(timeout);
+  }, [search]);
+
+  const {
+    data: searchIdTransaction,
+    isFetching: isFetchingSearchIdTransaction,
+  } = useQuery({
+    queryKey: ["keySearchIdTransaction", publicId, debounceSearch],
+    queryFn: async () => {
+      const URL = ROUTES_TRANSACTION.GET({
+        key: "searchTransactions",
+        currentPath: "/transaction",
+        search: debounceSearch,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
+    enabled: debounceSearch !== "",
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false, // "always" => refetch jika stale saja
+    retry: false,
+  });
+
+  const SearchIdTransactionData = useMemo(
+    () => searchIdTransaction ?? [],
+    [searchIdTransaction],
+  );
+
+  return {
+    search,
+    setSearch,
+    SearchIdTransactionData,
+    isFetchingSearchIdTransaction,
+  };
+};
+
+// * TRANSACTIONS ======================
 type UseQueryTransactionsProps = {
   publicId: string;
   currentPath: string;
 };
-
 const getToday = () => {
   const today = new Date();
   return today.toISOString().split("T")[0];
 };
-
 export const useQueryTransactions = ({
   publicId,
   currentPath,
@@ -32,7 +132,7 @@ export const useQueryTransactions = ({
       queryFn: async ({ pageParam = 1 }) => {
         const limit = 15;
         const URL = ROUTES_TRANSACTION.GET({
-          key: "searchTransactions",
+          key: "transactions",
           currentPath: currentPath,
           date: date,
           pageParam: pageParam,
@@ -47,22 +147,65 @@ export const useQueryTransactions = ({
       staleTime: 1000 * 60 * 10,
       gcTime: 1000 * 60 * 60,
       initialPageParam: 1,
-      enabled: !!date,
+      enabled: !!date && currentPath === "/transaction",
       placeholderData: keepPreviousData,
       refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
       refetchOnMount: false, // "always" => refetch jika stale saja
       retry: false,
     });
 
-  const TransactionsListData = useMemo(
+  const TransactionsListData: TransactionsDataType[] = useMemo(
     () => fTransactionsList?.pages.flatMap((page) => page.data) ?? [],
     [fTransactionsList?.pages],
   );
 
-  //   const projectUpdateData: ProjectUpdateData[] = useMemo(
-  //     () => projectUpdate ?? [],
-  //     [projectUpdate],
-  //   );
+  return {
+    TransactionsListData,
+    TransactionsListRefetch,
+    date,
+    setDate,
+    queryKeyTransactions: ["keyTransactionsList", publicId, date],
+  };
+};
 
-  return { TransactionsListData, TransactionsListRefetch, date, setDate };
+// * GET PUT TRANSACTIONS ======================
+type UseQueryGetPutTransactionsProps = {
+  publicId: string;
+  currentPath: string;
+};
+export const useQueryGetPutTransactions = ({
+  publicId,
+  currentPath,
+}: UseQueryGetPutTransactionsProps) => {
+  const [idTransaction, setIdTransaction] = useState("");
+
+  const { data: PutIdTransaction, isFetching: isFetchingPutIdTransaction } =
+    useQuery({
+      queryKey: ["keyGetPutIdTransaction", publicId, idTransaction],
+      queryFn: async () => {
+        const URL = ROUTES_TRANSACTION.GET({
+          key: "PutIdTransactions",
+          currentPath: currentPath,
+          idTransaction: idTransaction,
+        });
+        const { data } = await axios.get(URL);
+        return data;
+      },
+      enabled: idTransaction !== "",
+      refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+      refetchOnMount: false, // "always" => refetch jika stale saja
+      retry: false,
+    });
+
+  const PutIdTransactionData = useMemo(
+    () => PutIdTransaction ?? [],
+    [PutIdTransaction],
+  );
+
+  return {
+    idTransaction,
+    setIdTransaction,
+    PutIdTransactionData,
+    isFetchingPutIdTransaction,
+  };
 };

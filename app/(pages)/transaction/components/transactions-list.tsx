@@ -1,29 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useContext } from "react";
+import type { TransactionsDataType } from "../types/types";
+import { TransactionContext } from "@/app/context/context";
+import FormPutTransactions from "./form-put";
 
-export default function TransactionList({ TransactionsListData }: any) {
+const ListOptionBtn = [
+  { value: "Detail Foto" },
+  { value: "Perbarui" },
+  { value: "Hapus" },
+];
+
+type TranscationListProps = {
+  TransactionsListData: TransactionsDataType[];
+};
+
+const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
+  const { idTransaction, setIdTransaction } = useContext(TransactionContext);
+
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [put, setPut] = useState(false);
 
-//   const filteredTransactions = useMemo(() => {
-//     if (!Array.isArray(TransactionsListData)) return [];
-
-//     return TransactionsListData.filter((i) => {
-//       const matchSearch =
-//         i.information?.toLowerCase().includes(search.toLowerCase()) ||
-//         String(i.nominal).includes(search);
-
-//       const matchFilter =
-//         filter === "all"
-//           ? true
-//           : filter === "income"
-//           ? i.nominal > 0
-//           : i.nominal < 0;
-
-//       return matchSearch && matchFilter;
-//     });
-//   }, [TransactionsListData, search, filter]);
+  const handleAction = useCallback(
+    (actionType: string, id: string) => {
+      switch (actionType) {
+        case "Perbarui": {
+          setIdTransaction(id);
+          setPut(true);
+          break;
+        }
+      }
+    },
+    [setIdTransaction],
+  );
 
   return (
     <section>
@@ -50,15 +60,17 @@ export default function TransactionList({ TransactionsListData }: any) {
           className="border-b border-zinc-300 bg-black text-sm text-white"
         >
           <option value="all">All</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
+          <option value="newest">Terbaru</option>
+          <option value="latest">Terlama</option>
+          <option value="mostExpensive">Termahal</option>
+          <option value="cheapest">Termurah</option>
         </select>
       </div>
 
       {/* LIST */}
       <div className="flex flex-col">
         {TransactionsListData.length > 0 ? (
-          TransactionsListData.map((i: any, idx: number) => (
+          TransactionsListData.map((i, idx) => (
             <div
               key={idx}
               className="flex items-center justify-between border-b border-zinc-100 py-4"
@@ -76,13 +88,17 @@ export default function TransactionList({ TransactionsListData }: any) {
                   })}
                 </p>
 
-                {/* DETAIL BUTTON */}
-                <button
-                  onClick={() => console.log("detail:", i.id)}
-                  className="mt-2 text-xs text-blue-500 hover:underline"
-                >
-                  Detail
-                </button>
+                <div className="flex gap-4">
+                  {ListOptionBtn.map((b, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleAction(b.value, i.id)}
+                      className="mt-2 text-xs text-blue-500 hover:underline"
+                    >
+                      {b.value}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* RIGHT */}
@@ -96,18 +112,20 @@ export default function TransactionList({ TransactionsListData }: any) {
                   {Number(i.nominal).toLocaleString("id-ID")}
                 </p>
 
-                <p className="text-xs text-zinc-500">
-                  {i.information}
-                </p>
+                <p className="text-xs text-zinc-500">{i.information}</p>
               </div>
             </div>
           ))
         ) : (
-          <p className="py-6 text-sm text-zinc-500">
-            Tidak ada transaksi
-          </p>
+          <p className="py-6 text-sm text-zinc-500">Tidak ada transaksi</p>
         )}
       </div>
+
+      {/* // ? */}
+
+      {put && <FormPutTransactions idTransaction={idTransaction} onBack={() => setPut(false)} />}
     </section>
   );
-}
+};
+
+export default TransactionList;

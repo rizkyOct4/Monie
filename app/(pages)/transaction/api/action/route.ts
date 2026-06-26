@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   PostNewTransaction,
   PostCurrentTransaction,
+  PutTransaction,
 } from "@/_lib/services/transaction/action/services-action-transaction-index";
 import GetSession from "@/_lib/session";
 
@@ -48,6 +49,44 @@ export async function POST(req: NextRequest) {
         });
         return NextResponse.json({
           message: "Transaction Success",
+        });
+      }
+    }
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const key = req.nextUrl.searchParams.get("key");
+
+    const { publicId } = await GetSession();
+
+    const {
+      existId,
+      date,
+      nominal,
+      images,
+      information,
+      newImages,
+      deleteImages,
+    } = await req.json();
+
+    switch (key) {
+      case "putTransaction": {
+        await PutTransaction({
+          publicId,
+          existId,
+          date,
+          nominal,
+          images,
+          information,
+          newImages,
+          deleteImages
+        });
+        return NextResponse.json({
+          message: "Update Transaction Success",
         });
       }
     }

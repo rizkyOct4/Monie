@@ -10,17 +10,34 @@ import { uploadMultipleToCloudinary } from "@/_utils/direct-upload-cloud";
 import { useSessionClient } from "@/_lib/c-session";
 import { TransactionContext } from "@/app/context/context";
 import { FormPutType, FormPutSchema } from "../../z-schema/z-schema";
-import { Upload, Search, Loader2 } from "lucide-react";
 
 type TransactionsProps = {
   idTransaction: string;
+  imagesV:
+    | {
+        id: string;
+        imageName: string;
+        imageUrl: string;
+      }[]
+    | [];
+  information: string;
+  nominal: number;
   onBack: () => void;
 };
 
-const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
+const FormPut = ({
+  idTransaction,
+  imagesV,
+  information,
+  nominal,
+  onBack,
+}: TransactionsProps) => {
   const { publicId } = useSessionClient();
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+
   const {
-    postTransaction,
+    putTransaction,
     PutIdTransactionData,
     setIsOpenIdTransaction,
     IdTransactionsListData,
@@ -46,6 +63,7 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
   });
 
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [imageDeleted, setImageDeleted] = useState<string[]>([]);
 
   // * IMAGES =================
   const images =
@@ -77,11 +95,17 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
 
       let cloudImage;
 
-      if (images.length > 0) {
+      const just = images.filter((img) => !img.path.startsWith("https://"));
+
+      const newImage = previewImagePath.filter(
+        (img: string) => !img.startsWith("https://"),
+      );
+
+      if (newImage.length > 0) {
         const idImages = nanoid(8);
 
         const cloud = await uploadMultipleToCloudinary({
-          files: images.map((i) => i.path),
+          files: newImage,
           publicId: publicId,
           type: "images",
           id: id,
@@ -89,7 +113,7 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
 
         const image = cloud.map((i, idx) => ({
           id: idImages,
-          imageName: previewImageName[idx],
+          imageName: just[idx].name,
           imageId: i.public_id,
           imageUrl: i.secure_url,
         }));
@@ -97,17 +121,18 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
         cloudImage = image;
       }
 
-      const post = {
+      const put = {
         ...values,
-        existsId: idTransaction,
         nominal: Number(values.nominal),
-        images: images.length > 0 ? cloudImage : [],
+        images: images,
+        newImages: cloudImage,
+        deleteImages: imageDeleted,
       };
 
-      // await postTransaction(post);
-      console.log(post);
+      // await putTransaction(put);
+      console.log(put);
       setIsSubmitLoading(false);
-      onBack();
+      // onBack();
     } catch (err) {
       setIsSubmitLoading(false);
       console.error(err);
@@ -117,53 +142,75 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
   useEffect(() => {
     if (PutIdTransactionData) {
       reset({
-        existId: PutIdTransactionData[0]?.id,
-        date: PutIdTransactionData[0]?.updatedAt,
-        images: PutIdTransactionData[0]?.images.map(
-          (i: { imageName: string; imageUrl: string }) => ({
-            name: i.imageName,
-            path: i.imageUrl,
-          }),
-        ),
-        information: PutIdTransactionData[0]?.information,
-        nominal: PutIdTransactionData[0]?.nominal,
+        existId: idTransaction,
+        // date: PutIdTransactionData[0]?.updatedAt,
+        images: imagesV.map((i: { imageName: string; imageUrl: string }) => ({
+          name: i.imageName,
+          path: i.imageUrl,
+        })),
+        information: information,
+        nominal: String(nominal),
       });
     }
-  }, [PutIdTransactionData, reset]);
+  }, [
+    PutIdTransactionData,
+    idTransaction,
+    imagesV,
+    information,
+    nominal,
+    reset,
+  ]);
 
   // console.log(errors);
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={submit}>
-      <div>
-        {/* Tanggal */}
-        <div>
-          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            Tanggal
-          </label>
-
-          <input
-            {...register("date", {
-              valueAsDate: true,
-            })}
-            type="datetime-local"
-            required
-            className=" w-full border-b border-zinc-300 pb-2 text-black outline-none"
-          />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className=" w-full max-w-lg h-[80vh] overflow-y-auto bg-white p-6">
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-black">
+            Perbarui Transaksi
+          </h2>
+          <button
+            onClick={onBack}
+            type="button"
+            className="text-zinc-500 hover:text-black"
+          >
+            ✕
+          </button>
         </div>
 
-        {/* Upload */}
-        <div>
-          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            Lampiran Foto
-          </label>
+        <div className="flex flex-col gap-6">
+          <form className="flex flex-col gap-4" onSubmit={submit}>
+            <div>
+              {/* Tanggal */}
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  Tanggal
+                </label>
 
-          <div className="mb-3 flex max-h-60 flex-wrap gap-3 overflow-y-auto">
-            {previewImagePath.length > 0 &&
-              previewImagePath.map((src, idx) => (
-                <div
-                  key={idx}
-                  className="
+                <input
+                  {...register("date", {
+                    valueAsDate: true,
+                  })}
+                  type="datetime-local"
+                  defaultValue={now.toISOString().slice(0, 16)}
+                  required
+                  className=" w-full border-b border-zinc-300 pb-2 text-black outline-none"
+                />
+              </div>
+
+              {/* Upload */}
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  Lampiran Foto
+                </label>
+
+                <div className="mb-3 flex max-h-60 flex-wrap gap-3 overflow-y-auto">
+                  {images.length > 0 &&
+                    images.map((src, idx) => (
+                      <div
+                        key={idx}
+                        className="
                         relative
                         h-24
                         w-24
@@ -171,23 +218,34 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
                         border
                         border-zinc-200
                       "
-                >
-                  <Image
-                    src={src}
-                    alt={`Preview ${idx}`}
-                    fill
-                    className="object-cover"
-                  />
+                      >
+                        <Image
+                          src={src?.path}
+                          alt={`Preview ${idx}`}
+                          fill
+                          className="object-cover"
+                        />
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updated =
-                        images?.filter((_, index) => index !== idx) ?? [];
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const delImage = images?.find(
+                              (i) => i.name === src.name,
+                            );
 
-                      setValue("images", updated);
-                    }}
-                    className="
+                            const updated =
+                              images?.filter((_, index) => index !== idx) ?? [];
+
+                            setValue("images", updated);
+
+                            if (delImage) {
+                              setImageDeleted((prev) => [
+                                ...prev,
+                                delImage.name,
+                              ]);
+                            }
+                          }}
+                          className="
                           absolute
                           top-1
                           right-1
@@ -200,18 +258,18 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
                           text-xs
                           text-red-500
                         "
-                  >
-                    ✕
-                  </button>
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
                 </div>
-              ))}
-          </div>
 
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            className="
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="
                   text-sm
                   text-zinc-600
                   file:border
@@ -221,51 +279,51 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
                   file:py-2
                   file:text-sm
                 "
-            onChange={(e) => {
-              const files = e.target.files;
-              if (!files) return;
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (!files) return;
 
-              Array.from(files).forEach((file) => {
-                const reader = new FileReader();
+                    Array.from(files).forEach((file) => {
+                      const reader = new FileReader();
 
-                reader.onloadend = () => {
-                  const base64 = reader.result as string;
+                      reader.onloadend = () => {
+                        const base64 = reader.result as string;
 
-                  const currentImages = getValues("images") || [];
+                        const currentImages = getValues("images") || [];
 
-                  setValue(
-                    "images",
-                    [
-                      ...currentImages,
-                      {
-                        name: file.name,
-                        path: base64,
-                      },
-                    ],
-                    {
-                      shouldValidate: true,
-                    },
-                  );
-                };
+                        setValue(
+                          "images",
+                          [
+                            ...currentImages,
+                            {
+                              name: file.name,
+                              path: base64,
+                            },
+                          ],
+                          {
+                            shouldValidate: true,
+                          },
+                        );
+                      };
 
-                reader.readAsDataURL(file);
-              });
+                      reader.readAsDataURL(file);
+                    });
 
-              e.target.value = "";
-            }}
-          />
-        </div>
+                    e.target.value = "";
+                  }}
+                />
+              </div>
 
-        {/* Keterangan */}
-        <div>
-          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            Keterangan
-          </label>
+              {/* Keterangan */}
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  Keterangan
+                </label>
 
-          <textarea
-            {...register("information")}
-            rows={4}
-            className="
+                <textarea
+                  {...register("information")}
+                  rows={4}
+                  className="
                   w-full
                   resize-none
                   border-b
@@ -274,20 +332,20 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
                   text-black
                   outline-none
                 "
-          />
-        </div>
+                />
+              </div>
 
-        {/* Nominal */}
-        <div>
-          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            Nominal
-          </label>
+              {/* Nominal */}
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  Nominal
+                </label>
 
-          <input
-            {...register("nominal")}
-            type="number"
-            placeholder="0"
-            className="
+                <input
+                  {...register("nominal")}
+                  type="number"
+                  placeholder="0"
+                  className="
                   w-full
                   border-b
                   border-zinc-300
@@ -295,29 +353,35 @@ const FormPut = ({ idTransaction, onBack }: TransactionsProps) => {
                   text-black
                   outline-none
                 "
-          />
-        </div>
+                />
+              </div>
 
-        {/* Action */}
-        <div className="flex justify-end gap-6 border-t border-zinc-200 pt-6">
-          <button
-            type="submit"
-            disabled={isSubmitLoading}
-            className=" flex h-12 items-center justify-center gap-2 rounded-2xl bg-black px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isSubmitLoading ? (
-              <>
-                <Spokes className="size-4 animate-spin" />
-                <span>Dalam Progres...</span>
-              </>
-            ) : (
-              "Perbarui"
-            )}
-          </button>
+              {/* Action */}
+              <div className="flex justify-end gap-6 border-t border-zinc-200 pt-6">
+                <button
+                  type="submit"
+                  disabled={isSubmitLoading}
+                  className=" flex h-12 items-center justify-center gap-2 rounded-2xl bg-black px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isSubmitLoading ? (
+                    <>
+                      <Spokes className="size-4 animate-spin" />
+                      <span>Dalam Progres...</span>
+                    </>
+                  ) : (
+                    "Perbarui"
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
-    </form>
+    </div>
   );
 };
 
 export default FormPut;
+
+
+// todo GA PERLU AMBIL DATA UNTUK INI !!! CUKUP PAKAI DATA YG ADA !! 

@@ -19,6 +19,8 @@ type TransactionsProps = {
 
 const Transactions = ({ onBack, isNewTransaction }: TransactionsProps) => {
   const { publicId } = useSessionClient();
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
   const {
     postTransaction,
     setIsOpenIdTransaction,
@@ -82,7 +84,6 @@ const Transactions = ({ onBack, isNewTransaction }: TransactionsProps) => {
       let cloudImage;
 
       if (images.length > 0) {
-
         const cloud = await uploadMultipleToCloudinary({
           files: images.map((i) => i.path),
           publicId: publicId,
@@ -105,6 +106,7 @@ const Transactions = ({ onBack, isNewTransaction }: TransactionsProps) => {
         id: id,
         nominal: Number(values.nominal),
         images: images.length > 0 ? cloudImage : [],
+        status: "ACTIVE"
       };
 
       await postTransaction(post);
@@ -264,6 +266,7 @@ const Transactions = ({ onBack, isNewTransaction }: TransactionsProps) => {
                 valueAsDate: true,
               })}
               type="datetime-local"
+              defaultValue={now.toISOString().slice(0, 16)}
               required
               className=" w-full border-b border-zinc-300 pb-2 text-black outline-none"
             />

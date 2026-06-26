@@ -9,6 +9,7 @@ import {
 import {
   useMutationNewTransaction,
   useMutationTransaction,
+  useMutationPutTranscation,
 } from "./mutation/mutation-index";
 
 export const useTransactionHook = (publicId: string, currentPath: string) => {
@@ -16,7 +17,7 @@ export const useTransactionHook = (publicId: string, currentPath: string) => {
   const QIdGet = useQueryIdTransactions({ publicId, currentPath });
   const QSearchIdGet = useQuerySearchIdTransactions({ publicId });
   const QGet = useQueryTransactions({ publicId, currentPath });
-  const QPutGet = useQueryGetPutTransactions({ publicId, currentPath });
+  const QGetPut = useQueryGetPutTransactions({ publicId, currentPath });
 
   // * MUTATION =======
   const MNewPost = useMutationNewTransaction({
@@ -25,15 +26,19 @@ export const useTransactionHook = (publicId: string, currentPath: string) => {
   });
   const MPost = useMutationTransaction({
     queryKeyTransactions: QGet.queryKeyTransactions,
-    refetchTransaction: QGet.TransactionsListRefetch,
+  });
+  const MPut = useMutationPutTranscation({
+    currentPath,
+    queryKeyGetPutTransaction: QGetPut.queryKeyGetPutTransaction,
   });
 
   return {
     ...QGet,
     ...QIdGet,
     ...QSearchIdGet,
-    ...QPutGet,
+    ...QGetPut,
     ...MNewPost,
     ...MPost,
+    ...MPut,
   };
 };

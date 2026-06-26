@@ -3,7 +3,7 @@
 import { useState, useCallback, useContext } from "react";
 import type { TransactionsDataType } from "../types/types";
 import { TransactionContext } from "@/app/context/context";
-import FormPutTransactions from "./form-put";
+import FormPut from "./form-put/form-put";
 
 const ListOptionBtn = [
   { value: "Detail Foto" },
@@ -22,11 +22,30 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
   const [filter, setFilter] = useState("all");
   const [put, setPut] = useState(false);
 
+  const [putValue, setPutValue] = useState({
+    existId: "",
+    images: [],
+    information: "",
+    nominal: 0,
+  });
+
   const handleAction = useCallback(
-    (actionType: string, id: string) => {
+    (
+      actionType: string,
+      id: string,
+      images: any,
+      information: string,
+      nominal: number,
+    ) => {
       switch (actionType) {
         case "Perbarui": {
           setIdTransaction(id);
+          setPutValue({
+            existId: id,
+            images: images,
+            information: information,
+            nominal: nominal,
+          });
           setPut(true);
           break;
         }
@@ -34,6 +53,8 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
     },
     [setIdTransaction],
   );
+
+  // console.log(putValue)
 
   return (
     <section>
@@ -73,7 +94,7 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
           TransactionsListData.map((i, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between border-b border-zinc-100 py-4"
+              className={`flex items-center justify-between border-b border-zinc-100 py-4 ${i.status === "FINISH" ? "bg-red-500" : "bg-transparent"}`}
             >
               {/* LEFT */}
               <div>
@@ -92,7 +113,15 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
                   {ListOptionBtn.map((b, idx) => (
                     <button
                       key={idx}
-                      onClick={() => handleAction(b.value, i.id)}
+                      onClick={() =>
+                        handleAction(
+                          b.value,
+                          i.id,
+                          i.images,
+                          i.information,
+                          i.nominal,
+                        )
+                      }
                       className="mt-2 text-xs text-blue-500 hover:underline"
                     >
                       {b.value}
@@ -122,8 +151,15 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
       </div>
 
       {/* // ? */}
-
-      {put && <FormPutTransactions idTransaction={idTransaction} onBack={() => setPut(false)} />}
+      {put && (
+        <FormPut
+          idTransaction={idTransaction}
+          imagesV={putValue.images}
+          information={putValue.information}
+          nominal={putValue.nominal}
+          onBack={() => setPut(false)}
+        />
+      )}
     </section>
   );
 };

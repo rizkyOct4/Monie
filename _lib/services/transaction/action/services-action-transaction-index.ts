@@ -7,7 +7,6 @@ type PostNewTransactionProps = {
   nameTransaction: string;
   date: Date;
 };
-
 export const PostNewTransaction = async ({
   publicId,
   id,
@@ -54,7 +53,6 @@ export const PostCurrentTransaction = async ({
   information,
 }: PostCurrentTransactionProps) => {
   return prisma.$transaction(async (tx) => {
-
     await tx.$executeRaw`
       UPDATE initial_salary
         SET salary_remaining = salary_remaining - ${nominal}, updated_at = ${date}::timestamp
@@ -76,6 +74,75 @@ export const PostCurrentTransaction = async ({
               (ref_id, image_id, image_name, image_url, id)
             VALUES
               (${id}, ${i.imageId}, ${i.imageName}, ${i.imageUrl}, ${i.id})`,
+        ),
+      );
+    }
+  });
+};
+
+type PutTransactionProps = {
+  publicId: string;
+  existId: string;
+  date: Date;
+  nominal: number;
+  images: string[];
+  information: string;
+  newImages:
+    | {
+        id: string;
+        imageName: string;
+        imageId: string;
+        imageUrl: string;
+      }[]
+    | [];
+  deleteImages: string[];
+};
+export const PutTransaction = async ({
+  publicId,
+  existId,
+  date,
+  nominal,
+  images,
+  information,
+  newImages,
+  deleteImages,
+}: PutTransactionProps) => {
+  return prisma.$transaction(async (tx) => {
+    // ? UPDATE INTIAL SALARY ============
+    await tx.$executeRaw`
+      UPDATE initial_salary
+        SET salary_remaining = salary_remaining - ${nominal}
+      WHERE id = (SELECT ref_id FROM transactions WHERE id = ${existId}) AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
+    `;
+
+    // ? UPDATE TRANSACTION ============
+    await tx.$executeRaw`
+      UPDATE transactions
+        SET information = ${information}, nominal = ${nominal}, updated_at = ${date}::timestamp
+      FROM transactions
+      WHERE id = ${existId}`;
+
+    // ? CHECK IMAGES DELETED ===========
+    if (deleteImages.length > 0) {
+      await Promise.all(
+        deleteImages.map(
+          (i) => tx.$executeRaw`
+          DELETE FROM transaction_images
+          WHERE image_name = ${i}
+        `,
+        ),
+      );
+    }
+
+    // ? CHECK NEW IMAGES ===========
+    if (newImages.length > 0) {
+      await Promise.all(
+        newImages.map(
+          (i) => tx.$executeRaw`
+      INSERT INTO transaction_images (ref_id, id, image_id, image_name, image_url)
+        VALUES
+      (${existId}, ${i.id}, ${i.imageId}, ${i.imageName}, ${i.imageUrl})
+      `,
         ),
       );
     }

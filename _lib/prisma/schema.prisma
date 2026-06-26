@@ -11,9 +11,15 @@ enum UserType {
   REGULAR
   PREMIUM
 }
-enum TransactionType {
-  INCOME
-  EXPENSE
+
+enum IdStatus {
+  ACTIVE
+  FINISH
+}
+
+enum TransactionStatus {
+  AVAILABLE
+  DELETED
 }
 
 model User {
@@ -57,6 +63,7 @@ model InitialSalary {
   salary_remaining     Int?
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
+  status      IdStatus     @default(ACTIVE)
 
   user      User     @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
   transaction  Transaction[]
@@ -74,7 +81,7 @@ model Transaction {
   nominal       Int
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
-
+  status      TransactionStatus     @default(AVAILABLE)
 
   user      User     @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
   initialSalary      InitialSalary     @relation(fields: [ref_id], references: [id], onDelete: Cascade)

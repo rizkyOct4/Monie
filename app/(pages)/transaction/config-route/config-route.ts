@@ -53,15 +53,13 @@ export const ROUTES_TRANSACTION = {
   PUT: ({
     key,
     currentPath,
-    idTranscation,
   }: {
     key: "putTransaction";
     currentPath: string;
-    idTranscation: string;
   }) => {
     switch (key) {
       case "putTransaction":
-        return `/${currentPath}/api/action?key=${key}&idTranscation=${idTranscation}`;
+        return `/${currentPath}/api/action?key=${key}`;
       default:
         return "";
     }

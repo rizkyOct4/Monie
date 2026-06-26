@@ -179,7 +179,7 @@ export const useQueryGetPutTransactions = ({
 }: UseQueryGetPutTransactionsProps) => {
   const [idTransaction, setIdTransaction] = useState("");
 
-  const { data: PutIdTransaction, isFetching: isFetchingPutIdTransaction } =
+  const { data: PutIdTransaction, isFetching: isFetchingGetPutIdTransaction } =
     useQuery({
       queryKey: ["keyGetPutIdTransaction", publicId, idTransaction],
       queryFn: async () => {
@@ -206,6 +206,11 @@ export const useQueryGetPutTransactions = ({
     idTransaction,
     setIdTransaction,
     PutIdTransactionData,
-    isFetchingPutIdTransaction,
+    isFetchingGetPutIdTransaction,
+    queryKeyGetPutTransaction: [
+      "keyGetPutIdTransaction",
+      publicId,
+      idTransaction,
+    ],
   };
 };

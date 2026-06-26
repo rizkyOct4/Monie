@@ -6,8 +6,10 @@ export type IdTransactionsDataType = {
 export type TransactionsDataType = {
   id: string;
   refId: string;
+  images: any;
   information: string;
   nominal: number;
   createdAt: Date;
   updatedAt: Date;
+  status: "FINISH" | "ACTIVE";
 };

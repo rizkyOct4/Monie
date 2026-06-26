@@ -86,11 +86,9 @@ export const useMutationNewTransaction = ({
 // * EXISTS TRANSACTIONS ======================
 type UseMutationTransactionProps = {
   queryKeyTransactions: QueryKey;
-  refetchTransaction: any;
 };
 export const useMutationTransaction = ({
   queryKeyTransactions,
-  refetchTransaction,
 }: UseMutationTransactionProps) => {
   const queryClient = useQueryClient();
 
@@ -110,7 +108,11 @@ export const useMutationTransaction = ({
 
       const prevTransactions = queryClient.getQueryData(queryKeyTransactions);
 
-      if (!prevTransactions) refetchTransaction();
+      if (!prevTransactions) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeyTransactions,
+        });
+      }
 
       queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
         queryKeyTransactions,
@@ -125,11 +127,12 @@ export const useMutationTransaction = ({
                 ...page.data,
                 {
                   id: mutate.id,
-                  refId: mutate.existsId,
+                  refId: mutate.existId,
                   information: mutate.information,
                   nominal: mutate.nominal,
                   createdAt: mutate.date,
                   updatedAt: mutate.date,
+                  status: mutate.status,
                 },
               ],
             })),
@@ -154,62 +157,33 @@ export const useMutationTransaction = ({
 };
 
 // * UPDATE TRANSACTIONS ======================
-export const useMutationPutTranscation = () => {
+type UseMutationPutTranscationProps = {
+  currentPath: string;
+  queryKeyGetPutTransaction: QueryKey;
+};
+export const useMutationPutTranscation = ({
+  currentPath,
+  queryKeyGetPutTransaction,
+}: UseMutationPutTranscationProps) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: putTransaction } = useMutation({
     mutationFn: async (data) => {
-      const URL = ROUTES_TRANSACTION.POST({
-        key: "postTransaction",
+      const URL = ROUTES_TRANSACTION.PUT({
+        key: "putTransaction",
+        currentPath: currentPath,
       });
-      const res = await axios.post(URL, data);
+      const res = await axios.put(URL, data);
       return res.data;
     },
-    // onMutate: async (mutate: any) => {
-    //   await Promise.all([
-    //     queryClient.cancelQueries({ queryKey: queryKeyTransactions }),
-    //     // queryClient.cancelQueries({ queryKey: queryKeyProjectList }),
-    //   ]);
-
-    //   const prevTransactions = queryClient.getQueryData(queryKeyTransactions);
-
-    //   if (!prevTransactions) refetchTransaction();
-
-    //   queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
-    //     queryKeyTransactions,
-    //     (oldData) => {
-    //       if (!oldData) return oldData;
-
-    //       return {
-    //         ...oldData,
-    //         pages: oldData?.pages.map((page: any) => ({
-    //           ...page,
-    //           data: [
-    //             ...page.data,
-    //             {
-    //               refId: mutate.id,
-    //               information: mutate.information,
-    //               nominal: mutate.nominal,
-    //               createdAt: mutate.date,
-    //               updatedAt: mutate.date,
-    //             },
-    //           ],
-    //         })),
-    //       };
-    //     },
-    //   );
-
-    //   return { prevTransactions };
-    // },
-    // onError: (error, _variables, context) => {
-    //   console.error(error);
-    //   if (context?.prevTransactions) {
-    //     queryClient.setQueryData(
-    //       queryKeyTransactions,
-    //       context.prevTransactions,
-    //     );
-    //   }
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeyGetPutTransaction,
+      });
+    },
+    onError: (error, _variables, context) => {
+      console.error(error);
+    },
   });
 
   return { putTransaction };

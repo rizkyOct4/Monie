@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useCallback, useContext } from "react";
+import { useState, useCallback, useContext, useMemo } from "react";
 import type { TransactionsDataType } from "../types/types";
 import { TransactionContext } from "@/app/context/context";
-import FormPut from "./form-put/form-put";
+import FormPut from "./pop-up/pop-up-form-put";
+import PopUpDeleteTransaction from "./pop-up/pop-up-delete";
+import PopUpShowImages from "./pop-up/pop-up-show-image";
 
 const ListOptionBtn = [
   { value: "Detail Foto" },
@@ -20,7 +22,17 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  const [put, setPut] = useState(false);
+
+  const [popup, setPopup] = useState("");
+
+  const [imageValue, setImageValue] = useState([]);
+
+  const [deleteValue, setDeleteValue] = useState({
+    id: "",
+    refId: "",
+    nominal: 0,
+    information: "",
+  });
 
   const [putValue, setPutValue] = useState({
     existId: "",
@@ -33,12 +45,22 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
     (
       actionType: string,
       id: string,
+      refId: string,
       images: any,
       information: string,
       nominal: number,
     ) => {
       switch (actionType) {
+        case "Detail Foto": {
+          setPopup(actionType);
+          setImageValue(images);
+
+          break;
+        }
+
         case "Perbarui": {
+          setPopup(actionType);
+
           setIdTransaction(id);
           setPutValue({
             existId: id,
@@ -46,7 +68,16 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
             information: information,
             nominal: nominal,
           });
-          setPut(true);
+          break;
+        }
+        case "Hapus": {
+          setPopup(actionType);
+          setDeleteValue({
+            id: id,
+            refId: refId,
+            nominal: nominal,
+            information: information,
+          });
           break;
         }
       }
@@ -54,7 +85,50 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
     [setIdTransaction],
   );
 
-  // console.log(putValue)
+  const PopUpRender = useMemo(() => {
+    switch (popup) {
+      case "Detail Foto": {
+        return (
+          <PopUpShowImages images={imageValue} onClose={() => setPopup("")} />
+        );
+      }
+      case "Perbarui": {
+        return (
+          <FormPut
+            idTransaction={idTransaction}
+            imagesV={putValue.images}
+            information={putValue.information}
+            nominal={putValue.nominal}
+            onBack={() => setPopup("")}
+          />
+        );
+      }
+      case "Hapus": {
+        return (
+          <PopUpDeleteTransaction
+            data={{
+              id: deleteValue.id,
+              refId: deleteValue.refId,
+              nominal: deleteValue.nominal,
+              information: deleteValue.information,
+            }}
+            onClose={() => setPopup("")}
+          />
+        );
+      }
+    }
+  }, [
+    deleteValue.id,
+    deleteValue.information,
+    deleteValue.nominal,
+    deleteValue.refId,
+    idTransaction,
+    imageValue,
+    popup,
+    putValue.images,
+    putValue.information,
+    putValue.nominal,
+  ]);
 
   return (
     <section>
@@ -66,7 +140,7 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
       </div>
 
       {/* SEARCH + FILTER */}
-      <div className="mb-4 flex gap-3">
+      {/* <div className="mb-4 flex gap-3">
         <input
           type="text"
           placeholder="Search..."
@@ -86,7 +160,7 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
           <option value="mostExpensive">Termahal</option>
           <option value="cheapest">Termurah</option>
         </select>
-      </div>
+      </div> */}
 
       {/* LIST */}
       <div className="flex flex-col">
@@ -117,6 +191,7 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
                         handleAction(
                           b.value,
                           i.id,
+                          i.refId,
                           i.images,
                           i.information,
                           i.nominal,
@@ -149,17 +224,8 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
           <p className="py-6 text-sm text-zinc-500">Tidak ada transaksi</p>
         )}
       </div>
-
-      {/* // ? */}
-      {put && (
-        <FormPut
-          idTransaction={idTransaction}
-          imagesV={putValue.images}
-          information={putValue.information}
-          nominal={putValue.nominal}
-          onBack={() => setPut(false)}
-        />
-      )}
+      {/* // ? POPUP */}
+      {PopUpRender}
     </section>
   );
 };

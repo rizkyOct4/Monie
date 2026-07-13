@@ -133,6 +133,7 @@ export const useMutationTransaction = ({
                   createdAt: mutate.date,
                   updatedAt: mutate.date,
                   status: mutate.status,
+                  images: mutate.images,
                 },
               ],
             })),
@@ -159,11 +160,11 @@ export const useMutationTransaction = ({
 // * UPDATE TRANSACTIONS ======================
 type UseMutationPutTranscationProps = {
   currentPath: string;
-  queryKeyGetPutTransaction: QueryKey;
+  queryKeyTransactions: QueryKey;
 };
 export const useMutationPutTranscation = ({
   currentPath,
-  queryKeyGetPutTransaction,
+  queryKeyTransactions,
 }: UseMutationPutTranscationProps) => {
   const queryClient = useQueryClient();
 
@@ -178,7 +179,7 @@ export const useMutationPutTranscation = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeyGetPutTransaction,
+        queryKey: queryKeyTransactions,
       });
     },
     onError: (error, _variables, context) => {
@@ -187,4 +188,70 @@ export const useMutationPutTranscation = ({
   });
 
   return { putTransaction };
+};
+
+// * DELETE TRANSACTIONS ======================
+type UseMutationDeleteTransactionProps = {
+  currentPath: string;
+  queryKeyTransactions: QueryKey;
+};
+
+export const useMutationDeleteTransaction = ({
+  currentPath,
+  queryKeyTransactions,
+}: UseMutationDeleteTransactionProps) => {
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: deleteTransaction } = useMutation({
+    mutationFn: async (data) => {
+      const URL = ROUTES_TRANSACTION.DELETE({
+        key: "deleteTransaction",
+        currentPath: currentPath,
+      });
+      const res = await axios.delete(URL, { data });
+      return res.data;
+    },
+    onMutate: async (mutate: {
+      id: string;
+      refId: string;
+      nominal: number;
+      information: string;
+    }) => {
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: queryKeyTransactions }),
+      ]);
+
+      const prevTransactions = queryClient.getQueryData(queryKeyTransactions);
+
+      queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
+        queryKeyTransactions,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData?.pages.map((page: any) => ({
+              ...page,
+              data: page?.data.filter(
+                (f: { id: string }) => f.id !== mutate.id,
+              ),
+            })),
+          };
+        },
+      );
+
+      return { prevTransactions };
+    },
+    onError: (error, _variables, context) => {
+      console.error(error);
+      if (context?.prevTransactions) {
+        queryClient.setQueryData(
+          queryKeyTransactions,
+          context.prevTransactions,
+        );
+      }
+    },
+  });
+
+  return { deleteTransaction };
 };

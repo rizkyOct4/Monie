@@ -123,16 +123,17 @@ const FormPut = ({
 
       const put = {
         ...values,
+        lastNominal: Number(nominal),
         nominal: Number(values.nominal),
         images: images,
-        newImages: cloudImage,
+        newImages: cloudImage ?? [],
         deleteImages: imageDeleted,
       };
 
-      // await putTransaction(put);
-      console.log(put);
+      await putTransaction(put);
+      // console.log(put);
       setIsSubmitLoading(false);
-      // onBack();
+      onBack();
     } catch (err) {
       setIsSubmitLoading(false);
       console.error(err);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FormPostSchema } from "./schemas";
+import { FormPostSchema } from "./z-schema";
 
 describe("FormPostSchema", () => {
   const validData = {

@@ -24,6 +24,7 @@ export const PostNewTransaction = async ({
   });
 };
 
+// * DELETE TRANSACTION ==============
 type PostCurrentTransactionProps = {
   publicId: string;
   id: string;
@@ -84,6 +85,7 @@ type PutTransactionProps = {
   publicId: string;
   existId: string;
   date: Date;
+  lastNominal: number;
   nominal: number;
   images: string[];
   information: string;
@@ -101,6 +103,7 @@ export const PutTransaction = async ({
   publicId,
   existId,
   date,
+  lastNominal,
   nominal,
   images,
   information,
@@ -108,18 +111,37 @@ export const PutTransaction = async ({
   deleteImages,
 }: PutTransactionProps) => {
   return prisma.$transaction(async (tx) => {
-    // ? UPDATE INTIAL SALARY ============
-    await tx.$executeRaw`
-      UPDATE initial_salary
-        SET salary_remaining = salary_remaining - ${nominal}
-      WHERE id = (SELECT ref_id FROM transactions WHERE id = ${existId}) AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
-    `;
+    console.log(lastNominal)
+    console.log(nominal)
+
+
 
     // ? UPDATE TRANSACTION ============
+    // ! CHECK NOMINAL
+    if (lastNominal > nominal) {
+      const nominalFix = lastNominal - nominal;
+
+      // ? UPDATE INTIAL SALARY ============
+      await tx.$executeRaw`
+        UPDATE initial_salary
+          SET salary_remaining = salary_remaining + ${nominalFix}
+        WHERE id = (SELECT ref_id FROM transactions WHERE id = ${existId}) AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
+      `;
+    } else {
+      const nominalFix = nominal - lastNominal;
+
+      // ? UPDATE INTIAL SALARY ============
+      await tx.$executeRaw`
+        UPDATE initial_salary
+          SET salary_remaining = salary_remaining - ${nominalFix}
+        WHERE id = (SELECT ref_id FROM transactions WHERE id = ${existId}) AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
+      `;
+    }
+
+
     await tx.$executeRaw`
       UPDATE transactions
         SET information = ${information}, nominal = ${nominal}, updated_at = ${date}::timestamp
-      FROM transactions
       WHERE id = ${existId}`;
 
     // ? CHECK IMAGES DELETED ===========
@@ -148,3 +170,43 @@ export const PutTransaction = async ({
     }
   });
 };
+
+// * DELETE TRANSACTION ==============
+type DeleteTransactionProps = {
+  publicId: string;
+  refId: string;
+  id: string;
+  nominal: number;
+};
+export const DeleteTransaction = async ({
+  publicId,
+  refId,
+  id,
+  nominal,
+}: DeleteTransactionProps) => {
+  return prisma.$transaction(async (tx) => {
+    // ? UPDATE INITIAL TRANSACTION ========
+    await tx.$executeRaw`
+      UPDATE initial_salary
+        SET salary_remaining = salary_remaining + ${nominal}
+      WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND id = ${refId}
+    `;
+
+    // ! DELETE TRANSACTION ========
+    await tx.$executeRaw`
+      DELETE FROM transactions
+      WHERE id = ${id}
+    `;
+
+    // ! DELETE TRANSACTION IMAGES ========
+    await tx.$executeRaw`
+      DELETE FROM transaction_images 
+      WHERE ref_id = ${id}
+    `;
+  });
+};
+
+
+
+
+// todo DIKIT LAGI UNTUK TRANSACTION INI !!! 

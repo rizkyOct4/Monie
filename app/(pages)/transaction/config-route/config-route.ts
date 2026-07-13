@@ -59,21 +59,21 @@ export const ROUTES_TRANSACTION = {
   }) => {
     switch (key) {
       case "putTransaction":
-        return `/${currentPath}/api/action?key=${key}`;
+        return `${currentPath}/api/action?key=${key}`;
       default:
         return "";
     }
   },
-  DELETE_ACTION: ({
+  DELETE: ({
     key,
     currentPath,
   }: {
-    key: "putDeleteProject";
+    key: "deleteTransaction";
     currentPath: string;
   }) => {
     switch (key) {
-      case "putDeleteProject":
-        return `/admin/${currentPath}/api/action?key=${key}`;
+      case "deleteTransaction":
+        return `${currentPath}/api/action?key=${key}`;
       default:
         return "";
     }

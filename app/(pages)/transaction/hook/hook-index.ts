@@ -10,6 +10,7 @@ import {
   useMutationNewTransaction,
   useMutationTransaction,
   useMutationPutTranscation,
+  useMutationDeleteTransaction,
 } from "./mutation/mutation-index";
 
 export const useTransactionHook = (publicId: string, currentPath: string) => {
@@ -29,7 +30,12 @@ export const useTransactionHook = (publicId: string, currentPath: string) => {
   });
   const MPut = useMutationPutTranscation({
     currentPath,
-    queryKeyGetPutTransaction: QGetPut.queryKeyGetPutTransaction,
+    queryKeyTransactions: QGet.queryKeyTransactions,
+  });
+
+  const MDelete = useMutationDeleteTransaction({
+    currentPath,
+    queryKeyTransactions: QGet.queryKeyTransactions,
   });
 
   return {
@@ -40,5 +46,6 @@ export const useTransactionHook = (publicId: string, currentPath: string) => {
     ...MNewPost,
     ...MPost,
     ...MPut,
+    ...MDelete,
   };
 };

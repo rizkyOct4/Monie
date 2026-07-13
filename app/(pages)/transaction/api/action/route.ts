@@ -3,6 +3,7 @@ import {
   PostNewTransaction,
   PostCurrentTransaction,
   PutTransaction,
+  DeleteTransaction,
 } from "@/_lib/services/transaction/action/services-action-transaction-index";
 import GetSession from "@/_lib/session";
 
@@ -66,6 +67,7 @@ export async function PUT(req: NextRequest) {
     const {
       existId,
       date,
+      lastNominal,
       nominal,
       images,
       information,
@@ -73,20 +75,59 @@ export async function PUT(req: NextRequest) {
       deleteImages,
     } = await req.json();
 
+    // console.log(data)
     switch (key) {
       case "putTransaction": {
         await PutTransaction({
           publicId,
           existId,
           date,
+          lastNominal,
           nominal,
           images,
           information,
           newImages,
-          deleteImages
+          deleteImages,
         });
         return NextResponse.json({
           message: "Update Transaction Success",
+        });
+      }
+      // case "deleteTransaction": {
+      //   await DeleteTransaction({
+      //     publicId,
+      //     refId,
+      //     id,
+      //     nominal,
+      //   });
+      //   return NextResponse.json({
+      //     message: "Delete Transaction Success",
+      //   });
+      // }
+    }
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const key = req.nextUrl.searchParams.get("key");
+
+    const { publicId } = await GetSession();
+
+    const { id, refId, nominal } = await req.json();
+
+    switch (key) {
+      case "deleteTransaction": {
+        await DeleteTransaction({
+          publicId,
+          refId,
+          id,
+          nominal,
+        });
+        return NextResponse.json({
+          message: "Delete Transaction Success",
         });
       }
     }

@@ -54,13 +54,10 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
         case "Detail Foto": {
           setPopup(actionType);
           setImageValue(images);
-
           break;
         }
-
         case "Perbarui": {
           setPopup(actionType);
-
           setIdTransaction(id);
           setPutValue({
             existId: id,

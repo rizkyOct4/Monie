@@ -68,7 +68,8 @@ model InitialSalary {
   user      User     @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
   transaction  Transaction[]
 
-
+  @@index([status])
+  @@index([created_at])
   @@map("initial_salary")
 }
 

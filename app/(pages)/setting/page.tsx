@@ -1,11 +1,13 @@
 export default function SettingPage() {
+  const test12 = () => {
+    return console.log("test");
+  };
+
   return (
     <main className="flex flex-col px-6 py-4 w-full">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">
-          Pengaturan
-        </h1>
+        <h1 className="text-3xl font-bold">Pengaturan</h1>
 
         <p className="mt-1 text-sm text-zinc-500">
           Kelola preferensi aplikasi dan data keuangan
@@ -20,18 +22,12 @@ export default function SettingPage() {
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium">
-              Rizky
-            </p>
+            <p className="font-medium">Rizky</p>
 
-            <p className="text-sm text-zinc-500">
-              rizky@email.com
-            </p>
+            <p className="text-sm text-zinc-500">rizky@email.com</p>
           </div>
 
-          <button className="text-sm font-medium">
-            Edit
-          </button>
+          <button className="text-sm font-medium">Edit</button>
         </div>
       </section>
 
@@ -58,9 +54,7 @@ export default function SettingPage() {
 
           <button className="flex items-center justify-between py-4">
             <span>Mata Uang</span>
-            <span className="text-zinc-500">
-              IDR (Rp)
-            </span>
+            <span className="text-zinc-500">IDR (Rp)</span>
           </button>
         </div>
       </section>
@@ -75,19 +69,13 @@ export default function SettingPage() {
           <label className="flex items-center justify-between">
             <span>Pengingat Catat Transaksi</span>
 
-            <input
-              type="checkbox"
-              defaultChecked
-            />
+            <input type="checkbox" defaultChecked />
           </label>
 
           <label className="flex items-center justify-between">
             <span>Pengingat Tabungan</span>
 
-            <input
-              type="checkbox"
-              defaultChecked
-            />
+            <input type="checkbox" defaultChecked />
           </label>
         </div>
       </section>
@@ -99,21 +87,13 @@ export default function SettingPage() {
         </h2>
 
         <div className="flex flex-col">
-          <button className="py-4 text-left">
-            Export Excel
-          </button>
+          <button className="py-4 text-left">Export Excel</button>
 
-          <button className="py-4 text-left">
-            Export PDF
-          </button>
+          <button className="py-4 text-left">Export PDF</button>
 
-          <button className="py-4 text-left">
-            Backup Data
-          </button>
+          <button className="py-4 text-left">Backup Data</button>
 
-          <button className="py-4 text-left">
-            Restore Data
-          </button>
+          <button className="py-4 text-left">Restore Data</button>
         </div>
       </section>
 
@@ -124,13 +104,9 @@ export default function SettingPage() {
         </h2>
 
         <div className="flex flex-col">
-          <button className="py-4 text-left">
-            Ubah PIN
-          </button>
+          <button className="py-4 text-left">Ubah PIN</button>
 
-          <button className="py-4 text-left">
-            Aktifkan Biometrik
-          </button>
+          <button className="py-4 text-left">Aktifkan Biometrik</button>
         </div>
       </section>
 
@@ -140,14 +116,10 @@ export default function SettingPage() {
           Tentang
         </h2>
 
-        <p className="text-sm text-zinc-500">
-          Versi 1.0.0
-        </p>
+        <p className="text-sm text-zinc-500">Versi 1.0.0</p>
       </section>
     </main>
   );
 }
-
-
 
 // todo GASKAN BESOK SAMA KAU UNIT TEST !!!! PAKAI JEST

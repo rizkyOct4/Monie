@@ -8,17 +8,24 @@ import {
 import axios from "axios";
 import { useState, useMemo } from "react";
 import { ROUTES_REPORT } from "../../config-route/config-route";
-import type { IdPeriodTransactionDataType } from "../../types/types";
+import type {
+  PeriodTransactionDataType,
+  IdPeriodTransactionDataType,
+} from "../../types/types";
 
 // * PERIOD TRANSACTIONS ======================
+export const parsePeriod = (period: string) => {
+  const result = period.split("-").reverse().join("-");
+  const [month, year] = result.split("-");
+  return { month, year };
+};
 export const useQueryPeriodTransactions = ({
   publicId,
 }: {
   publicId: string;
 }) => {
   const [period, setPeriod] = useState("");
-  const result = period.split("-").reverse().join("-");
-  const [month, year] = result.split("-");
+  const { month, year } = parsePeriod(period);
 
   const { data: periodTransaction, isFetching: isFetchingPeriodTransaction } =
     useQuery({
@@ -39,7 +46,7 @@ export const useQueryPeriodTransactions = ({
       retry: false,
     });
 
-  const PeriodTransactionData = useMemo(
+  const PeriodTransactionData: PeriodTransactionDataType[] = useMemo(
     () => periodTransaction ?? [],
     [periodTransaction],
   );

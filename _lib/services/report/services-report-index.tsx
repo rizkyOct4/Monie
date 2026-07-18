@@ -13,7 +13,7 @@ export const GetPeriodTransaction = async ({
   year,
 }: GetPeriodTransactionProps) => {
   const query = await prisma.$queryRaw<
-    { id: string; initial_salary: string }[]
+    { id: string; initial_name: string }[]
   >`
         SELECT
           id, initial_name

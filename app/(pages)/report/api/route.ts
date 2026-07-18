@@ -38,6 +38,8 @@ export async function GET(req: NextRequest) {
         });
         return NextResponse.json(output);
       }
+      default:
+        return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });

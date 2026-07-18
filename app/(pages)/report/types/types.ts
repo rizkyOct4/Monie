@@ -1,3 +1,8 @@
+export type PeriodTransactionDataType = {
+  id: string;
+  initialName: string;
+};
+
 export type IdPeriodTransactionDataType = {
   salaryIncome: number;
   salaryRemaining: number;

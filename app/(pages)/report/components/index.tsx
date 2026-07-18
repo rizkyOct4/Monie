@@ -7,34 +7,6 @@ import ReportInsight from "./insight";
 import { useContext } from "react";
 import { ReportContext } from "@/app/context/context";
 
-const categories = [
-  {
-    name: "Makan & Minum",
-    amount: 700000,
-    percentage: 35,
-  },
-  {
-    name: "Transportasi",
-    amount: 500000,
-    percentage: 25,
-  },
-  {
-    name: "Belanja",
-    amount: 400000,
-    percentage: 20,
-  },
-  {
-    name: "Tagihan",
-    amount: 300000,
-    percentage: 15,
-  },
-  {
-    name: "Lainnya",
-    amount: 100000,
-    percentage: 5,
-  },
-];
-
 const ReportClient = () => {
   const { IdPeriodTransactionData } = useContext(ReportContext);
 

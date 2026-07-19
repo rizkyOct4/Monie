@@ -12,6 +12,7 @@ const config: Config = {
   testEnvironment: "jsdom",
   modulePaths: ["<rootDir>/app"],
   collectCoverage: true,
+  verbose: true,
   collectCoverageFrom: [
     "app/**/*.{ts,tsx}",
     "!app/**/*.d.ts",
@@ -20,8 +21,8 @@ const config: Config = {
     "!<rootDir>/.next/**",
     "!<rootDir>/coverage/**",
     "!<rootDir>/node_modules/**",
-    "!<rootDir>/*.proxy.ts",
-    "!<rootDir>/*.auth.ts",
+    "!<rootDir>/proxy.ts",
+    "!<rootDir>/auth.ts",
     "!<rootDir>/*.config.ts",
   ],
   moduleNameMapper: {
@@ -29,6 +30,7 @@ const config: Config = {
   },
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

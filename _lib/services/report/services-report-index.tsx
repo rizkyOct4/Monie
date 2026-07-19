@@ -12,9 +12,7 @@ export const GetPeriodTransaction = async ({
   month,
   year,
 }: GetPeriodTransactionProps) => {
-  const query = await prisma.$queryRaw<
-    { id: string; initial_name: string }[]
-  >`
+  const query = await prisma.$queryRaw<{ id: string; initial_name: string }[]>`
         SELECT
           id, initial_name
         FROM initial_salary
@@ -22,8 +20,6 @@ export const GetPeriodTransaction = async ({
           AND EXTRACT(YEAR FROM created_at) = ${year} AND EXTRACT(MONTH FROM created_at) = ${month}
           AND status != 'FINISH'::"IdStatus"
         `;
-
-  if (!query) return [];
 
   return camelcaseKeys(query);
 };
@@ -45,9 +41,17 @@ export const GetIdPeriodTransaction = async ({
       updated_at: Date;
       status: string;
       insight: {
-        total_transaction: number;
-        biggest_expense: number;
-        average_expense: number;
+        totalTransaction: number;
+        biggestExpense: {
+          date: Date;
+          amount: number;
+        };
+        averageExpense: number;
+        amountNominal: number;
+        mostExpensiveDay: {
+          date: Date;
+          amount: number;
+        };
       }[];
     }[]
   >`
@@ -61,7 +65,7 @@ export const GetIdPeriodTransaction = async ({
                 SELECT json_agg(result)
                 FROM (
                     SELECT
-                        COUNT(*) AS totalTransaction,
+                        COUNT(*) AS "totalTransaction",
                         (
                           SELECT json_build_object(
                             'date', DATE(created_at),
@@ -72,9 +76,9 @@ export const GetIdPeriodTransaction = async ({
                           GROUP BY DATE(created_at) 
                           ORDER BY MAX(nominal) DESC
                           LIMIT 1
-                        ) AS biggestExpense,
-                        AVG(nominal) AS averageExpense,
-                        SUM(nominal) AS amountNominal,
+                        ) AS "biggestExpense",
+                        AVG(nominal) AS "averageExpense",
+                        SUM(nominal) AS "amountNominal",
                         (
                               SELECT json_build_object(
                                   'date', DATE(created_at),
@@ -85,7 +89,7 @@ export const GetIdPeriodTransaction = async ({
                               GROUP BY DATE(created_at) 
                               ORDER BY SUM(nominal) DESC
                               LIMIT 1
-                        ) AS mostExpensiveDay
+                        ) AS "mostExpensiveDay"
                     FROM transactions
                     WHERE ref_id = ${idPeriod}
                 ) result

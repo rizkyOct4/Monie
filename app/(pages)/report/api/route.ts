@@ -29,19 +29,35 @@ export async function GET(req: NextRequest) {
           month,
           year,
         });
-        return NextResponse.json(output);
+
+        if (!output.length) {
+          return NextResponse.json(
+            { message: "Data tidak ditemukan" },
+            { status: 404 },
+          );
+        } else {
+          return NextResponse.json(output);
+        }
       }
       case "idPeriodTransactions": {
         const output = await GetIdPeriodTransaction({
           publicId,
           idPeriod,
         });
-        return NextResponse.json(output);
+        if (!output.length) {
+          return NextResponse.json(
+            { message: "Data tidak ditemukan" },
+            { status: 404 },
+          );
+        } else {
+          return NextResponse.json(output);
+        }
       }
       default:
         return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
-  } catch (err: any) {
-    return NextResponse.json({ message: err.message }, { status: 500 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import HeaderReport from "./header";
-import { FormatCurrency } from "@/_utils/format-currency";
 import FinanceHealth from "./finance-health";
 import ReportInsight from "./insight";
 import { useContext } from "react";

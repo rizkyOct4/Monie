@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

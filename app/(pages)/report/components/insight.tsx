@@ -4,18 +4,18 @@ import { FormatCurrency } from "@/_utils/format-currency";
 
 type ReportInsightProps = {
   insightData: {
-    totalTtansaction: number;
-    biggestexpense: {
+    totalTransaction: number;
+    biggestExpense: {
       date: Date;
       amount: number;
     };
-    averageexpense: number;
-    amountnominal: number;
-    mostexpensiveday: {
+    averageExpense: number;
+    amountNominal: number;
+    mostExpensiveDay: {
       date: Date;
       amount: number;
     };
-  }[];
+  };
 };
 
 const ReportInsight = ({ insightData }: ReportInsightProps) => {
@@ -31,7 +31,7 @@ const ReportInsight = ({ insightData }: ReportInsightProps) => {
           <span className="text-white">Total Transaksi</span>
 
           <span className="font-medium text-white">
-            {insightData?.totaltransaction}
+            {insightData?.totalTransaction}
           </span>
         </div>
 
@@ -39,7 +39,7 @@ const ReportInsight = ({ insightData }: ReportInsightProps) => {
           <span className="text-white">Pengeluaran Terbesar</span>
 
           <span className="font-medium text-red-500">
-            {FormatCurrency(insightData?.biggestexpense.amount)}
+            {FormatCurrency(insightData?.biggestExpense.amount)}
           </span>
         </div>
 
@@ -47,7 +47,7 @@ const ReportInsight = ({ insightData }: ReportInsightProps) => {
           <span className="text-white">Rata-rata Pengeluaran / Hari</span>
 
           <span className="font-medium text-yellow-500">
-            {FormatCurrency(insightData?.averageexpense)}
+            {FormatCurrency(insightData?.averageExpense)}
           </span>
         </div>
 
@@ -55,7 +55,7 @@ const ReportInsight = ({ insightData }: ReportInsightProps) => {
           <span className="text-white">Hari Paling Boros</span>
 
           <span className="font-medium text-orange-500">
-            {insightData?.mostexpensiveday.amount}
+            {insightData?.mostExpensiveDay.amount}
           </span>
         </div>
       </div>

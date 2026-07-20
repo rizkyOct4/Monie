@@ -10,14 +10,14 @@ export type IdPeriodTransactionDataType = {
   createdAt: Date;
   updatedAt: Date;
   insight: {
-    totaltransaction: number;
-    biggestexpense: {
+    totalTransaction: number;
+    biggestExpense: {
       date: Date;
       amount: number;
     };
-    averageexpense: number;
-    amountnominal: number;
-    mostexpensiveday: {
+    averageExpense: number;
+    amountNominal: number;
+    mostExpensiveDay: {
       date: Date;
       amount: number;
     };

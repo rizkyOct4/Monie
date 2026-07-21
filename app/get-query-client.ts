@@ -12,6 +12,7 @@ function makeQueryClient() {
         refetchOnMount: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
+        retry: false,
       },
       dehydrate: {
         // include pending queries in dehydration

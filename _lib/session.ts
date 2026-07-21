@@ -5,8 +5,10 @@ const GetSession = async () => {
   const session = token?.user;
   const publicId = session?.publicId as string;
   const name = session?.name as string;
-//   const role = session?.role as string;
+  //   const role = session?.role as string;
   // console.log(`token`, session)
+
+  if (!session) return null;
 
   return {
     publicId,

@@ -1,11 +1,22 @@
 "use client";
 
-import { useQueryPeriodTransactions, useQueryPeriodYearTransactions } from "./query/query-index";
+import {
+  useQueryPeriodTransactions,
+  useQueryPeriodIdTransactions,
+} from "./query/query-index";
+import { useSessionClient } from "@/_lib/c-session";
 
-export const useHookReport = (publicId: string) => {
+export const useHookReport = () => {
+  const { publicId } = useSessionClient();
+
   // * GET PERIOD
   const QGetPeriod = useQueryPeriodTransactions({ publicId });
-  const QGetIdPeriod = useQueryPeriodYearTransactions({ publicId });
+  const QGetIdPeriod = useQueryPeriodIdTransactions({ publicId });
 
-  return { ...QGetPeriod, ...QGetIdPeriod };
+  const values = {
+    ...QGetPeriod,
+    ...QGetIdPeriod,
+  };
+
+  return values;
 };

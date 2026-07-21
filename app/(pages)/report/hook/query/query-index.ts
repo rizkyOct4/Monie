@@ -11,7 +11,7 @@ import { ROUTES_REPORT } from "../../config-route/config-route";
 import type {
   PeriodTransactionDataType,
   IdPeriodTransactionDataType,
-} from "../../types/types";
+} from "../../types/report.type";
 
 // * PERIOD TRANSACTIONS ======================
 export const parsePeriod = (period: string) => {
@@ -43,7 +43,6 @@ export const useQueryPeriodTransactions = ({
       enabled: !!month && !!year,
       refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
       refetchOnMount: false, // "always" => refetch jika stale saja
-      retry: false,
     });
 
   const PeriodTransactionData: PeriodTransactionDataType[] = useMemo(
@@ -60,7 +59,7 @@ export const useQueryPeriodTransactions = ({
 };
 
 // * ID PERIOD TRANSACTIONS ======================
-export const useQueryPeriodYearTransactions = ({
+export const useQueryPeriodIdTransactions = ({
   publicId,
 }: {
   publicId: string;

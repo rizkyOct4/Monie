@@ -21,19 +21,21 @@ jest.mock("@/app/(pages)/report/components/finance-health", () => ({
 
 jest.mock("@/app/(pages)/report/components/insight", () => ({
   __esModule: true,
-  default: (insightData: {
-    totalTransaction: number;
-    biggestExpense: {
-      date: Date;
-      amount: number;
-    };
-    averageExpense: number;
-    amountNominal: number;
-    mostExpensiveDay: {
-      date: Date;
-      amount: number;
-    };
-  }) => {
+  default: (
+    insightData: {
+      totalTransaction: number;
+      biggestExpense: {
+        date: Date;
+        amount: number;
+      };
+      averageExpense: number;
+      amountNominal: number;
+      mostExpensiveDay: {
+        date: Date;
+        amount: number;
+      };
+    }[],
+  ) => {
     mockReportInsight(insightData);
 
     return <div data-testid="insight-report" />;
@@ -86,11 +88,9 @@ describe("Render ReportClient", () => {
   it("should pass undefined when context is empty", () => {
     render(
       <ReportContext.Provider
-        value={
-          {
-            IdPeriodTransactionData: [],
-          }
-        }
+        value={{
+          IdPeriodTransactionData: [],
+        }}
       >
         <ReportClient />
       </ReportContext.Provider>,

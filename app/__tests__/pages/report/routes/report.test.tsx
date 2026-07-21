@@ -2,10 +2,9 @@
  * @jest-environment node
  */
 
-import { render } from "@testing-library/react";
-// import ReportPage from "@/app/(pages)/report/page";
 import { parsePeriod } from "@/app/(pages)/report/hook/query/query-index";
 import { NextRequest } from "next/server";
+import { MockUseQueryIdPeriodTransactions } from "@/app/mocks/(pages)/report/hook/hook.index.mock";
 
 // ? MOCK => PALSU -> DATA YG DIAMBIL GA SAMPAI KE DATABASE !!! -> CUMA SEKEDAR WADAHNYA SAJA !!
 jest.mock("@/_lib/services/report/services-report-index", () => ({
@@ -128,34 +127,12 @@ describe("GET /report/api", () => {
     const req = createRequest("key=idPeriodTransactions&id-period=Ts13ss");
     const expectedIdPeriod = {
       publicId: "ss12",
-      idPeriod: "Ts13ss"
-    }
+      idPeriod: "Ts13ss",
+    };
 
     it("should return 200 when data exists", async () => {
-      mockedGetIdPeriod.mockResolvedValue([
-        {
-          salaryIncome: 2000000,
-          salaryRemaining: 1800000,
-          createdAt: new Date("2026-07-19T10:00:00.000Z"),
-          updatedAt: new Date("2026-07-19T12:00:00.000Z"),
-          status: "ACTIVE",
-          insight: [
-            {
-              totalTransaction: 10,
-              biggestExpense: {
-                date: new Date("2026-07-19T10:00:00.000Z"),
-                amount: 500000,
-              },
-              averageExpense: 150000,
-              amountNominal: 1500000,
-              mostExpensiveDay: {
-                date: new Date("2026-07-19T10:00:00.000Z"),
-                amount: 800000,
-              },
-            },
-          ],
-        },
-      ]);
+      const { IdPeriodTransactionData } = MockUseQueryIdPeriodTransactions();
+      mockedGetIdPeriod.mockResolvedValue(IdPeriodTransactionData);
 
       const res = await GET(req);
 

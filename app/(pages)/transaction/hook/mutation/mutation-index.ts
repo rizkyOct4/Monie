@@ -12,7 +12,7 @@ import { QueryKey } from "@tanstack/react-query";
 import type {
   IdTransactionsDataType,
   TransactionsDataType,
-} from "../../types/types";
+} from "../../types/transaction.type";
 
 // * NEW TRANSACTIONS ======================
 type UseMutationsNewTransactionProps = {
@@ -202,7 +202,10 @@ export const useMutationDeleteTransaction = ({
 }: UseMutationDeleteTransactionProps) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deleteTransaction } = useMutation({
+  const {
+    mutateAsync: deleteTransaction,
+    isPending: isPendingDeleteTransaction,
+  } = useMutation({
     mutationFn: async (data) => {
       const URL = ROUTES_TRANSACTION.DELETE({
         key: "deleteTransaction",
@@ -253,5 +256,5 @@ export const useMutationDeleteTransaction = ({
     },
   });
 
-  return { deleteTransaction };
+  return { deleteTransaction, isPendingDeleteTransaction };
 };

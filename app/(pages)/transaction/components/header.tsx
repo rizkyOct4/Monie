@@ -1,18 +1,22 @@
 "use client";
 
-import { TransactionContext } from "@/app/context/context";
-import { useState, useContext } from "react";
+interface IDateInput {
+  date: string;
+  setDate: React.Dispatch<React.SetStateAction<string>>;
+}
 
-export default function CustomDateInput() {
-  const { date, setDate } = useContext(TransactionContext);
-
-  const formattedDate = date
+export const FormattedDate = (date: string) => {
+  return date
     ? new Date(date).toLocaleDateString("id-ID", {
         day: "2-digit",
         month: "long",
         year: "numeric",
       })
     : "Pilih Tanggal";
+};
+
+const DateInput = ({ date, setDate }: IDateInput) => {
+  const formatDate = FormattedDate(date);
 
   return (
     <div className="relative py-4">
@@ -20,11 +24,16 @@ export default function CustomDateInput() {
         Tanggal
       </span>
 
-      <div
-        className=" relative w-full flex items-center border-b border-zinc-300 pb-1">
-        <span className="mr-2 text-sm text-white w-[90%]">{formattedDate}</span>
+      <div className=" relative w-full flex items-center border-b border-zinc-300 pb-1">
+        <span
+          className="mr-2 text-sm text-white w-[90%]"
+          data-testid="formatted-date"
+        >
+          {formatDate}
+        </span>
 
         <input
+          data-testid="input-date"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
@@ -43,4 +52,6 @@ export default function CustomDateInput() {
       </div>
     </div>
   );
-}
+};
+
+export default DateInput;

@@ -8,7 +8,7 @@ import { useHookReport } from "@/app/(pages)/report/hook/hook-index";
 import {
   MockUseQueryPeriodTransactions,
   MockUseQueryIdPeriodTransactions,
-} from "@/app/mocks/(pages)/report/hook/hook.index.mock";
+} from "@/app/__tests__/mocks/(pages)/report/hook/hook.index.mock";
 
 jest.mock("@/_lib/c-session", () => ({
   useSessionClient: jest.fn(),

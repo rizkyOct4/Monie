@@ -11,27 +11,23 @@ import { useSessionClient } from "@/_lib/c-session";
 import { TransactionContext } from "@/app/context/context";
 import { FormPutType, FormPutSchema } from "../../z-schema/z-schema";
 
-type TransactionsProps = {
-  idTransaction: string;
-  imagesV:
-    | {
-        id: string;
-        imageName: string;
-        imageUrl: string;
-      }[]
-    | [];
-  information: string;
-  nominal: number;
-  onBack: () => void;
+export type PutFormTransactionsProps = {
+  putValue: {
+    existId: string;
+    images:
+      | {
+          id: string;
+          imageName: string;
+          imageUrl: string;
+        }[]
+      | [];
+    information: string;
+    nominal: number;
+  };
+  onClose: () => void;
 };
 
-const FormPut = ({
-  idTransaction,
-  imagesV,
-  information,
-  nominal,
-  onBack,
-}: TransactionsProps) => {
+const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
   const { publicId } = useSessionClient();
   const now = new Date();
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -123,7 +119,7 @@ const FormPut = ({
 
       const put = {
         ...values,
-        lastNominal: Number(nominal),
+        lastNominal: Number(putValue.nominal),
         nominal: Number(values.nominal),
         images: images,
         newImages: cloudImage ?? [],
@@ -133,7 +129,7 @@ const FormPut = ({
       await putTransaction(put);
       // console.log(put);
       setIsSubmitLoading(false);
-      onBack();
+      onClose();
     } catch (err) {
       setIsSubmitLoading(false);
       console.error(err);
@@ -143,24 +139,19 @@ const FormPut = ({
   useEffect(() => {
     if (PutIdTransactionData) {
       reset({
-        existId: idTransaction,
+        existId: putValue.existId,
         // date: PutIdTransactionData[0]?.updatedAt,
-        images: imagesV.map((i: { imageName: string; imageUrl: string }) => ({
-          name: i.imageName,
-          path: i.imageUrl,
-        })),
-        information: information,
-        nominal: String(nominal),
+        images: putValue.images.map(
+          (i: { imageName: string; imageUrl: string }) => ({
+            name: i.imageName,
+            path: i.imageUrl,
+          }),
+        ),
+        information: putValue.information,
+        nominal: String(putValue.nominal),
       });
     }
-  }, [
-    PutIdTransactionData,
-    idTransaction,
-    imagesV,
-    information,
-    nominal,
-    reset,
-  ]);
+  }, [PutIdTransactionData, putValue, reset]);
 
   // console.log(errors);
 
@@ -172,7 +163,8 @@ const FormPut = ({
             Perbarui Transaksi
           </h2>
           <button
-            onClick={onBack}
+            data-testid="close-popup"
+            onClick={onClose}
             type="button"
             className="text-zinc-500 hover:text-black"
           >
@@ -383,6 +375,3 @@ const FormPut = ({
 };
 
 export default FormPut;
-
-
-// todo GA PERLU AMBIL DATA UNTUK INI !!! CUKUP PAKAI DATA YG ADA !! 

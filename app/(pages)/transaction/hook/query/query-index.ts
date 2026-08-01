@@ -11,7 +11,7 @@ import { ROUTES_TRANSACTION } from "../../config-route/config-route";
 import type {
   IdTransactionsDataType,
   TransactionsDataType,
-} from "../../types/types";
+} from "../../types/transaction.type";
 
 // * ID TRANSACTIONS ======================
 export const useQueryIdTransactions = ({
@@ -126,33 +126,36 @@ export const useQueryTransactions = ({
   // * INITIAL STATE ============
   const [date, setDate] = useState(getToday());
 
-  const { data: fTransactionsList, refetch: TransactionsListRefetch } =
-    useInfiniteQuery({
-      queryKey: ["keyTransactionsList", publicId, date],
-      queryFn: async ({ pageParam = 1 }) => {
-        const limit = 15;
-        const URL = ROUTES_TRANSACTION.GET({
-          key: "transactions",
-          currentPath: currentPath,
-          date: date,
-          pageParam: pageParam,
-          limit: limit,
-        });
-        const { data } = await axios.get(URL);
-        return data;
-      },
-      getNextPageParam: (lastPage, allPages) => {
-        return lastPage?.hasMore ? allPages.length + 1 : undefined;
-      },
-      staleTime: 1000 * 60 * 10,
-      gcTime: 1000 * 60 * 60,
-      initialPageParam: 1,
-      enabled: !!date && currentPath === "/transaction",
-      placeholderData: keepPreviousData,
-      refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-      refetchOnMount: false, // "always" => refetch jika stale saja
-      retry: false,
-    });
+  const {
+    data: fTransactionsList,
+    isFetching: isFTransactionsListData,
+    refetch: TransactionsListRefetch,
+  } = useInfiniteQuery({
+    queryKey: ["keyTransactionsList", publicId, date],
+    queryFn: async ({ pageParam = 1 }) => {
+      const limit = 15;
+      const URL = ROUTES_TRANSACTION.GET({
+        key: "transactions",
+        currentPath: currentPath,
+        date: date,
+        pageParam: pageParam,
+        limit: limit,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage?.hasMore ? allPages.length + 1 : undefined;
+    },
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    initialPageParam: 1,
+    enabled: !!date && currentPath === "/transaction",
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false, // "always" => refetch jika stale saja
+    retry: false,
+  });
 
   const TransactionsListData: TransactionsDataType[] = useMemo(
     () => fTransactionsList?.pages.flatMap((page) => page.data) ?? [],
@@ -161,6 +164,7 @@ export const useQueryTransactions = ({
 
   return {
     TransactionsListData,
+    isFTransactionsListData,
     TransactionsListRefetch,
     date,
     setDate,

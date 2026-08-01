@@ -8,7 +8,7 @@ const GetSession = async () => {
   //   const role = session?.role as string;
   // console.log(`token`, session)
 
-  if (!session) return null;
+  // if (!session) return null;
 
   return {
     publicId,

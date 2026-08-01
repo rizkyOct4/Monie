@@ -2,12 +2,9 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import HeaderReport from "@/app/(pages)/report/components/header";
 import { ReportContext } from "@/app/context/context";
 
-const mockSetPeriod = jest.fn(); // ? but this is state ???
-const mockSetIdPeriod = jest.fn();
-
 const mockContext = {
-  setPeriod: mockSetPeriod,
-  setIdPeriod: mockSetIdPeriod,
+  setPeriod: jest.fn(),
+  setIdPeriod: jest.fn(),
   isFetchingPeriodTransaction: true,
   PeriodTransactionData: [
     {
@@ -52,7 +49,7 @@ describe("HeaderReport", () => {
       },
     });
 
-    expect(mockSetPeriod).toHaveBeenCalledWith("2026-07");
+    expect(mockContext.setPeriod).toHaveBeenCalledWith("2026-07");
   });
 
   it("should open transaction dropdown", () => {
@@ -102,7 +99,7 @@ describe("HeaderReport", () => {
 
     fireEvent.click(button);
 
-    expect(mockSetIdPeriod).toHaveBeenCalledWith("1");
+    expect(mockContext.setIdPeriod).toHaveBeenCalledWith("1");
 
     expect(screen.queryByTestId("transaction-dropdown")).not.toBeInTheDocument();
 

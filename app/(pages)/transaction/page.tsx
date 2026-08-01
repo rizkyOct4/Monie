@@ -1,7 +1,13 @@
-import ModalClient from "./modal-client";
+import TransactionModalClient from "./transcation-modal-client";
+import type { Metadata } from "next";
 
-const page = () => {
-  return <ModalClient />;
+export const metadata: Metadata = {
+  title: "Transaksi | My App",
+  description: "Halaman transaksi user.",
 };
 
-export default page;
+const TransactionPage = () => {
+  return <TransactionModalClient />;
+};
+
+export default TransactionPage;

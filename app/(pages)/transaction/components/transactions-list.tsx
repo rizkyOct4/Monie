@@ -1,44 +1,47 @@
 "use client";
 
-import { useState, useCallback, useContext, useMemo } from "react";
-import type { TransactionsDataType } from "../types/types";
-import { TransactionContext } from "@/app/context/context";
+import { useState, useCallback, useMemo, Dispatch } from "react";
+import type { TransactionsDataType } from "../types/transaction.type";
 import FormPut from "./pop-up/pop-up-form-put";
 import PopUpDeleteTransaction from "./pop-up/pop-up-delete";
 import PopUpShowImages from "./pop-up/pop-up-show-image";
+import { FormatDate } from "@/_utils/format-date";
+import { FormatCurrency } from "@/_utils/format-currency";
 
-const ListOptionBtn = [
-  { value: "Detail Foto" },
-  { value: "Perbarui" },
-  { value: "Hapus" },
+export const ListOptionBtn = [
+  { text: "Detail Foto", value: "detailImage" },
+  { text: "Perbarui", value: "putImage" },
+  { text: "Hapus", value: "deleteImage" },
 ];
 
 type TranscationListProps = {
   TransactionsListData: TransactionsDataType[];
+  setIdTransaction: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
-  const { idTransaction, setIdTransaction } = useContext(TransactionContext);
-
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
+const TransactionList = ({
+  TransactionsListData,
+  setIdTransaction,
+}: TranscationListProps) => {
+  // const [search, setSearch] = useState("");
+  // const [filter, setFilter] = useState("all");
 
   const [popup, setPopup] = useState("");
 
   const [imageValue, setImageValue] = useState([]);
-
-  const [deleteValue, setDeleteValue] = useState({
-    id: "",
-    refId: "",
-    nominal: 0,
-    information: "",
-  });
 
   const [putValue, setPutValue] = useState({
     existId: "",
     images: [],
     information: "",
     nominal: 0,
+  });
+
+  const [deleteValue, setDeleteValue] = useState({
+    id: "",
+    refId: "",
+    nominal: 0,
+    information: "",
   });
 
   const handleAction = useCallback(
@@ -51,12 +54,12 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
       nominal: number,
     ) => {
       switch (actionType) {
-        case "Detail Foto": {
+        case "detailImage": {
           setPopup(actionType);
           setImageValue(images);
           break;
         }
-        case "Perbarui": {
+        case "putImage": {
           setPopup(actionType);
           setIdTransaction(id);
           setPutValue({
@@ -67,7 +70,7 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
           });
           break;
         }
-        case "Hapus": {
+        case "deleteImage": {
           setPopup(actionType);
           setDeleteValue({
             id: id,
@@ -84,54 +87,33 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
 
   const PopUpRender = useMemo(() => {
     switch (popup) {
-      case "Detail Foto": {
+      case "detailImage": {
         return (
           <PopUpShowImages images={imageValue} onClose={() => setPopup("")} />
         );
       }
-      case "Perbarui": {
-        return (
-          <FormPut
-            idTransaction={idTransaction}
-            imagesV={putValue.images}
-            information={putValue.information}
-            nominal={putValue.nominal}
-            onBack={() => setPopup("")}
-          />
-        );
+      case "putImage": {
+        return <FormPut putValue={putValue} onClose={() => setPopup("")} />;
       }
-      case "Hapus": {
+      case "deleteImage": {
         return (
           <PopUpDeleteTransaction
-            data={{
-              id: deleteValue.id,
-              refId: deleteValue.refId,
-              nominal: deleteValue.nominal,
-              information: deleteValue.information,
-            }}
+            deleteValue={deleteValue}
             onClose={() => setPopup("")}
           />
         );
       }
     }
-  }, [
-    deleteValue.id,
-    deleteValue.information,
-    deleteValue.nominal,
-    deleteValue.refId,
-    idTransaction,
-    imageValue,
-    popup,
-    putValue.images,
-    putValue.information,
-    putValue.nominal,
-  ]);
+  }, [deleteValue, imageValue, popup, putValue]);
 
   return (
     <section>
       {/* HEADER */}
       <div className="pb-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+        <h2
+          className="text-sm font-semibold uppercase tracking-wide text-zinc-500"
+          data-testid="title"
+        >
           Riwayat Transaksi
         </h2>
       </div>
@@ -164,25 +146,27 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
         {TransactionsListData.length > 0 ? (
           TransactionsListData.map((i, idx) => (
             <div
+              data-testid="has-transaction"
               key={idx}
               className={`flex items-center justify-between border-b border-zinc-100 py-4 ${i.status === "FINISH" ? "bg-red-500" : "bg-transparent"}`}
             >
               {/* LEFT */}
               <div>
-                <h3 className="font-medium text-black">
+                <h3
+                  className="font-medium text-black"
+                  data-testid="information-transaction"
+                >
                   {i.information || "Transaction"}
                 </h3>
 
                 <p className="mt-1 text-xs text-zinc-500">
-                  {new Date(i.createdAt).toLocaleTimeString("id-ID", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {FormatDate(i.createdAt)}
                 </p>
 
                 <div className="flex gap-4">
                   {ListOptionBtn.map((b, idx) => (
                     <button
+                      data-testid={`button-popup-${b.value}`}
                       key={idx}
                       onClick={() =>
                         handleAction(
@@ -196,7 +180,7 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
                       }
                       className="mt-2 text-xs text-blue-500 hover:underline"
                     >
-                      {b.value}
+                      {b.text}
                     </button>
                   ))}
                 </div>
@@ -205,12 +189,13 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
               {/* RIGHT */}
               <div className="text-right">
                 <p
+                  data-testid="nominal-transaction"
                   className={`font-medium ${
                     i.nominal <= 50000 ? "text-emerald-600" : "text-red-500"
                   }`}
                 >
-                  {i.nominal <= 50000 ? "-" : "(Hemat Oy !!)"} Rp.
-                  {Number(i.nominal).toLocaleString("id-ID")}
+                  {i.nominal <= 50000 ? "-" : "(Hemat Oy !!)"}{" "}
+                  {FormatCurrency(i.nominal)}
                 </p>
 
                 <p className="text-xs text-zinc-500">{i.information}</p>
@@ -218,7 +203,12 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
             </div>
           ))
         ) : (
-          <p className="py-6 text-sm text-zinc-500">Tidak ada transaksi</p>
+          <p
+            className="py-6 text-sm text-zinc-500"
+            data-testid="empty-transaction"
+          >
+            Tidak ada transaksi
+          </p>
         )}
       </div>
       {/* // ? POPUP */}

@@ -6,7 +6,11 @@ export type IdTransactionsDataType = {
 export type TransactionsDataType = {
   id: string;
   refId: string;
-  images: any;
+  images: {
+    id: string;
+    imageName: string;
+    imageUrl: string;
+  }[];
   information: string;
   nominal: number;
   createdAt: Date;

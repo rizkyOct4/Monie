@@ -14,13 +14,17 @@ type PopUpShowImagesProps = {
 
 const PopUpShowImages = ({ images, onClose }: PopUpShowImagesProps) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5"
+      data-testid="popup-show-images-container"
+    >
       <div className="flex h-[90vh] w-full max-w-5xl flex-col bg-white shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-200 px-6 py-4">
           <h2 className="text-lg font-semibold">Gambar Transaksi</h2>
 
           <button
+            data-testid="close-popup"
             onClick={onClose}
             className="flex h-10 w-10 items-center justify-center transition hover:bg-zinc-100"
           >
@@ -32,18 +36,22 @@ const PopUpShowImages = ({ images, onClose }: PopUpShowImagesProps) => {
         <div className="flex-1 overflow-y-auto px-6 py-6">
           <div className="flex flex-col gap-6">
             {images.length === 0 ? (
-              <div className="py-10 text-center text-zinc-500">
+              <div
+                className="py-10 text-center text-zinc-500"
+                data-testid="no-images"
+              >
                 Tidak ada gambar.
               </div>
             ) : (
               images.map((image) => (
                 <div
                   key={image.id}
+                  data-testid={`has-images-${image.id}`}
                   className="flex justify-center border border-zinc-200 bg-zinc-50 p-3"
                 >
                   <Image
                     src={image.imageUrl}
-                    alt={image.imageName ?? "Transaction Image"}
+                    alt={image.imageName}
                     width={1200}
                     height={800}
                     className="h-auto w-full object-contain"
@@ -55,14 +63,15 @@ const PopUpShowImages = ({ images, onClose }: PopUpShowImagesProps) => {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end border-t border-zinc-200 px-6 py-4">
+        {/* <div className="flex justify-end border-t border-zinc-200 px-6 py-4">
           <button
+            data-testid="close-popup"
             onClick={onClose}
             className="bg-black px-5 py-2 text-sm font-medium text-white transition hover:opacity-90"
           >
             Tutup
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

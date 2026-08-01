@@ -4,7 +4,7 @@
 
 import { parsePeriod } from "@/app/(pages)/report/hook/query/query-index";
 import { NextRequest } from "next/server";
-import { MockUseQueryIdPeriodTransactions } from "@/app/mocks/(pages)/report/hook/hook.index.mock";
+import { MockUseQueryIdPeriodTransactions } from "@/app/__tests__/mocks/(pages)/report/hook/hook.index.mock";
 
 // ? MOCK => PALSU -> DATA YG DIAMBIL GA SAMPAI KE DATABASE !!! -> CUMA SEKEDAR WADAHNYA SAJA !!
 jest.mock("@/_lib/services/report/services-report-index", () => ({

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import DateInput from "@/app/(pages)/transaction/components/header";
-import { MockUseQueryTransactions } from "@/app/__tests__/mocks/(pages)/transaction/transaction.mock";
+import { MockUseQueryTransactions } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
 import { FormattedDate } from "@/app/(pages)/transaction/components/header";
 
 const { date, setDate } = MockUseQueryTransactions();
@@ -23,7 +23,7 @@ describe("Render date input", () => {
 
   it("users action change date", () => {
     // ? FIND EVENT
-    const input = screen.getByTestId("input-date");
+    const input = screen.getByLabelText("Transaction Date");;
 
     // ? CHANGE EVENT
     fireEvent.change(input, {
@@ -45,6 +45,3 @@ describe("Render date input", () => {
     expect(formattedDate).toHaveTextContent(checkValue);
   });
 });
-
-
-// todo MY BODY !! AHHHH

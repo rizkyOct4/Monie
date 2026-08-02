@@ -35,13 +35,12 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
   const {
     putTransaction,
     PutIdTransactionData,
+    isPendingPutTransaction,
     setIsOpenIdTransaction,
     IdTransactionsListData,
     SearchIdTransactionData,
     isFetchingSearchIdTransaction,
   } = useContext(TransactionContext);
-
-  // console.log(idTransaction)
 
   const nanoId = nanoid(8);
 
@@ -58,7 +57,6 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
     mode: "onChange",
   });
 
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [imageDeleted, setImageDeleted] = useState<string[]>([]);
 
   // * IMAGES =================
@@ -86,7 +84,6 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
 
   const submit = handleSubmit(async (values) => {
     try {
-      setIsSubmitLoading(true);
       const id = nanoId;
 
       let cloudImage;
@@ -128,11 +125,10 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
 
       await putTransaction(put);
       // console.log(put);
-      setIsSubmitLoading(false);
       onClose();
     } catch (err) {
-      setIsSubmitLoading(false);
       console.error(err);
+    } finally {
     }
   });
 
@@ -353,10 +349,10 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
               <div className="flex justify-end gap-6 border-t border-zinc-200 pt-6">
                 <button
                   type="submit"
-                  disabled={isSubmitLoading}
+                  disabled={isPendingPutTransaction}
                   className=" flex h-12 items-center justify-center gap-2 rounded-2xl bg-black px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {isSubmitLoading ? (
+                  {isPendingPutTransaction ? (
                     <>
                       <Spokes className="size-4 animate-spin" />
                       <span>Dalam Progres...</span>

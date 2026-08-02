@@ -1,11 +1,11 @@
 import Footer from "./components/footer";
-import NewPostBtn from "./components/new-post";
+import NewPostBtn from "./components/new-post-btn";
 
 type RootLayoutProps = {
   children: React.ReactNode;
 };
 
-const Layout = ({ children }: RootLayoutProps) => {
+const MainLayout = ({ children }: RootLayoutProps) => {
   return (
     <>
       <main className="flex flex-col items-center font-sans bg-black max-w-8xl min-h-screen relative pb-20 pt-4">
@@ -17,4 +17,4 @@ const Layout = ({ children }: RootLayoutProps) => {
   );
 };
 
-export default Layout;
+export default MainLayout;

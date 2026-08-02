@@ -13,11 +13,10 @@ import { FormPostType, FormPostSchema } from "../transaction/z-schema/z-schema";
 import { Upload, Search, Loader2 } from "lucide-react";
 
 type TransactionsProps = {
-  onBack: () => void;
-  isNewTransaction: boolean;
+  onClose: () => void;
 };
 
-const Transactions = ({ onBack, isNewTransaction }: TransactionsProps) => {
+const ExistedTransactions = ({ onClose }: TransactionsProps) => {
   const { publicId } = useSessionClient();
   const now = new Date();
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -106,16 +105,17 @@ const Transactions = ({ onBack, isNewTransaction }: TransactionsProps) => {
         id: id,
         nominal: Number(values.nominal),
         images: images.length > 0 ? cloudImage : [],
-        status: "ACTIVE"
+        status: "ACTIVE",
       };
 
       await postTransaction(post);
       // console.log(post);
       setIsSubmitLoading(false);
-      onBack();
     } catch (err) {
       setIsSubmitLoading(false);
       console.error(err);
+    } finally {
+      onClose();
     }
   });
 
@@ -447,4 +447,4 @@ const Transactions = ({ onBack, isNewTransaction }: TransactionsProps) => {
   );
 };
 
-export default Transactions;
+export default ExistedTransactions;

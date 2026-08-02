@@ -1,1 +1,12 @@
 // ? YG WAJIB DI TEST  -> proxy, components, pages, api routes
+
+
+
+| Prioritas | Cara mencari element     | Kapan digunakan                                                  |
+| --------- | ------------------------ | ---------------------------------------------------------------- |
+| ⭐⭐⭐⭐⭐     | `getByRole()`            | Button, input, form, checkbox, heading, link, main, dialog, dll. |
+| ⭐⭐⭐⭐      | `getByLabelText()`       | Input yang memiliki `<label>` atau `aria-label`                  |
+| ⭐⭐⭐⭐      | `getByPlaceholderText()` | Input dengan placeholder                                         |
+| ⭐⭐⭐       | `getByText()`            | Paragraf, span, button dengan teks                               |
+| ⭐⭐        | `getByDisplayValue()`    | Input yang sudah memiliki value                                  |
+| ⭐         | `getByTestId()`          | Kalau semua cara di atas tidak memungkinkan                      |

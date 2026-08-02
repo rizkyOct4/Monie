@@ -6,7 +6,7 @@ import {
   MockTransactionsListData,
   MockPutFormTransactionsData,
   MockDeleteFormTransactionsData,
-} from "@/app/__tests__/mocks/(pages)/transaction/transaction.mock";
+} from "@/app/__mocks__/(pages)/transaction/transaction.mock";
 
 const mockProps = {
   TransactionsListData: MockTransactionsListData,
@@ -31,10 +31,8 @@ jest.mock(
       mockPropsPopUpShowImage({ images, onClose });
 
       return (
-        <div data-testid="mock-pop-up-show-image">
-          <button data-testid="close-popup" onClick={onClose}>
-            Close
-          </button>
+        <div role="dialog" aria-label="Mock Popup Show Image">
+          <button onClick={onClose}>Close</button>
         </div>
       );
     },
@@ -57,10 +55,8 @@ jest.mock(
       mockPropsPutImage({ putValue, onClose });
 
       return (
-        <div data-testid="mock-pop-up-put-image">
-          <button data-testid="close-popup" onClick={onClose}>
-            Close
-          </button>
+        <div role="dialog" aria-label="Mock Popup Put Image">
+          <button onClick={onClose}>Close</button>
         </div>
       );
     },
@@ -81,10 +77,8 @@ jest.mock("@/app/(pages)/transaction/components/pop-up/pop-up-delete", () => ({
     mockPropsDeleteImage({ deleteValue, onClose });
 
     return (
-      <div data-testid="mock-pop-up-delete-image">
-        <button data-testid="close-popup" onClick={onClose}>
-          Close
-        </button>
+      <div role="dialog" aria-label="Mock Popup Delete Image">
+        <button onClick={onClose}>Close</button>
       </div>
     );
   },
@@ -98,43 +92,42 @@ describe("Render Transaction List", () => {
     it("check title", () => {
       renderTransactionsList();
 
-      const title = screen.getByTestId("title");
+      // const title = screen.getByTestId("title");
+      const title = screen.getByRole("heading", {
+        name: "Title",
+      });
       expect(title).toHaveTextContent("Riwayat Transaksi");
     });
     it("check has information", () => {
       renderTransactionsList();
 
-      const information = screen.getByTestId("information-transaction");
+      const information = screen.getByRole("heading", {
+        name: "Information Transaction",
+      });
       expect(information).toBeInTheDocument();
     });
     it("check no information", () => {
-      const { rerender } = renderTransactionsList();
-
-      const updateTransactionData = {
+      renderTransactionsList({
         ...mockProps,
         TransactionsListData: mockProps.TransactionsListData.map((i) => ({
           ...i,
           information: "",
         })),
-      };
+      });
 
-      rerender(<TransactionList {...updateTransactionData} />);
-
-      const information = screen.getByTestId("information-transaction");
+      const information = screen.getByRole("heading", {
+        name: "Information Transaction",
+      });
       expect(information).toHaveTextContent("Transaction");
     });
     it("check nominal more than > 50.000", () => {
-      const { rerender } = renderTransactionsList();
-
-      const updateTransactionData = {
+      renderTransactionsList({
         ...mockProps,
         TransactionsListData: mockProps.TransactionsListData.map((i) => ({
           ...i,
           nominal: 51000,
         })),
-      };
-
-      rerender(<TransactionList {...updateTransactionData} />);
+      });
 
       const nominal = screen.getByTestId("nominal-transaction");
       expect(nominal).toHaveTextContent("(Hemat Oy !!)");
@@ -147,48 +140,47 @@ describe("Render Transaction List", () => {
       expect(nominal).toHaveTextContent("-");
       expect(nominal).toHaveClass("text-emerald-600");
     });
-
     it("should has transactions data", () => {
       renderTransactionsList();
 
-      const hasTransaction = screen.getByTestId("has-transaction");
+      const hasTransaction = screen.getByRole("dialog", {
+        name: "Has Transactions",
+      });
       expect(hasTransaction).toBeInTheDocument();
     });
     it("should empty transactions data", () => {
-      const { rerender } = renderTransactionsList();
-
-      const updateTransactionData = {
+      renderTransactionsList({
         ...mockProps,
         TransactionsListData: [],
-      };
+      });
 
-      rerender(<TransactionList {...updateTransactionData} />);
+      const emptyTransaction = screen.getByText("Tidak ada transaksi");
 
-      const emptyTransaction = screen.getByTestId("empty-transaction");
       expect(emptyTransaction).toBeInTheDocument();
     });
   });
+
   describe("CSS condition", () => {
     it("constainer status ACTIVE", () => {
       renderTransactionsList();
-      const hasTransaction = screen.getByTestId("has-transaction");
+      const hasTransaction = screen.getByRole("dialog", {
+        name: "Has Transactions",
+      });
 
       expect(hasTransaction).toHaveClass("bg-transparent");
     });
     it("constainer status FINISH", () => {
-      const { rerender } = renderTransactionsList();
-
-      const updateTransactionData = {
+      renderTransactionsList({
         ...mockProps,
         TransactionsListData: mockProps.TransactionsListData.map((i) => ({
           ...i,
           status: "FINISH" as const,
         })),
-      };
+      });
 
-      rerender(<TransactionList {...updateTransactionData} />);
-
-      const hasTransaction = screen.getByTestId("has-transaction");
+      const hasTransaction = screen.getByRole("dialog", {
+        name: "Has Transactions",
+      });
 
       expect(hasTransaction).toHaveClass("bg-red-500");
     });
@@ -202,44 +194,82 @@ describe("Render Transaction List", () => {
       renderTransactionsList();
     });
     it("Pop up detail images", () => {
-      fireEvent.click(screen.getByTestId("button-popup-detailImage"));
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Button Popup detailImage",
+        }),
+      );
 
       expect(mockPropsPopUpShowImage).toHaveBeenCalled();
 
-      expect(screen.getByTestId("mock-pop-up-show-image")).toBeInTheDocument();
+      expect(
+        screen.getByRole("dialog", {
+          name: "Mock Popup Show Image",
+        }),
+      ).toBeInTheDocument();
 
-      fireEvent.click(screen.getByTestId("close-popup"));
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Close",
+        }),
+      );
 
       expect(
-        screen.queryByTestId("mock-pop-up-show-image"),
+        screen.queryByRole("dialog", {
+          name: "Mock Popup Show Image",
+        }),
       ).not.toBeInTheDocument();
     });
     it("Pop up put images", () => {
-      fireEvent.click(screen.getByTestId("button-popup-putImage"));
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Button Popup putImage",
+        }),
+      );
 
       expect(mockPropsPutImage).toHaveBeenCalled();
 
-      expect(screen.getByTestId("mock-pop-up-put-image")).toBeInTheDocument();
-
-      fireEvent.click(screen.getByTestId("close-popup"));
-
       expect(
-        screen.queryByTestId("mock-pop-up-put-image"),
+        screen.getByRole("dialog", {
+          name: "Mock Popup Put Image",
+        }),
+      ).toBeInTheDocument();
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Close",
+        }),
+      );
+      expect(
+        screen.queryByRole("dialog", {
+          name: "Mock Popup Put Image",
+        }),
       ).not.toBeInTheDocument();
     });
     it("Pop up delete images", () => {
-      fireEvent.click(screen.getByTestId("button-popup-deleteImage"));
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Button Popup deleteImage",
+        }),
+      );
 
       expect(mockPropsDeleteImage).toHaveBeenCalled();
 
       expect(
-        screen.getByTestId("mock-pop-up-delete-image"),
+        screen.getByRole("dialog", {
+          name: "Mock Popup Delete Image",
+        }),
       ).toBeInTheDocument();
 
-      fireEvent.click(screen.getByTestId("close-popup"));
-
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Close",
+        }),
+      );
       expect(
-        screen.queryByTestId("mock-pop-up-delete-image"),
+        screen.queryByRole("dialog", {
+          name: "Mock Popup Delete Image",
+        }),
       ).not.toBeInTheDocument();
     });
   });

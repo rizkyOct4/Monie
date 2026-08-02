@@ -46,7 +46,7 @@ export const MockUseQueryTransactions = (): ReturnType<
   typeof useQueryTransactions
 > => ({
   TransactionsListData: MockTransactionsListData,
-  isFTransactionsListData: false,
+  isFTransactionsListData: true,
   TransactionsListRefetch: jest.fn(),
   date: "2026-07-25",
   setDate: jest.fn(),

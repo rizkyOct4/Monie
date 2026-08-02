@@ -19,7 +19,6 @@ const config: Config = {
     "!app/**/*.type.ts",
     "!<rootDir>/types/**",
     "!app/**/*.type.ts",
-    "!app/**/*.mock.ts",
     "!<rootDir>/.next/**",
     "!<rootDir>/coverage/**",
     "!<rootDir>/node_modules/**",

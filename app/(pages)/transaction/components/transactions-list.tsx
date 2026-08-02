@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, Dispatch } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { TransactionsDataType } from "../types/transaction.type";
 import FormPut from "./pop-up/pop-up-form-put";
 import PopUpDeleteTransaction from "./pop-up/pop-up-delete";
@@ -107,12 +107,12 @@ const TransactionList = ({
   }, [deleteValue, imageValue, popup, putValue]);
 
   return (
-    <section>
+    <div role="dialog" aria-modal="true" aria-labelledby="transactions-list">
       {/* HEADER */}
-      <div className="pb-4">
+      <div className="pb-4" id="transactions-list">
         <h2
           className="text-sm font-semibold uppercase tracking-wide text-zinc-500"
-          data-testid="title"
+          aria-label="Title"
         >
           Riwayat Transaksi
         </h2>
@@ -146,7 +146,8 @@ const TransactionList = ({
         {TransactionsListData.length > 0 ? (
           TransactionsListData.map((i, idx) => (
             <div
-              data-testid="has-transaction"
+              role="dialog"
+              aria-label="Has Transactions"
               key={idx}
               className={`flex items-center justify-between border-b border-zinc-100 py-4 ${i.status === "FINISH" ? "bg-red-500" : "bg-transparent"}`}
             >
@@ -154,7 +155,7 @@ const TransactionList = ({
               <div>
                 <h3
                   className="font-medium text-black"
-                  data-testid="information-transaction"
+                  aria-label="Information Transaction"
                 >
                   {i.information || "Transaction"}
                 </h3>
@@ -166,7 +167,7 @@ const TransactionList = ({
                 <div className="flex gap-4">
                   {ListOptionBtn.map((b, idx) => (
                     <button
-                      data-testid={`button-popup-${b.value}`}
+                      aria-label={`Button Popup ${b.value}`}
                       key={idx}
                       onClick={() =>
                         handleAction(
@@ -203,17 +204,12 @@ const TransactionList = ({
             </div>
           ))
         ) : (
-          <p
-            className="py-6 text-sm text-zinc-500"
-            data-testid="empty-transaction"
-          >
-            Tidak ada transaksi
-          </p>
+          <p className="py-6 text-sm text-zinc-500">Tidak ada transaksi</p>
         )}
       </div>
       {/* // ? POPUP */}
       {PopUpRender}
-    </section>
+    </div>
   );
 };
 

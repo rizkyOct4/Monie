@@ -1,28 +1,29 @@
 "use client";
 
 import { Spokes } from "@/components/ui/spokes";
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import {
   FormNewPostType,
   FormNewPostSchema,
 } from "../transaction/z-schema/z-schema";
 import { nanoid } from "nanoid";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TransactionContext } from "@/app/context/context";
 
 type NewTransactionsProps = {
   showInfo: boolean;
-  setShowInfo: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsNewTransaction: React.Dispatch<React.SetStateAction<boolean>>;
+  onInfo: () => void;
+  onClose: () => void;
 };
 
-const NewTransactions = ({
+const NewTransaction = ({
   showInfo,
-  setShowInfo,
-  setIsNewTransaction,
+  onInfo,
+  onClose,
 }: NewTransactionsProps) => {
-  const { newPostTransaction } = useContext(TransactionContext);
+  const { newPostTransaction, isPendingNewPostTransaction } =
+    useContext(TransactionContext);
 
   const {
     register,
@@ -33,11 +34,8 @@ const NewTransactions = ({
     mode: "onChange",
   });
 
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-
   const submit = handleSubmit(async (values) => {
     try {
-      setIsSubmitLoading(true);
       const post = {
         ...values,
         id: nanoid(8),
@@ -46,16 +44,15 @@ const NewTransactions = ({
       };
       // console.log(post)
       await newPostTransaction(post);
-      setIsSubmitLoading(false);
-      setIsNewTransaction(false);
     } catch (err) {
       console.error(err);
-      setIsSubmitLoading(false);
+    } finally {
+      onClose();
     }
   });
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} aria-label="New Transaction Form">
       {/* LABEL + INFO BUTTON */}
       <span className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -65,14 +62,13 @@ const NewTransactions = ({
 
           <button
             type="button"
-            onClick={() => setShowInfo((prev: boolean) => !prev)}
+            onClick={() => onInfo()}
             className="
               flex h-4 w-4 items-center justify-center
               rounded-full border border-gray-500
               text-[10px] text-gray-400
               transition
-              hover:border-emerald-500 hover:text-emerald-400
-            "
+              hover:border-emerald-500 hover:text-emerald-400"
           >
             ?
           </button>
@@ -156,16 +152,10 @@ const NewTransactions = ({
       <div className="flex justify-end gap-6 border-t border-zinc-200 pt-6">
         <button
           type="submit"
-          disabled={isSubmitLoading}
-          className="
-                              flex h-12 items-center justify-center gap-2
-                              rounded-2xl bg-black px-5
-                              text-sm font-medium text-white
-                              transition hover:opacity-90
-                              disabled:cursor-not-allowed disabled:opacity-70
-                            "
+          disabled={isPendingNewPostTransaction}
+          className=" flex h-12 items-center justify-center gap-2 rounded-2xl bg-black px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isSubmitLoading ? (
+          {isPendingNewPostTransaction ? (
             <>
               <Spokes className="size-4 animate-spin" />
               <span>Dalam Progres...</span>
@@ -179,4 +169,4 @@ const NewTransactions = ({
   );
 };
 
-export default NewTransactions;
+export default NewTransaction;

@@ -1,9 +1,9 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import PopUpDeleteTransaction from "@/app/(pages)/transaction/components/pop-up/pop-up-delete";
-import { MockDeleteFormTransactionsData } from "@/app/__tests__/mocks/(pages)/transaction/transaction.mock";
+import { MockDeleteFormTransactionsData } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
 import { TransactionContext } from "@/app/context/context";
 import type { PopUpDeleteTransactionProps } from "@/app/(pages)/transaction/components/pop-up/pop-up-delete";
-import { MockUseMutationDeleteTransactions } from "@/app/__tests__/mocks/(pages)/transaction/mutation/mutation.delete.mock";
+import { MockUseMutationDeleteTransactions } from "@/app/__mocks__/(pages)/transaction/mutation/mutation.delete.mock";
 
 const mockContext = MockUseMutationDeleteTransactions();
 
@@ -27,7 +27,11 @@ describe("Render Popup delete form", () => {
   it("close btn", () => {
     renderDeleteForm();
 
-    fireEvent.click(screen.getByTestId("close-popup"));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Batal",
+      }),
+    );
 
     expect(mockProps.onClose).toHaveBeenCalledTimes(1);
   });
@@ -38,20 +42,104 @@ describe("Render Popup delete form", () => {
       isPendingDeleteTransaction: false,
     });
 
-    expect(screen.getByTestId("submit-delete-btn")).toHaveTextContent("Hapus");
+    expect(
+      screen.getByRole("button", {
+        name: "Hapus",
+      }),
+    ).toHaveTextContent("Hapus");
   });
 
-  //   it("accept delete transaction", () => {
-  //     fireEvent.click(screen.getByTestId("submit-delete-btn"));
+  it("should success delete transaction and close popup", async () => {
+    const { rerender } = renderDeleteForm(mockProps, {
+      ...mockContext,
+      isPendingDeleteTransaction: false,
+    });
 
-  //     const isLoading = screen.getByTestId("is-loading-delete")
+    fireEvent.submit(
+      screen.getByRole("form", {
+        name: "Delete Transaction Form",
+      }),
+    );
 
-  //     expect(isLoading).toBeInTheDocument()
+    const updateContext = {
+      ...mockContext,
+      isPendingDeleteTransaction: true,
+    };
 
-  //   })
+    rerender(
+      <TransactionContext.Provider value={updateContext}>
+        <PopUpDeleteTransaction {...mockProps} />
+      </TransactionContext.Provider>,
+    );
+
+    await waitFor(() => {
+      expect(mockContext.deleteTransaction).toHaveBeenCalledWith(
+        MockDeleteFormTransactionsData,
+      );
+      expect(mockContext.deleteTransaction).toHaveBeenCalledTimes(1);
+
+      expect(
+        screen.getByRole("status", {
+          name: "Is Loading Delete",
+        }),
+      ).toBeInTheDocument();
+
+      expect(mockProps.onClose).toHaveBeenCalledTimes(1);
+    });
+  });
+  it("should failed delete transaction and close popup", async () => {
+    const error = new Error("Delete failed");
+
+    const ErrorDeleteTransaction = jest.fn().mockRejectedValue(error); // ! created MOCK FUNCTION which is return ERROR !!
+
+    const consoleSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    const { rerender } = renderDeleteForm(mockProps, {
+      deleteTransaction: ErrorDeleteTransaction,
+      isPendingDeleteTransaction: false,
+    });
+
+    fireEvent.submit(
+      screen.getByRole("form", {
+        name: "Delete Transaction Form",
+      }),
+    );
+
+    const updateContext = {
+      ...mockContext,
+      isPendingDeleteTransaction: true,
+    };
+
+    rerender(
+      <TransactionContext.Provider value={updateContext}>
+        <PopUpDeleteTransaction {...mockProps} />
+      </TransactionContext.Provider>,
+    );
+
+    await waitFor(() => {
+      expect(ErrorDeleteTransaction).toHaveBeenCalledTimes(1);
+      expect(ErrorDeleteTransaction).toHaveBeenCalledWith(
+        MockDeleteFormTransactionsData,
+      );
+
+      expect(
+        screen.getByRole("status", {
+          name: "Is Loading Delete",
+        }),
+      ).toBeInTheDocument();
+
+      expect(consoleSpy).toHaveBeenCalledWith(error);
+
+      expect(mockProps.onClose).toHaveBeenCalledTimes(1);
+    });
+    consoleSpy.mockRestore();
+  });
 });
 
 // TODO LOOK FOR RERENDER !! DONT FKING REPEAT URSELF !!
 // TODO HOOK return from react query ITS MUST BE A FUNCTION !!!
-//  TODO MOCK DATA ITS MUST BE AN OBJECT !! DONT FKING FORGET !!! 
+// TODO MOCK DATA ITS MUST BE AN OBJECT !! DONT FKING FORGET !!!
 // TODO isFetching = true, refetch = function, mutation (isLoading = true)
+// ! IF button has already text inside those, DONT NEED TO ADD MORE aria-label !!!!

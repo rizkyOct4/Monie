@@ -25,7 +25,10 @@ export const useMutationNewTransaction = ({
 }: UseMutationsNewTransactionProps) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: newPostTransaction } = useMutation({
+  const {
+    mutateAsync: newPostTransaction,
+    isPending: isPendingNewPostTransaction,
+  } = useMutation({
     mutationFn: async (data) => {
       const URL = ROUTES_TRANSACTION.POST({
         key: "newPostTransaction",
@@ -80,7 +83,7 @@ export const useMutationNewTransaction = ({
     },
   });
 
-  return { newPostTransaction };
+  return { newPostTransaction, isPendingNewPostTransaction };
 };
 
 // * EXISTS TRANSACTIONS ======================
@@ -168,26 +171,39 @@ export const useMutationPutTranscation = ({
 }: UseMutationPutTranscationProps) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: putTransaction } = useMutation({
-    mutationFn: async (data) => {
-      const URL = ROUTES_TRANSACTION.PUT({
-        key: "putTransaction",
-        currentPath: currentPath,
-      });
-      const res = await axios.put(URL, data);
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeyTransactions,
-      });
-    },
-    onError: (error, _variables, context) => {
-      console.error(error);
-    },
-  });
+  const { mutateAsync: putTransaction, isPending: isPendingPutTransaction } =
+    useMutation({
+      mutationFn: async (data) => {
+        const URL = ROUTES_TRANSACTION.PUT({
+          key: "putTransaction",
+          currentPath: currentPath,
+        });
+        const res = await axios.put(URL, data);
+        return res.data;
+      },
+      onMutate: () => {
+        const prevPutTransaction =
+          queryClient.getQueryData(queryKeyTransactions);
 
-  return { putTransaction };
+        return { prevPutTransaction };
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: queryKeyTransactions,
+        });
+      },
+      onError: (error, _variables, context) => {
+        console.error(error);
+        if (context?.prevPutTransaction) {
+          queryClient.setQueryData(
+            queryKeyTransactions,
+            context.prevPutTransaction,
+          );
+        }
+      },
+    });
+
+  return { putTransaction, isPendingPutTransaction };
 };
 
 // * DELETE TRANSACTIONS ======================
@@ -195,7 +211,6 @@ type UseMutationDeleteTransactionProps = {
   currentPath: string;
   queryKeyTransactions: QueryKey;
 };
-
 export const useMutationDeleteTransaction = ({
   currentPath,
   queryKeyTransactions,

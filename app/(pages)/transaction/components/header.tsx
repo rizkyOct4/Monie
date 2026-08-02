@@ -20,9 +20,12 @@ const DateInput = ({ date, setDate }: IDateInput) => {
 
   return (
     <div className="relative py-4">
-      <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-zinc-400">
+      <label
+        htmlFor="transaction-date"
+        className="mb-1 block text-xs font-semibold uppercase tracking-wide text-zinc-400"
+      >
         Tanggal
-      </span>
+      </label>
 
       <div className=" relative w-full flex items-center border-b border-zinc-300 pb-1">
         <span
@@ -33,7 +36,8 @@ const DateInput = ({ date, setDate }: IDateInput) => {
         </span>
 
         <input
-          data-testid="input-date"
+          id="transaction-date"
+          aria-label="Transaction Date"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}

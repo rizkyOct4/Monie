@@ -13,7 +13,7 @@ import {
   useMutationDeleteTransaction,
 } from "./mutation/mutation-index";
 
-export const useTransactionHook = (publicId: string, currentPath: string) => {
+export const useHookTransaction = (publicId: string, currentPath: string) => {
   // * QUERY =======
   const QIdGet = useQueryIdTransactions({ publicId, currentPath });
   const QSearchIdGet = useQuerySearchIdTransactions({ publicId });

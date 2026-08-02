@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import { TransactionContext } from "@/app/context/context";
 import { useSessionClient } from "@/_lib/c-session";
-import { useTransactionHook } from "../hook/hook-index";
+import { useHookTransaction } from "../hook/hook-index";
 import { usePathname } from "next/navigation";
 
 interface TransactionProviderProps {
@@ -17,7 +17,7 @@ const TransactionProvider: React.FC<TransactionProviderProps> = ({
 
   const currentPath = usePathname();
   //   const currentPath = pathname.split("/")[2];
-  const transaction = useTransactionHook(publicId, currentPath);
+  const transaction = useHookTransaction(publicId, currentPath);
 
   const values = {
     ...transaction,

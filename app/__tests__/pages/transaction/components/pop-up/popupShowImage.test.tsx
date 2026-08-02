@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import PopUpShowImages from "@/app/(pages)/transaction/components/pop-up/pop-up-show-image";
-import { MockTransactionsListData } from "@/app/__tests__/mocks/(pages)/transaction/transaction.mock";
+import { MockTransactionsListData } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
 
 const mockProps = {
   images: MockTransactionsListData[0].images,
@@ -17,7 +17,11 @@ describe("Render Popup show images", () => {
     renderPopupShowImages();
   });
   it("close btn", () => {
-    fireEvent.click(screen.getByTestId("close-popup"));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Close Popup",
+      }),
+    );
 
     expect(mockProps.onClose).toHaveBeenCalledTimes(1);
   });
@@ -32,14 +36,16 @@ describe("Render Popup show images", () => {
 
     rerender(<PopUpShowImages {...updateTransactionImagesData} />);
 
-    const noImages = screen.getByTestId("no-images");
-
-    expect(noImages).toHaveTextContent("Tidak ada gambar.");
+    expect(screen.getByText("Tidak ada gambar.")).toBeInTheDocument();
   });
 
   it("has images", () => {
     mockProps.images.forEach((image) => {
-      expect(screen.getByTestId(`has-images-${image.id}`)).toBeInTheDocument();
+      expect(
+        screen.getByRole("dialog", {
+          name: `Has Images ${image.id}`,
+        }),
+      ).toBeInTheDocument();
     });
   });
 });

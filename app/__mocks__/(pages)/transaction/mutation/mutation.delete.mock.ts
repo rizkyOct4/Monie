@@ -6,3 +6,4 @@ export const MockUseMutationDeleteTransactions = (): ReturnType<
   deleteTransaction: jest.fn(),
   isPendingDeleteTransaction: true,
 });
+

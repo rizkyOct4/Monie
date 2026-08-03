@@ -10,13 +10,12 @@ type OptionsFormPostProps = {
 };
 
 const OptionsFormPost = ({ onClose }: OptionsFormPostProps) => {
-  const [isNewTransaction, setIsNewTransaction] = useState("Existed");
-  const [showInfo, setShowInfo] = useState(false);
+  const [isNewTransaction, setIsNewTransaction] = useState("New");
 
   const handleAction = useCallback((actionType: string) => {
     switch (actionType) {
       case "newTransaction": {
-        setIsNewTransaction((prev) => (prev !== "Existed" ? "New" : "Existed"));
+        setIsNewTransaction((prev) => (prev === "New" ? "Existed" : "New"));
         break;
       }
     }
@@ -45,7 +44,7 @@ const OptionsFormPost = ({ onClose }: OptionsFormPostProps) => {
             type="button"
             className="text-zinc-500 hover:text-black"
           >
-            {isNewTransaction ? "Existed" : "New"}
+            {isNewTransaction === "New" ? "New" : "Existed"}
           </button>
           <button
             aria-label="Close Btn"
@@ -58,13 +57,11 @@ const OptionsFormPost = ({ onClose }: OptionsFormPostProps) => {
         </div>
 
         <div className="flex flex-col gap-6">
-          {isNewTransaction ? (
+          {isNewTransaction === "New" ? (
             <NewTransaction
-              showInfo={showInfo}
-              onInfo={() => setShowInfo((prev) => !prev)}
               onClose={() =>
                 setIsNewTransaction((prev) =>
-                  prev !== "Existed" ? "New" : "Existed",
+                  prev === "New" ? "Existed" : "New",
                 )
               }
             />

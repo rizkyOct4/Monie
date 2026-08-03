@@ -5,19 +5,14 @@ const mockPropsNewTransaction = jest.fn();
 jest.mock("@/app/(pages)/components/new-transaction", () => ({
   __esModule: true,
   default: ({
-    showInfo,
-    onInfo,
     onClose,
   }: {
-    showInfo: boolean;
-    onInfo: () => void;
     onClose: () => void;
   }) => {
-    mockPropsNewTransaction({ showInfo, onInfo, onClose });
+    mockPropsNewTransaction({ onClose });
 
     return (
       <div role="dialog" aria-label="Mock New Transaction">
-        <button onClick={onInfo}>?</button>
         <button onClick={onClose}>Close</button>
       </div>
     );
@@ -67,10 +62,18 @@ describe("Render Options Form Post", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("Open Existed Transaction", () => {
+  it("Handler Switch Between New and Existed Transaction", () => {
+    // * NEW ====
+    expect(
+      screen.getByRole("dialog", {
+        name: "Mock New Transaction",
+      }),
+    ).toBeInTheDocument();
+
+    // ? SWITCH INTO EXISTED
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Handler Options Btn Existed",
+        name: "Handler Options Btn New",
       }),
     );
 
@@ -80,46 +83,29 @@ describe("Render Options Form Post", () => {
       }),
     ).toBeInTheDocument();
 
-    // fireEvent.click(
-    //   screen.getByRole("button", {
-    //     name: "Close",
-    //   }),
-    // );
+    expect(
+      screen.queryByRole("dialog", {
+        name: "Mock New Transaction",
+      }),
+    ).not.toBeInTheDocument();
 
-    // expect(
-    //   screen.queryByRole("dialog", {
-    //     name: "Mock Existed Transaction",
-    //   }),
-    // ).not.toBeInTheDocument();
+    // ? SWITCH BACK
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Handler Options Btn Existed",
+      }),
+    );
+
+    expect(
+      screen.getByRole("dialog", {
+        name: "Mock New Transaction",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("dialog", {
+        name: "Mock Existed Transaction",
+      }),
+    ).not.toBeInTheDocument();
   });
-
-//   it("Open New Transaction", () => {
-//     fireEvent.click(
-//       screen.getByRole("button", {
-//         name: "Handler Options Btn New",
-//       }),
-//     );
-
-//     expect(
-//       screen.getByRole("dialog", {
-//         name: "Mock New Transaction",
-//       }),
-//     ).toBeInTheDocument();
-
-//     fireEvent.click(
-//       screen.getByRole("button", {
-//         name: "Close",
-//       }),
-//     );
-
-//     expect(
-//       screen.queryByRole("dialog", {
-//         name: "Mock New Transaction",
-//       }),
-//     ).not.toBeInTheDocument();
-//   });
 });
-
-
-
-// TODO LOGIC STATENYA BESOK PERBAIKI !!!!

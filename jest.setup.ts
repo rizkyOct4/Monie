@@ -1,13 +1,15 @@
-import '@testing-library/jest-dom'
+import "@testing-library/jest-dom";
 // import 'whatwg-fetch'
 // import { serverMockReport } from './app/mocks/server'
 
-// // Establish API mocking before all tests.
-// beforeAll(() => serverMockReport.listen())
+jest.mock("nanoid", () => ({
+  nanoid: () => "mock-id",
+  publicId: () => "mock-id",
+}));
 
-// // Reset any request handlers that we may add during the tests,
-// // so they don't affect other tests.
-// afterEach(() => serverMockReport.resetHandlers())
+jest.mock("session", () => ({
+  publicId: () => "ss12",
+  name: () => "asking",
+}));
 
-// // Clean up after the tests are finished.
-// afterAll(() => serverMockReport.close())
+

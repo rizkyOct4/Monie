@@ -12,12 +12,13 @@ const mockProps: PopUpDeleteTransactionProps = {
   onClose: jest.fn(),
 };
 
-const renderDeleteForm = (props = mockProps, context = mockContext) =>
-  render(
+const renderDeleteForm = (props = mockProps, context = mockContext) => {
+  return render(
     <TransactionContext.Provider value={context}>
       <PopUpDeleteTransaction {...props} />
     </TransactionContext.Provider>,
   );
+};
 
 describe("Render Popup delete form", () => {
   beforeEach(() => {

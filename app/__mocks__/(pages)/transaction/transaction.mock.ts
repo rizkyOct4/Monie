@@ -3,6 +3,9 @@ import type { TransactionsDataType } from "@/app/(pages)/transaction/types/trans
 import { MockSession } from "../../session.mock";
 import type { PopUpDeleteTransactionProps } from "@/app/(pages)/transaction/components/pop-up/pop-up-delete";
 
+
+
+// ! TRANSACTIONS LIST DATA ==============
 export const MockTransactionsListData: TransactionsDataType[] = [
   {
     id: "jj-4533",

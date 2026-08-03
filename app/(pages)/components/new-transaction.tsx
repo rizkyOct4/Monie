@@ -1,7 +1,7 @@
 "use client";
 
 import { Spokes } from "@/components/ui/spokes";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
   FormNewPostType,
   FormNewPostSchema,
@@ -12,23 +12,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TransactionContext } from "@/app/context/context";
 
 type NewTransactionsProps = {
-  showInfo: boolean;
-  onInfo: () => void;
   onClose: () => void;
 };
 
-const NewTransaction = ({
-  showInfo,
-  onInfo,
-  onClose,
-}: NewTransactionsProps) => {
+const NewTransaction = ({ onClose }: NewTransactionsProps) => {
   const { newPostTransaction, isPendingNewPostTransaction } =
     useContext(TransactionContext);
+
+  const [showInfo, setShowInfo] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormNewPostType>({
     resolver: zodResolver(FormNewPostSchema),
     mode: "onChange",
@@ -62,7 +58,7 @@ const NewTransaction = ({
 
           <button
             type="button"
-            onClick={() => onInfo()}
+            onClick={() => setShowInfo((prev) => !prev)}
             className="
               flex h-4 w-4 items-center justify-center
               rounded-full border border-gray-500
@@ -75,7 +71,10 @@ const NewTransaction = ({
         </div>
 
         {errors.nameTransaction && (
-          <p className="text-[11px] text-red-400">
+          <p
+            className="text-[11px] text-red-400"
+            data-testid="error-nameTransaction"
+          >
             {errors.nameTransaction.message}
           </p>
         )}
@@ -86,24 +85,15 @@ const NewTransaction = ({
         id="name"
         type="text"
         placeholder="January 2026"
-        className="
-          mt-2
-          w-full
-          rounded-md
-          border border-white/10
-          bg-black/40
-          px-3 py-2
-          text-sm text-gray-200
-          placeholder:text-gray-500
-          outline-none
-          focus:border-emerald-500/40
-        "
+        className=" mt-2 w-full rounded-md border border-white/10 bg-black/40 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-500 outline-none focus:border-emerald-500/40"
         required
         {...register("nameTransaction")}
       />
 
       {/* POPUP INFO + FADE ANIMATION */}
       <div
+        role="dialog"
+        aria-label="ID Icon Help"
         className={`
           relative mt-2
           transition-all duration-300 ease-out
@@ -130,11 +120,25 @@ const NewTransaction = ({
       </div>
 
       <div>
-        <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
-          Inisial Nominal
-        </label>
+        <div className="flex gap-6">
+          <label
+            htmlFor="nominal"
+            className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500"
+          >
+            Inisial Nominal
+          </label>
+          {errors.initialNominal && (
+            <p
+              className="text-[11px] text-red-400"
+              data-testid="error-initialNominal"
+            >
+              {errors.initialNominal.message}
+            </p>
+          )}
+        </div>
 
         <input
+          id="nominal"
           {...register("initialNominal")}
           type="number"
           placeholder="Rp. 100"
@@ -156,10 +160,10 @@ const NewTransaction = ({
           className=" flex h-12 items-center justify-center gap-2 rounded-2xl bg-black px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isPendingNewPostTransaction ? (
-            <>
+            <div role="status" aria-label="Is Loading New Transaction">
               <Spokes className="size-4 animate-spin" />
               <span>Dalam Progres...</span>
-            </>
+            </div>
           ) : (
             "Submit"
           )}

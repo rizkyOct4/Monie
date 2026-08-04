@@ -21,12 +21,12 @@ export const OAuthRegister = async ({
 }) => {
   const publicId = nanoid(8);
 
-  prisma.$transaction(async (tx: { $executeRaw: any }) => {
+  await prisma.$transaction(async (tx: { $executeRaw: any }) => {
     // * OAuth
     await tx.$executeRaw`
-      INSERT INTO users (name, email, image_url, public_id, created_at)
+      INSERT INTO users (name, email, image_url, public_id, created_at, user_type)
         VALUES 
-      (${fullname}, ${email}, ${imageUrl}, ${publicId}, ${createdAt}::timestamp)`;
+      (${fullname}, ${email}, ${imageUrl}, ${publicId}, ${createdAt}::timestamp), "REGULAR"::"UserType"`;
   });
 
   const result = await prisma.$queryRaw<any>`

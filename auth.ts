@@ -1,15 +1,13 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import { OAuthRegister, CredentialsLogin } from "./_lib/services/auth/services-auth";
+import {
+  OAuthRegister,
+  CredentialsLogin,
+} from "./_lib/services/auth/services-auth";
 import type { User, Session } from "next-auth";
 
-export const {
-  handlers,
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
     maxAge: 60 * 60 * 12, // ? 0.5 hari -> login bertahan
@@ -69,11 +67,11 @@ export const {
     async jwt({ token, user, account, profile }) {
       // ! user -> credential, profile -> OAuth
       // ? credentials login → user berisi data dari authorize
-        if (user) {
-          token.publicId = user.publicId;
-          token.name = user.name;
-          // token.role = user.role;
-        }
+      if (user) {
+        token.publicId = user.publicId;
+        token.name = user.name;
+        // token.role = user.role;
+      }
 
       // ? OAuth login → user hanya berisi data dasar
       if (account && profile) {
@@ -100,6 +98,11 @@ export const {
       }
 
       // console.log(`token sesion`, token);
+      // console.log({
+      //   AUTH_SECRET: !!process.env.AUTH_SECRET,
+      //   AUTH_GOOGLE_ID: !!process.env.AUTH_GOOGLE_ID,
+      //   AUTH_GOOGLE_SECRET: !!process.env.AUTH_GOOGLE_SECRET,
+      // });
       return token;
     },
     // ? INI YG AKAN DIGUNAKNA DI CLIENT !!

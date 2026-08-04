@@ -29,7 +29,7 @@ model User {
   email     String
   password  String?    @db.VarChar(255)
 
-  user_type    UserType   @default(REGULAR)
+  user_type    UserType?  @default(REGULAR)
   image_url String?
   created_at DateTime @default(now())
 

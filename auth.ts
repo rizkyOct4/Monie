@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import Github from "next-auth/providers/github";
+
 import {
   OAuthRegister,
   CredentialsLogin,
@@ -60,6 +62,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
       },
     }),
+    Github({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
   ],
   // debug: true, // This prints exact errors in the server logs
   // ? jwt -> INI DATA SECRET YG AKAN DIKIRIM KE COOKIES !!!
@@ -98,11 +111,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       // console.log(`token sesion`, token);
-      // console.log({
-      //   AUTH_SECRET: !!process.env.AUTH_SECRET,
-      //   AUTH_GOOGLE_ID: !!process.env.AUTH_GOOGLE_ID,
-      //   AUTH_GOOGLE_SECRET: !!process.env.AUTH_GOOGLE_SECRET,
-      // });
       return token;
     },
     // ? INI YG AKAN DIGUNAKNA DI CLIENT !!

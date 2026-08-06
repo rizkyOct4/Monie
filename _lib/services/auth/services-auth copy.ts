@@ -8,6 +8,7 @@ export const OAuthRegister = async ({
   firstName,
   lastName,
   email,
+  password,
   fullname,
   imageUrl,
   createdAt,
@@ -15,28 +16,29 @@ export const OAuthRegister = async ({
   firstName: string;
   lastName: string;
   email: string;
+  password?: string | undefined;
   fullname?: string | undefined;
   imageUrl?: string | undefined;
-  createdAt?: Date;
+  createdAt: Date;
 }) => {
   const queryCheck = await prisma.$queryRaw<{ email: string }[]>`
-        SELECT email from users WHERE email = ${email}
-      `;
-
+      SELECT email from users WHERE email = ${email}
+    `;
   const publicId = nanoid(8);
 
   if (queryCheck.length < 1) {
     prisma.$transaction(async (tx) => {
       // * OAuth
       await tx.$executeRaw`
-        INSERT INTO users (name, email, image_url, public_id, created_at, user_type)
-          VALUES 
-        (${fullname}, ${email}, ${imageUrl}, ${publicId}, ${createdAt}::timestamp), "REGULAR"::"UserType"`;
+        INSERT INTO users (public_id, name, username, email, email_verified, image, updated_at)
+        VALUES (${publicId}, ${fullname}, ${firstName}, ${email}, ${createdAt}::timestamp ,${imageUrl} ,${createdAt}::timestamp)`;
     });
   }
 
-  const result = await prisma.$queryRaw<any>`
-      SELECT name, created_at, public_id, image_url
+  const result = await prisma.$queryRaw<
+    { created_at: Date; public_id: string; image_url: string }[]
+  >`
+      SELECT created_at, public_id, image_url
       FROM users WHERE email = ${email}`;
 
   return camelcaseKeys(result);

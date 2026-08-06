@@ -20,4 +20,6 @@ alur -> 1. update schema,
 
 // !! id          String    @id @default(cuid())
 
+
+!! * WHILE DB FIX , DO THIS INSTEAD !!
 pnpm dotenv -e .env.production -- prisma migrate deploy

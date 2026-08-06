@@ -33,26 +33,10 @@ model User {
   image_url String?
   created_at DateTime @default(now())
 
-  accounts  Account[]
   transactions  Transaction[]
   initialSalary  InitialSalary[]
 
   @@map("users")
-}
-
-model Account {
-  id        String   @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String
-  balance   BigInt   @default(0)
-
-  user_id    String   @db.Uuid
-  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-
-  created_at DateTime @default(now())
-
-  @@index([user_id])
-  @@map("accounts")
 }
 
 model InitialSalary {

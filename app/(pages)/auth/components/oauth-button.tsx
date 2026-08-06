@@ -54,25 +54,7 @@ const OAuthButton = () => {
               callbackUrl: "/",
             })
           }
-          className="
-        flex
-        h-12
-        w-full
-        items-center
-        justify-center
-        gap-3
-        rounded-xl
-        border
-        border-zinc-800
-        bg-zinc-950
-        text-sm
-        font-medium
-        text-white
-        transition-all
-        hover:border-zinc-700
-        hover:bg-zinc-900
-        active:scale-[0.98]
-      "
+          className=" flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950 text-sm font-medium text-white transition-all hover:border-zinc-700 hover:bg-zinc-900 active:scale-[0.98]"
         >
           {i.icon}
 

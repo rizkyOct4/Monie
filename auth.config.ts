@@ -1,0 +1,46 @@
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
+import { CredentialsLogin } from "./_lib/services/auth/services-auth";
+import type { User, NextAuthConfig } from "next-auth";
+
+export default {
+  providers: [
+    GitHub,
+    Google,
+    Credentials({
+      name: "Credentials",
+      credentials: {
+        email: {
+          type: "email",
+          label: "Email",
+          placeholder: "m@example.com",
+        },
+        password: {
+          type: "password",
+          label: "Password",
+          placeholder: "*****",
+        },
+      },
+      async authorize(credentials) {
+        if (!credentials.email || !credentials.password) {
+          return null;
+        }
+        const res = await CredentialsLogin({
+          email: credentials.email,
+          password: credentials.password,
+        });
+
+        const user: User = {
+          id: String(res.user.publicId),
+          publicId: res.user.publicId,
+          name: res.user.name,
+        };
+
+        return user;
+
+        // ? CARI sama kau RETURN value dari credentials
+      },
+    }),
+  ],
+} satisfies NextAuthConfig;

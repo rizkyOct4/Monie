@@ -1,79 +1,22 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import Github from "next-auth/providers/github";
-
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
+import authConfig from "./auth.config";
 import {
   OAuthRegister,
-  CredentialsLogin,
 } from "./_lib/services/auth/services-auth";
 import type { User, Session } from "next-auth";
 
+const prisma = new PrismaClient();
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
     maxAge: 60 * 60 * 12, // ? 0.5 hari -> login bertahan
     // updateAge: 60 * 60 * 12, // ? refreshh login
   },
-  providers: [
-    Credentials({
-      name: "Credentials",
-      credentials: {
-        email: {
-          type: "email",
-          label: "Email",
-          placeholder: "m@example.com",
-        },
-        password: {
-          type: "password",
-          label: "Password",
-          placeholder: "*****",
-        },
-      },
-      async authorize(credentials) {
-        if (!credentials.email || !credentials.password) {
-          return null;
-        }
-        const res = await CredentialsLogin({
-          email: credentials.email,
-          password: credentials.password,
-        });
-
-        const user: User = {
-          id: String(res.user.publicId),
-          publicId: res.user.publicId,
-          name: res.user.name,
-          // role: res.user.role,
-        };
-
-        return user;
-
-        // ? CARI sama kau RETURN value dari credentials
-      },
-    }),
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-    }),
-    Github({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-    }),
-  ],
+  ...authConfig,
   // debug: true, // This prints exact errors in the server logs
   // ? jwt -> INI DATA SECRET YG AKAN DIKIRIM KE COOKIES !!!
   callbacks: {
@@ -123,18 +66,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-
-  // ! TARGET COOKIES KAU !!! -> Ini yang memastikan user login tetap hidup, dan memastikan token tidak dicuri lewat JavaScript.
-  // cookies: {
-  //   sessionToken: {
-  //     name: `next-auth.session-token`,
-  //     options: {
-  //       httpOnly: true, // ? cookie TIDAK bisa diakses JavaScript browser
-  //       secure: process.env.NODE_ENV === "production", // ? `secure` harus true pada HTTPS
-  //       path: "/", // ? semua route bisa membaca session
-  //     },
-  //   },
-  // },
   secret: process.env.AUTH_SECRET,
 });
 

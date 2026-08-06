@@ -39,10 +39,6 @@ const Login = ({
       });
       if (res?.error) {
         console.log(res);
-        // showToast({
-        //   type: "error",
-        //   fallback: "Something Went Wrong, Try Again!",
-        // });
       } else {
         router.refresh();
         router.push(redirect);

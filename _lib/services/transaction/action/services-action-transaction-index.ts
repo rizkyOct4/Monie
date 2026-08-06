@@ -98,6 +98,7 @@ type PutTransactionProps = {
       }[]
     | [];
   deleteImages: string[];
+  wrongDate: boolean;
 };
 export const PutTransaction = async ({
   publicId,
@@ -109,13 +110,9 @@ export const PutTransaction = async ({
   information,
   newImages,
   deleteImages,
+  wrongDate,
 }: PutTransactionProps) => {
   return prisma.$transaction(async (tx) => {
-    console.log(lastNominal)
-    console.log(nominal)
-
-
-
     // ? UPDATE TRANSACTION ============
     // ! CHECK NOMINAL
     if (lastNominal > nominal) {
@@ -124,7 +121,7 @@ export const PutTransaction = async ({
       // ? UPDATE INTIAL SALARY ============
       await tx.$executeRaw`
         UPDATE initial_salary
-          SET salary_remaining = salary_remaining + ${nominalFix}
+          SET salary_remaining = salary_remaining + ${nominalFix}, updated_at = ${date}::timestamp
         WHERE id = (SELECT ref_id FROM transactions WHERE id = ${existId}) AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
       `;
     } else {
@@ -133,16 +130,22 @@ export const PutTransaction = async ({
       // ? UPDATE INTIAL SALARY ============
       await tx.$executeRaw`
         UPDATE initial_salary
-          SET salary_remaining = salary_remaining - ${nominalFix}
+          SET salary_remaining = salary_remaining - ${nominalFix}, updated_at = ${date}::timestamp
         WHERE id = (SELECT ref_id FROM transactions WHERE id = ${existId}) AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
       `;
     }
 
-
-    await tx.$executeRaw`
-      UPDATE transactions
-        SET information = ${information}, nominal = ${nominal}, updated_at = ${date}::timestamp
-      WHERE id = ${existId}`;
+    if (wrongDate) {
+      await tx.$executeRaw`
+        UPDATE transactions
+          SET information = ${information}, nominal = ${nominal}, created_at = ${date}::timestamp, updated_at = ${date}::timestamp
+        WHERE id = ${existId}`;
+    } else {
+      await tx.$executeRaw`
+        UPDATE transactions
+          SET information = ${information}, nominal = ${nominal}, updated_at = ${date}::timestamp
+        WHERE id = ${existId}`;
+    }
 
     // ? CHECK IMAGES DELETED ===========
     if (deleteImages.length > 0) {
@@ -206,7 +209,4 @@ export const DeleteTransaction = async ({
   });
 };
 
-
-
-
-// todo DIKIT LAGI UNTUK TRANSACTION INI !!! 
+// todo DIKIT LAGI UNTUK TRANSACTION INI !!!

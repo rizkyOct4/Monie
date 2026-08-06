@@ -16,12 +16,10 @@ export const ListOptionBtn = [
 
 type TranscationListProps = {
   TransactionsListData: TransactionsDataType[];
-  setIdTransaction: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const TransactionList = ({
   TransactionsListData,
-  setIdTransaction,
 }: TranscationListProps) => {
   // const [search, setSearch] = useState("");
   // const [filter, setFilter] = useState("all");
@@ -61,7 +59,6 @@ const TransactionList = ({
         }
         case "putImage": {
           setPopup(actionType);
-          setIdTransaction(id);
           setPutValue({
             existId: id,
             images: images,
@@ -82,7 +79,7 @@ const TransactionList = ({
         }
       }
     },
-    [setIdTransaction],
+    [],
   );
 
   const PopUpRender = useMemo(() => {

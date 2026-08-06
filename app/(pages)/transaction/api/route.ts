@@ -3,7 +3,7 @@ import {
   GetIdTransactions,
   GetSearchIdTransactions,
   GetTransactionList,
-  GetPutIdTransactions
+  GetPutIdTransactions,
 } from "@/_lib/services/transaction/services-transaction-index";
 import GetSession from "@/_lib/session";
 
@@ -21,7 +21,6 @@ export async function GET(req: NextRequest) {
 
     // * PUT COMPONENT ======
     const idTransaction = req.nextUrl.searchParams.get("id-transaction") ?? "";
-
 
     switch (key) {
       case "idTransactions": {

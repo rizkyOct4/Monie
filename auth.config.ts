@@ -10,18 +10,6 @@ export default {
     Google,
     Credentials({
       name: "Credentials",
-      credentials: {
-        email: {
-          type: "email",
-          label: "Email",
-          placeholder: "m@example.com",
-        },
-        password: {
-          type: "password",
-          label: "Password",
-          placeholder: "*****",
-        },
-      },
       async authorize(credentials) {
         if (!credentials.email || !credentials.password) {
           return null;
@@ -32,14 +20,11 @@ export default {
         });
 
         const user: User = {
-          id: String(res.user.publicId),
           publicId: res.user.publicId,
           name: res.user.name,
         };
 
         return user;
-
-        // ? CARI sama kau RETURN value dari credentials
       },
     }),
   ],

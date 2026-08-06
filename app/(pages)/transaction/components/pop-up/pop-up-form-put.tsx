@@ -10,6 +10,7 @@ import { uploadMultipleToCloudinary } from "@/_utils/direct-upload-cloud";
 import { useSessionClient } from "@/_lib/c-session";
 import { TransactionContext } from "@/app/context/context";
 import { FormPutType, FormPutSchema } from "../../z-schema/z-schema";
+import { ConvertDateLocalIntoDate } from "@/_utils/format-date";
 
 export type PutFormTransactionsProps = {
   putValue: {
@@ -47,7 +48,7 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     setValue,
     getValues,
     control,
@@ -123,20 +124,23 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
         deleteImages: imageDeleted,
       };
 
-      await putTransaction(put);
-      // console.log(put);
-      onClose();
+      const checkPutWrongDate =
+        ConvertDateLocalIntoDate(values.date) !==
+        ConvertDateLocalIntoDate(new Date());
+
+      await putTransaction({...put, wrongDate: checkPutWrongDate});
+      // console.log({...put, wrongDate: checkPutWrongDate});
     } catch (err) {
       console.error(err);
     } finally {
+      onClose();
     }
   });
 
   useEffect(() => {
-    if (PutIdTransactionData) {
+    if (putValue) {
       reset({
         existId: putValue.existId,
-        // date: PutIdTransactionData[0]?.updatedAt,
         images: putValue.images.map(
           (i: { imageName: string; imageUrl: string }) => ({
             name: i.imageName,
@@ -147,7 +151,7 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
         nominal: String(putValue.nominal),
       });
     }
-  }, [PutIdTransactionData, putValue, reset]);
+  }, [putValue, reset]);
 
   // console.log(errors);
 
@@ -223,7 +227,7 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                             );
 
                             const updated =
-                              images?.filter((_, index) => index !== idx) ?? [];
+                              images?.filter((_, index) => index !== idx) ?? []; // ! .filter(argument, index) => (_, index) ?=> mengamabaikan argument
 
                             setValue("images", updated);
 
@@ -234,19 +238,7 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                               ]);
                             }
                           }}
-                          className="
-                          absolute
-                          top-1
-                          right-1
-                          flex
-                          h-5
-                          w-5
-                          items-center
-                          justify-center
-                          bg-white
-                          text-xs
-                          text-red-500
-                        "
+                          className=" absolute top-1 right-1 flex h-5 w-5 items-center justify-center bg-white text-xs text-red-500"
                         >
                           ✕
                         </button>

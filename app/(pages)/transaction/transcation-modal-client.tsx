@@ -11,7 +11,6 @@ const TransactionModalClient = () => {
     date,
     setDate,
     TransactionsListData,
-    setIdTransaction,
     isFTransactionsListData,
   } = useContext(TransactionContext);
 
@@ -23,7 +22,6 @@ const TransactionModalClient = () => {
       ) : (
         <TransactionList
           TransactionsListData={TransactionsListData}
-          setIdTransaction={setIdTransaction}
         />
       )}
     </>

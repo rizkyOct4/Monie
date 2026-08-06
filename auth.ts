@@ -3,9 +3,8 @@ import authConfig from "./auth.config";
 import {
   OAuthRegister,
 } from "./_lib/services/auth/services-auth";
-import type { User, Session } from "next-auth";
-
-// const prisma = new PrismaClient();
+import type { Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
@@ -23,22 +22,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.publicId = user.publicId;
         token.name = user.name;
-        // token.role = user.role;
       }
 
       // ? OAuth login → user hanya berisi data dasar
       if (account && profile) {
-        const fullname = profile?.name ?? "";
-        const splitName = fullname?.trim().split(" ");
-        const firstName = splitName[0];
-        const lastName = splitName.slice(1).join(" ");
+        const fullname = profile.name as string;
 
         const email = profile.email ?? "";
         const profilePicture = profile.picture;
 
         const fetch = await OAuthRegister({
-          firstName: firstName,
-          lastName: lastName,
           email: email,
           fullname: fullname,
           imageUrl: profilePicture,
@@ -46,19 +39,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
 
         token.publicId = fetch[0].publicId;
-        token.name = profile.name;
-        // token.role = fetch[0].role;
+        token.name = profile.name as string;
       }
 
       // console.log(`token sesion`, token);
       return token;
     },
     // ? INI YG AKAN DIGUNAKNA DI CLIENT !!
-    async session({ session, token }: { session: Session; token: any }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
-        session.user.publicId = token.publicId as string;
-        session.user.name = token.name as string;
-        // session.user.role = token.role as string;
+        session.user.publicId = token.publicId;
+        session.user.name = token.name;
+
+        delete session.user.email;
       }
       return session;
     },

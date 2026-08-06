@@ -173,48 +173,48 @@ export const useQueryTransactions = ({
 };
 
 // * GET PUT TRANSACTIONS ======================
-type UseQueryGetPutTransactionsProps = {
-  publicId: string;
-  currentPath: string;
-};
-export const useQueryGetPutTransactions = ({
-  publicId,
-  currentPath,
-}: UseQueryGetPutTransactionsProps) => {
-  const [idTransaction, setIdTransaction] = useState("");
+// type UseQueryGetPutTransactionsProps = {
+//   publicId: string;
+//   currentPath: string;
+// };
+// export const useQueryGetPutTransactions = ({
+//   publicId,
+//   currentPath,
+// }: UseQueryGetPutTransactionsProps) => {
+//   const [idTransaction, setIdTransaction] = useState("");
 
-  const { data: PutIdTransaction, isFetching: isFetchingGetPutIdTransaction } =
-    useQuery({
-      queryKey: ["keyGetPutIdTransaction", publicId, idTransaction],
-      queryFn: async () => {
-        const URL = ROUTES_TRANSACTION.GET({
-          key: "PutIdTransactions",
-          currentPath: currentPath,
-          idTransaction: idTransaction,
-        });
-        const { data } = await axios.get(URL);
-        return data;
-      },
-      enabled: idTransaction !== "",
-      refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-      refetchOnMount: false, // "always" => refetch jika stale saja
-      retry: false,
-    });
+//   const { data: PutIdTransaction, isFetching: isFetchingGetPutIdTransaction } =
+//     useQuery({
+//       queryKey: ["keyGetPutIdTransaction", publicId, idTransaction],
+//       queryFn: async () => {
+//         const URL = ROUTES_TRANSACTION.GET({
+//           key: "PutIdTransactions",
+//           currentPath: currentPath,
+//           idTransaction: idTransaction,
+//         });
+//         const { data } = await axios.get(URL);
+//         return data;
+//       },
+//       enabled: idTransaction !== "",
+//       refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+//       refetchOnMount: false, // "always" => refetch jika stale saja
+//       retry: false,
+//     });
 
-  const PutIdTransactionData = useMemo(
-    () => PutIdTransaction ?? [],
-    [PutIdTransaction],
-  );
+//   const PutIdTransactionData = useMemo(
+//     () => PutIdTransaction ?? [],
+//     [PutIdTransaction],
+//   );
 
-  return {
-    idTransaction,
-    setIdTransaction,
-    PutIdTransactionData,
-    isFetchingGetPutIdTransaction,
-    queryKeyGetPutTransaction: [
-      "keyGetPutIdTransaction",
-      publicId,
-      idTransaction,
-    ],
-  };
-};
+//   return {
+//     idTransaction,
+//     setIdTransaction,
+//     PutIdTransactionData,
+//     isFetchingGetPutIdTransaction,
+//     queryKeyGetPutTransaction: [
+//       "keyGetPutIdTransaction",
+//       publicId,
+//       idTransaction,
+//     ],
+//   };
+// };

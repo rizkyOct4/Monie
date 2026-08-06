@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ForbiddenRegex, ForbiddenRegexEmail, CapitalizeRegex } from "@/_utils/Regex";
+import { ForbiddenRegex, ForbiddenRegexEmail } from "@/_utils/Regex";
 
 // ! REGEX ini BERURUTAN METHODNYA !!!! PERHATIKAN URUTANNYA !
 export const zRegisterFormSchema = z.object({

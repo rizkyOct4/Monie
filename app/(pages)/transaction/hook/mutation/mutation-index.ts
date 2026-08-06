@@ -13,6 +13,8 @@ import type {
   IdTransactionsDataType,
   TransactionsDataType,
 } from "../../types/transaction.type";
+import type { TPutTransaction } from "../../types/action/action.type";
+import { ConvertDateLocalIntoDate } from "@/_utils/format-date";
 
 // * NEW TRANSACTIONS ======================
 type UseMutationsNewTransactionProps = {
@@ -162,10 +164,12 @@ export const useMutationTransaction = ({
 
 // * UPDATE TRANSACTIONS ======================
 type UseMutationPutTranscationProps = {
+  publicId: string;
   currentPath: string;
   queryKeyTransactions: QueryKey;
 };
 export const useMutationPutTranscation = ({
+  publicId,
   currentPath,
   queryKeyTransactions,
 }: UseMutationPutTranscationProps) => {
@@ -181,16 +185,32 @@ export const useMutationPutTranscation = ({
         const res = await axios.put(URL, data);
         return res.data;
       },
-      onMutate: () => {
+      onMutate: async (mutate: TPutTransaction) => {
+        const convertedDate = ConvertDateLocalIntoDate(mutate.date);
+
+        await Promise.all([
+          queryClient.cancelQueries({ queryKey: queryKeyTransactions }),
+          // queryClient.cancelQueries({
+          //   queryKey: ["keyTransactionsList", publicId, convertedDate],
+          // }),
+        ]);
+
         const prevPutTransaction =
           queryClient.getQueryData(queryKeyTransactions);
 
+        // ! LINTAS QUERY !!!!
+        if (mutate.wrongDate) {
+          queryClient.invalidateQueries({
+            queryKey: queryKeyTransactions,
+          });
+          // queryClient.invalidateQueries({
+          //   queryKey: ["keyTransactionsList", publicId, convertedDate],
+          // });
+        } 
+
+        // ! ini masih bug !! 
+
         return { prevPutTransaction };
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: queryKeyTransactions,
-        });
       },
       onError: (error, _variables, context) => {
         console.error(error);

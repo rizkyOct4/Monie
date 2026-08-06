@@ -5,15 +5,11 @@ import { nanoid } from "nanoid";
 
 // * OAuth =================
 export const OAuthRegister = async ({
-  firstName,
-  lastName,
   email,
   fullname,
   imageUrl,
   createdAt,
 }: {
-  firstName: string;
-  lastName: string;
   email: string;
   fullname?: string | undefined;
   imageUrl?: string | undefined;
@@ -65,6 +61,25 @@ export const CredentialRegister = async ({
   });
 };
 
+export const saltAndHashPassword = async (password: string, email: string) => {
+  const userCheck = await prisma.$queryRaw<
+    {
+      public_id: string;
+      email: string;
+      password: string;
+      name: string;
+      created_at: Date;
+    }[]
+  >`
+    SELECT public_id, email, password, name, created_at 
+      FROM users
+    WHERE email = ${email}`;
+
+  const passwordMatch = await bcrypt.compare(password, userCheck[0].password);
+
+  return passwordMatch;
+};
+
 export const CredentialsLogin = async ({
   email,
   password,
@@ -72,9 +87,17 @@ export const CredentialsLogin = async ({
   email: any;
   password: any;
 }) => {
-  const userCheck: any[] = await prisma.$queryRaw`
+  const userCheck = await prisma.$queryRaw<
+    {
+      public_id: string;
+      email: string;
+      password: string;
+      name: string;
+      created_at: Date;
+    }[]
+  >`
     SELECT public_id, email, password, name, created_at 
-    FROM users
+      FROM users
     WHERE email = ${email}`;
 
   const passwordMatch = await bcrypt.compare(password, userCheck[0].password);

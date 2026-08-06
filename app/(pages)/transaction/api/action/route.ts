@@ -73,6 +73,7 @@ export async function PUT(req: NextRequest) {
       information,
       newImages,
       deleteImages,
+      wrongDate
     } = await req.json();
 
     // console.log(data)
@@ -88,6 +89,7 @@ export async function PUT(req: NextRequest) {
           information,
           newImages,
           deleteImages,
+          wrongDate
         });
         return NextResponse.json({
           message: "Update Transaction Success",

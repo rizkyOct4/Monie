@@ -31,7 +31,7 @@ export const OAuthRegister = async ({
       await tx.$executeRaw`
         INSERT INTO users (name, email, image_url, public_id, created_at, user_type)
           VALUES 
-        (${fullname}, ${email}, ${imageUrl}, ${publicId}, ${createdAt}::timestamp, "REGULAR"::"UserType")`;
+        (${fullname}, ${email}, ${imageUrl}, ${publicId}, ${createdAt}::timestamp, 'REGULAR'::"UserType")`;
     });
   }
 

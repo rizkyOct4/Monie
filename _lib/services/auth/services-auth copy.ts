@@ -22,7 +22,7 @@ export const OAuthRegister = async ({
   createdAt: Date;
 }) => {
   const queryCheck = await prisma.$queryRaw<{ email: string }[]>`
-      SELECT email from users WHERE email = ${email}
+      SELECT email FROM users WHERE email = ${email}
     `;
   const publicId = nanoid(8);
 

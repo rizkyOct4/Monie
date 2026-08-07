@@ -18,9 +18,7 @@ type TranscationListProps = {
   TransactionsListData: TransactionsDataType[];
 };
 
-const TransactionList = ({
-  TransactionsListData,
-}: TranscationListProps) => {
+const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
   // const [search, setSearch] = useState("");
   // const [filter, setFilter] = useState("all");
 
@@ -33,6 +31,7 @@ const TransactionList = ({
     images: [],
     information: "",
     nominal: 0,
+    prevDate: new Date(),
   });
 
   const [deleteValue, setDeleteValue] = useState({
@@ -50,6 +49,7 @@ const TransactionList = ({
       images: any,
       information: string,
       nominal: number,
+      createdAt: any,
     ) => {
       switch (actionType) {
         case "detailImage": {
@@ -64,6 +64,7 @@ const TransactionList = ({
             images: images,
             information: information,
             nominal: nominal,
+            prevDate: new Date(createdAt),
           });
           break;
         }
@@ -115,53 +116,34 @@ const TransactionList = ({
         </h2>
       </div>
 
-      {/* SEARCH + FILTER */}
-      {/* <div className="mb-4 flex gap-3">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border-b border-zinc-300 bg-transparent text-sm text-white outline-none"
-        />
-
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="border-b border-zinc-300 bg-black text-sm text-white"
-        >
-          <option value="all">All</option>
-          <option value="newest">Terbaru</option>
-          <option value="latest">Terlama</option>
-          <option value="mostExpensive">Termahal</option>
-          <option value="cheapest">Termurah</option>
-        </select>
-      </div> */}
-
       {/* LIST */}
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-4">
         {TransactionsListData.length > 0 ? (
           TransactionsListData.map((i, idx) => (
             <div
               role="dialog"
               aria-label="Has Transactions"
               key={idx}
-              className={`flex items-center justify-between border-b border-zinc-100 py-4 ${i.status === "FINISH" ? "bg-red-500" : "bg-transparent"}`}
+              className={`group flex items-center justify-between rounded-2xl border p-5 transition-colors ${
+                i.status === "FINISH"
+                  ? "border-red-200 bg-red-50"
+                  : "border-zinc-200 bg-white hover:border-zinc-300"
+              }`}
             >
               {/* LEFT */}
-              <div>
+              <div className="flex flex-col">
                 <h3
-                  className="font-medium text-black"
+                  className="text-base font-semibold text-zinc-900"
                   aria-label="Information Transaction"
                 >
                   {i.information || "Transaction"}
                 </h3>
 
-                <p className="mt-1 text-xs text-zinc-500">
+                <p className="mt-1 text-sm text-zinc-500">
                   {FormatDate(i.createdAt)}
                 </p>
 
-                <div className="flex gap-4">
+                <div className="mt-4 flex flex-wrap gap-2">
                   {ListOptionBtn.map((b, idx) => (
                     <button
                       aria-label={`Button Popup ${b.value}`}
@@ -174,9 +156,21 @@ const TransactionList = ({
                           i.images,
                           i.information,
                           i.nominal,
+                          i.createdAt,
                         )
                       }
-                      className="mt-2 text-xs text-blue-500 hover:underline"
+                      className="
+                  rounded-lg
+                  border
+                  border-zinc-200
+                  px-3
+                  py-1.5
+                  text-xs
+                  font-medium
+                  text-zinc-600
+                  transition-colors
+                  hover:bg-zinc-100
+                "
                     >
                       {b.text}
                     </button>
@@ -188,7 +182,7 @@ const TransactionList = ({
               <div className="text-right">
                 <p
                   data-testid="nominal-transaction"
-                  className={`font-medium ${
+                  className={`text-lg font-bold ${
                     i.nominal <= 50000 ? "text-emerald-600" : "text-red-500"
                   }`}
                 >
@@ -196,15 +190,18 @@ const TransactionList = ({
                   {FormatCurrency(i.nominal)}
                 </p>
 
-                <p className="text-xs text-zinc-500">{i.information}</p>
+                <p className="mt-1 text-sm text-zinc-500">{i.information}</p>
               </div>
             </div>
           ))
         ) : (
-          <p className="py-6 text-sm text-zinc-500">Tidak ada transaksi</p>
+          <div className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 py-10 text-center">
+            <p className="text-sm text-zinc-500">Tidak ada transaksi</p>
+          </div>
         )}
       </div>
-      {/* // ? POPUP */}
+
+      {/* POPUP */}
       {PopUpRender}
     </div>
   );

@@ -76,7 +76,6 @@ export async function PUT(req: NextRequest) {
       wrongDate
     } = await req.json();
 
-    // console.log(data)
     switch (key) {
       case "putTransaction": {
         await PutTransaction({

@@ -186,13 +186,8 @@ export const useMutationPutTranscation = ({
         return res.data;
       },
       onMutate: async (mutate: TPutTransaction) => {
-        const convertedDate = ConvertDateLocalIntoDate(mutate.date);
-
         await Promise.all([
           queryClient.cancelQueries({ queryKey: queryKeyTransactions }),
-          // queryClient.cancelQueries({
-          //   queryKey: ["keyTransactionsList", publicId, convertedDate],
-          // }),
         ]);
 
         const prevPutTransaction =
@@ -200,17 +195,98 @@ export const useMutationPutTranscation = ({
 
         // ! LINTAS QUERY !!!!
         if (mutate.wrongDate) {
-          queryClient.invalidateQueries({
-            queryKey: queryKeyTransactions,
-          });
-          // queryClient.invalidateQueries({
-          //   queryKey: ["keyTransactionsList", publicId, convertedDate],
-          // });
-        } 
+          queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
+            queryKeyTransactions,
+            (oldData) => {
+              if (!oldData) return oldData;
 
-        // ! ini masih bug !! 
+              return {
+                ...oldData,
+                pages: oldData?.pages.map((page: any) => ({
+                  ...page,
+                  data: page?.data.filter(
+                    (f: { id: string }) => f.id !== mutate.existId,
+                  ),
+                })),
+              };
+            },
+          );
+        } else {
+          queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
+            queryKeyTransactions,
+            (oldData) => {
+              if (!oldData) return oldData;
+
+              return {
+                ...oldData,
+                pages: oldData?.pages.map((page: any) => ({
+                  ...page,
+                  data: page?.data.map(
+                    (i: {
+                      id: string;
+                      images: {
+                        id: string;
+                        imageName: string;
+                        imageUrl: string;
+                      }[];
+                    }) =>
+                      i.id === mutate.existId
+                        ? {
+                            ...i,
+                            information: mutate.information,
+                            nominal: mutate.nominal,
+                            createdAt: mutate.date,
+                            updatedAt: mutate.date,
+                            images: (() => {
+                              // ! adalah Immediately Invoked Function Expression (IIFE),
+                              // yaitu function yang langsung dipanggil saat itu juga. CASE karena banyak kondisi !!
+                              let images = i.images;
+
+                              if (mutate.deleteImages.length > 0) {
+                                images = images.filter(
+                                  (image: { imageName: string }) =>
+                                    !mutate.deleteImages.includes(
+                                      image.imageName,
+                                    ),
+                                );
+                              }
+
+                              if (mutate.newImages.length > 0) {
+                                images = [
+                                  ...images,
+                                  ...mutate.newImages.map((i) => ({
+                                    // ! di spread agar data tiap" itu dipisah masing" !!!
+                                    id: i.id,
+                                    imageName: i.imageName,
+                                    imageUrl: i.imageUrl,
+                                  })),
+                                ];
+                              }
+
+                              return images;
+                            })(),
+                          }
+                        : i,
+                  ),
+                })),
+              };
+            },
+          );
+        }
 
         return { prevPutTransaction };
+      },
+      onSuccess: (data, variables, context) => {
+        const isWrongDate = variables.wrongDate;
+        const convertedDate = ConvertDateLocalIntoDate(
+          new Date(variables.date),
+        );
+
+        if (isWrongDate) {
+          queryClient.invalidateQueries({
+            queryKey: ["keyTransactionsList", publicId, convertedDate],
+          });
+        }
       },
       onError: (error, _variables, context) => {
         console.error(error);

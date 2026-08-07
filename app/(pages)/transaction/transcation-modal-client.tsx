@@ -15,7 +15,7 @@ const TransactionModalClient = () => {
   } = useContext(TransactionContext);
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <DateInput date={date} setDate={setDate} />
       {isFTransactionsListData ? (
         <TransactionListSkeleton />
@@ -24,7 +24,7 @@ const TransactionModalClient = () => {
           TransactionsListData={TransactionsListData}
         />
       )}
-    </>
+    </div>
   );
 };
 

@@ -24,6 +24,7 @@ export type PutFormTransactionsProps = {
       | [];
     information: string;
     nominal: number;
+    prevDate: Date;
   };
   onClose: () => void;
 };
@@ -115,6 +116,10 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
         cloudImage = image;
       }
 
+      const checkPutWrongDate =
+        ConvertDateLocalIntoDate(values.date) !==
+        ConvertDateLocalIntoDate(putValue.prevDate);
+
       const put = {
         ...values,
         lastNominal: Number(putValue.nominal),
@@ -122,14 +127,11 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
         images: images,
         newImages: cloudImage ?? [],
         deleteImages: imageDeleted,
+        wrongDate: checkPutWrongDate,
       };
 
-      const checkPutWrongDate =
-        ConvertDateLocalIntoDate(values.date) !==
-        ConvertDateLocalIntoDate(new Date());
-
-      await putTransaction({...put, wrongDate: checkPutWrongDate});
-      // console.log({...put, wrongDate: checkPutWrongDate});
+      await putTransaction(put);
+      // console.log(put)
     } catch (err) {
       console.error(err);
     } finally {
@@ -157,7 +159,7 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className=" w-full max-w-lg h-[80vh] overflow-y-auto bg-white p-6">
+      <div className=" w-full max-w-lg h-[80vh] overflow-y-auto bg-white p-6 rounded-xl">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-black">
             Perbarui Transaksi
@@ -172,12 +174,12 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
           </button>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <form className="flex flex-col gap-4" onSubmit={submit}>
-            <div>
+        <div className="flex flex-col gap-8">
+          <form className="flex flex-col gap-8" onSubmit={submit}>
+            <div className="space-y-8">
               {/* Tanggal */}
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
                   Tanggal
                 </label>
 
@@ -188,29 +190,22 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                   type="datetime-local"
                   defaultValue={now.toISOString().slice(0, 16)}
                   required
-                  className=" w-full border-b border-zinc-300 pb-2 text-black outline-none"
+                  className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition-colors focus:border-black"
                 />
               </div>
 
               {/* Upload */}
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <div className="space-y-3">
+                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
                   Lampiran Foto
                 </label>
 
-                <div className="mb-3 flex max-h-60 flex-wrap gap-3 overflow-y-auto">
+                <div className="flex min-h-[110px] flex-wrap gap-4 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 p-4">
                   {images.length > 0 &&
                     images.map((src, idx) => (
                       <div
                         key={idx}
-                        className="
-                        relative
-                        h-24
-                        w-24
-                        overflow-hidden
-                        border
-                        border-zinc-200
-                      "
+                        className="relative h-24 w-24 overflow-hidden rounded-xl border border-zinc-200 bg-white"
                       >
                         <Image
                           src={src?.path}
@@ -227,7 +222,7 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                             );
 
                             const updated =
-                              images?.filter((_, index) => index !== idx) ?? []; // ! .filter(argument, index) => (_, index) ?=> mengamabaikan argument
+                              images?.filter((_, index) => index !== idx) ?? [];
 
                             setValue("images", updated);
 
@@ -238,7 +233,7 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                               ]);
                             }
                           }}
-                          className=" absolute top-1 right-1 flex h-5 w-5 items-center justify-center bg-white text-xs text-red-500"
+                          className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs font-bold text-red-500 shadow"
                         >
                           ✕
                         </button>
@@ -251,15 +246,24 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                   accept="image/*"
                   multiple
                   className="
-                  text-sm
-                  text-zinc-600
-                  file:border
-                  file:border-zinc-200
-                  file:bg-transparent
-                  file:px-3
-                  file:py-2
-                  file:text-sm
-                "
+              w-full
+              rounded-xl
+              border
+              border-zinc-300
+              bg-white
+              p-3
+              text-sm
+              text-zinc-600
+              file:mr-4
+              file:rounded-lg
+              file:border-0
+              file:bg-black
+              file:px-4
+              file:py-2
+              file:text-sm
+              file:font-medium
+              file:text-white
+            "
                   onChange={(e) => {
                     const files = e.target.files;
                     if (!files) return;
@@ -296,8 +300,8 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
               </div>
 
               {/* Keterangan */}
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
                   Keterangan
                 </label>
 
@@ -305,20 +309,26 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                   {...register("information")}
                   rows={4}
                   className="
-                  w-full
-                  resize-none
-                  border-b
-                  border-zinc-300
-                  pb-2
-                  text-black
-                  outline-none
-                "
+              w-full
+              resize-none
+              rounded-xl
+              border
+              border-zinc-300
+              bg-white
+              px-4
+              py-3
+              text-sm
+              text-zinc-900
+              outline-none
+              transition-colors
+              focus:border-black
+            "
                 />
               </div>
 
               {/* Nominal */}
-              <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
                   Nominal
                 </label>
 
@@ -327,22 +337,45 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                   type="number"
                   placeholder="0"
                   className="
-                  w-full
-                  border-b
-                  border-zinc-300
-                  pb-2
-                  text-black
-                  outline-none
-                "
+              w-full
+              rounded-xl
+              border
+              border-zinc-300
+              bg-white
+              px-4
+              py-3
+              text-sm
+              text-zinc-900
+              outline-none
+              transition-colors
+              focus:border-black
+            "
                 />
               </div>
 
               {/* Action */}
-              <div className="flex justify-end gap-6 border-t border-zinc-200 pt-6">
+              <div className="flex justify-end border-t border-zinc-200 pt-6">
                 <button
                   type="submit"
                   disabled={isPendingPutTransaction}
-                  className=" flex h-12 items-center justify-center gap-2 rounded-2xl bg-black px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="
+              flex
+              h-12
+              min-w-[160px]
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              bg-black
+              px-6
+              text-sm
+              font-semibold
+              text-white
+              transition-opacity
+              hover:opacity-90
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+            "
                 >
                   {isPendingPutTransaction ? (
                     <>

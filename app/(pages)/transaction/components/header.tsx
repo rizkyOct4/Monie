@@ -19,41 +19,35 @@ const DateInput = ({ date, setDate }: IDateInput) => {
   const formatDate = FormattedDate(date);
 
   return (
-    <div className="relative py-4">
-      <label
-        htmlFor="transaction-date"
-        className="mb-1 block text-xs font-semibold uppercase tracking-wide text-zinc-400"
+    <div className="flex w-full items-center rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm">
+      <span
+        className="flex-1 truncate text-sm font-medium text-zinc-900"
+        data-testid="formatted-date"
       >
-        Tanggal
-      </label>
+        {formatDate}
+      </span>
 
-      <div className=" relative w-full flex items-center border-b border-zinc-300 pb-1">
-        <span
-          className="mr-2 text-sm text-white w-[90%]"
-          data-testid="formatted-date"
-        >
-          {formatDate}
-        </span>
-
-        <input
-          id="transaction-date"
-          aria-label="Transaction Date"
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="
-      relative
-      flex-1
+      <input
+        id="transaction-date"
+        aria-label="Transaction Date"
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="
+      w-8
       cursor-pointer
       text-transparent
+      outline-none
 
       [&::-webkit-datetime-edit]:hidden
       [&::-webkit-calendar-picker-indicator]:m-0
+      [&::-webkit-calendar-picker-indicator]:h-6
+      [&::-webkit-calendar-picker-indicator]:w-6
       [&::-webkit-calendar-picker-indicator]:cursor-pointer
-      [&::-webkit-calendar-picker-indicator]:invert
+      [&::-webkit-calendar-picker-indicator]:opacity-70
+      hover:[&::-webkit-calendar-picker-indicator]:opacity-100
     "
-        />
-      </div>
+      />
     </div>
   );
 };

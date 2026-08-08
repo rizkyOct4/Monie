@@ -1,7 +1,6 @@
 import { useMutationNewTransaction } from "@/app/(pages)/transaction/hook/mutation/mutation-index";
 import { nanoid } from "nanoid";
 
-
 export const MockPostFormNewIdTransactionsData = {
   id: nanoid(),
   initialNominal: 120000,

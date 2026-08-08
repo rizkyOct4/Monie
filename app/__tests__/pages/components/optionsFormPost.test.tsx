@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import OptionsFormPost from "@/app/(pages)/components/options-form-post";
+import OptionsFormPost from "@/app/(pages)/transaction/components/form/post/options-form-post";
 
 const mockPropsNewTransaction = jest.fn();
 jest.mock("@/app/(pages)/components/new-transaction", () => ({

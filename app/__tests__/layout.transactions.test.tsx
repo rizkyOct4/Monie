@@ -6,7 +6,7 @@ jest.mock("../(pages)/components/footer", () => ({
   default: () => <div role="dialog" aria-label="Footer" />,
 }));
 
-jest.mock("../(pages)/components/new-post", () => ({
+jest.mock("../(pages)/components/new-post-btn", () => ({
   __esModule: true,
   default: () => <div role="dialog" aria-label="New Post Btn" />,
 }));

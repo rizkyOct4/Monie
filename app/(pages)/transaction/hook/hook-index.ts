@@ -2,9 +2,7 @@
 
 import {
   useQueryIdTransactions,
-  useQuerySearchIdTransactions,
   useQueryTransactions,
-  // useQueryGetPutTransactions,
 } from "./query/query-index";
 import {
   useMutationNewTransaction,
@@ -16,9 +14,7 @@ import {
 export const useHookTransaction = (publicId: string, currentPath: string) => {
   // * QUERY =======
   const QIdGet = useQueryIdTransactions({ publicId, currentPath });
-  const QSearchIdGet = useQuerySearchIdTransactions({ publicId });
   const QGet = useQueryTransactions({ publicId, currentPath });
-  // const QGetPut = useQueryGetPutTransactions({ publicId, currentPath });
 
   // * MUTATION =======
   const MNewPost = useMutationNewTransaction({
@@ -42,8 +38,6 @@ export const useHookTransaction = (publicId: string, currentPath: string) => {
   return {
     ...QGet,
     ...QIdGet,
-    ...QSearchIdGet,
-    // ...QGetPut,
     ...MNewPost,
     ...MPost,
     ...MPut,

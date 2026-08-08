@@ -34,22 +34,14 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
   const now = new Date();
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
 
-  const {
-    putTransaction,
-    PutIdTransactionData,
-    isPendingPutTransaction,
-    setIsOpenIdTransaction,
-    IdTransactionsListData,
-    SearchIdTransactionData,
-    isFetchingSearchIdTransaction,
-  } = useContext(TransactionContext);
+  const { putTransaction, isPendingPutTransaction } =
+    useContext(TransactionContext);
 
   const nanoId = nanoid(8);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
     setValue,
     getValues,
     control,
@@ -68,12 +60,6 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
       name: "images",
     }) ?? [];
 
-  const previewImageName =
-    useWatch({
-      control,
-      name: "images",
-    })?.map((img) => img.name) ?? [];
-
   const previewImagePath =
     useWatch({
       control,
@@ -87,11 +73,9 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
   const submit = handleSubmit(async (values) => {
     try {
       const id = nanoId;
-
       let cloudImage;
 
       const just = images.filter((img) => !img.path.startsWith("https://"));
-
       const newImage = previewImagePath.filter(
         (img: string) => !img.startsWith("https://"),
       );
@@ -130,8 +114,8 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
         wrongDate: checkPutWrongDate,
       };
 
-      await putTransaction(put);
-      // console.log(put)
+      // await putTransaction(put);
+      console.log(put)
     } catch (err) {
       console.error(err);
     } finally {
@@ -155,17 +139,23 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
     }
   }, [putValue, reset]);
 
-  // console.log(errors);
+  console.log(putValue);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Container Put Form"
+      aria-labelledby="put-transaction"
+    >
       <div className=" w-full max-w-lg h-[80vh] overflow-y-auto bg-white p-6 rounded-xl">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-black">
             Perbarui Transaksi
           </h2>
           <button
-            data-testid="close-popup"
+            aria-label="Close Btn"
             onClick={onClose}
             type="button"
             className="text-zinc-500 hover:text-black"
@@ -175,15 +165,23 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
         </div>
 
         <div className="flex flex-col gap-8">
-          <form className="flex flex-col gap-8" onSubmit={submit}>
+          <form
+            className="flex flex-col gap-8"
+            onSubmit={submit}
+            aria-label="Put Transaction Form"
+          >
             <div className="space-y-8">
-              {/* Tanggal */}
+              {/* Date */}
               <div className="space-y-2">
-                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                <label
+                  className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500"
+                  htmlFor="date"
+                >
                   Tanggal
                 </label>
 
                 <input
+                  id="date"
                   {...register("date", {
                     valueAsDate: true,
                   })}
@@ -194,28 +192,34 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                 />
               </div>
 
-              {/* Upload */}
+              {/* Upload Images */}
               <div className="space-y-3">
-                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                <label
+                  className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500"
+                  htmlFor="image"
+                >
                   Lampiran Foto
                 </label>
 
+                {/* Preview Images */}
                 <div className="flex min-h-[110px] flex-wrap gap-4 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 p-4">
                   {images.length > 0 &&
                     images.map((src, idx) => (
                       <div
                         key={idx}
+                        data-testid={`Image idx: ${idx}`}
                         className="relative h-24 w-24 overflow-hidden rounded-xl border border-zinc-200 bg-white"
                       >
                         <Image
                           src={src?.path}
-                          alt={`Preview ${idx}`}
+                          alt={`Preview ${src.name}`}
                           fill
                           className="object-cover"
                         />
 
                         <button
                           type="button"
+                          aria-label={`Delete idx: ${idx}`}
                           onClick={() => {
                             const delImage = images?.find(
                               (i) => i.name === src.name,
@@ -242,28 +246,11 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                 </div>
 
                 <input
+                  id="image"
                   type="file"
                   accept="image/*"
                   multiple
-                  className="
-              w-full
-              rounded-xl
-              border
-              border-zinc-300
-              bg-white
-              p-3
-              text-sm
-              text-zinc-600
-              file:mr-4
-              file:rounded-lg
-              file:border-0
-              file:bg-black
-              file:px-4
-              file:py-2
-              file:text-sm
-              file:font-medium
-              file:text-white
-            "
+                  className=" w-full rounded-xl border border-zinc-300 bg-white p-3 text-sm text-zinc-600 file:mr-4 file:rounded-lg file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white"
                   onChange={(e) => {
                     const files = e.target.files;
                     if (!files) return;
@@ -299,57 +286,38 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                 />
               </div>
 
-              {/* Keterangan */}
+              {/* Information */}
               <div className="space-y-2">
-                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                <label
+                  className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500"
+                  htmlFor="information"
+                >
                   Keterangan
                 </label>
 
                 <textarea
+                  id="information"
                   {...register("information")}
                   rows={4}
-                  className="
-              w-full
-              resize-none
-              rounded-xl
-              border
-              border-zinc-300
-              bg-white
-              px-4
-              py-3
-              text-sm
-              text-zinc-900
-              outline-none
-              transition-colors
-              focus:border-black
-            "
+                  className=" w-full resize-none rounded-xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition-colors focus:border-black"
                 />
               </div>
 
               {/* Nominal */}
               <div className="space-y-2">
-                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                <label
+                  className="block text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500"
+                  htmlFor="nominal"
+                >
                   Nominal
                 </label>
 
                 <input
+                  id="nominal"
                   {...register("nominal")}
                   type="number"
                   placeholder="0"
-                  className="
-              w-full
-              rounded-xl
-              border
-              border-zinc-300
-              bg-white
-              px-4
-              py-3
-              text-sm
-              text-zinc-900
-              outline-none
-              transition-colors
-              focus:border-black
-            "
+                  className=" w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition-colors focus:border-black"
                 />
               </div>
 
@@ -358,30 +326,16 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
                 <button
                   type="submit"
                   disabled={isPendingPutTransaction}
-                  className="
-              flex
-              h-12
-              min-w-[160px]
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-black
-              px-6
-              text-sm
-              font-semibold
-              text-white
-              transition-opacity
-              hover:opacity-90
-              disabled:cursor-not-allowed
-              disabled:opacity-60
-            "
+                  className=" flex h-12 min-w-[160px] items-center justify-center gap-2 rounded-xl bg-black px-6 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isPendingPutTransaction ? (
-                    <>
+                    <div
+                      role="dialog"
+                      aria-label="Is Loading"
+                    >
                       <Spokes className="size-4 animate-spin" />
                       <span>Dalam Progres...</span>
-                    </>
+                    </div>
                   ) : (
                     "Perbarui"
                   )}

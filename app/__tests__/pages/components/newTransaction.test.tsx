@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-// import userEvent from "@testing-library/user-event";
 import { TransactionContext } from "@/app/context/context";
-import NewTransaction from "@/app/(pages)/components/new-transaction";
+import NewTransaction from "@/app/(pages)/transaction/components/form/post/new-transaction";
 import {
   MockUseQueryNewTransactions,
   MockPostFormNewIdTransactionsData,

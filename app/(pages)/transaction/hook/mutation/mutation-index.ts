@@ -97,7 +97,7 @@ export const useMutationTransaction = ({
 }: UseMutationTransactionProps) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: postTransaction } = useMutation({
+  const { mutateAsync: postTransaction, isPending: isPendingPostTransaction } = useMutation({
     mutationFn: async (data) => {
       const URL = ROUTES_TRANSACTION.POST({
         key: "postTransaction",
@@ -159,7 +159,7 @@ export const useMutationTransaction = ({
     },
   });
 
-  return { postTransaction };
+  return { postTransaction, isPendingPostTransaction };
 };
 
 // * UPDATE TRANSACTIONS ======================

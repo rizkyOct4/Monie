@@ -5,7 +5,7 @@ import { useContext, useState } from "react";
 import {
   FormNewPostType,
   FormNewPostSchema,
-} from "../transaction/z-schema/z-schema";
+} from "../../../z-schema/z-schema";
 import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

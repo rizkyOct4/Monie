@@ -44,6 +44,10 @@ export const MockDeleteFormTransactionsData = {
   nominal: MockTransactionsListData[0].nominal,
 };
 
+
+
+
+
 // * REACT QUERY ==================
 export const MockUseQueryTransactions = (): ReturnType<
   typeof useQueryTransactions

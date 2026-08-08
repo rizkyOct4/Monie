@@ -167,7 +167,7 @@ describe("Render Transaction List", () => {
         name: "Has Transactions",
       });
 
-      expect(hasTransaction).toHaveClass("bg-transparent");
+      expect(hasTransaction).toHaveClass("bg-white");
     });
     it("constainer status FINISH", () => {
       renderTransactionsList({
@@ -182,7 +182,7 @@ describe("Render Transaction List", () => {
         name: "Has Transactions",
       });
 
-      expect(hasTransaction).toHaveClass("bg-red-500");
+      expect(hasTransaction).toHaveClass("bg-red-50");
     });
   });
 

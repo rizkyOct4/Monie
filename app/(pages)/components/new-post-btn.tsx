@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import OptionsFormPost from "./options-form-post";
+import OptionsFormPost from "../transaction/components/form/post/options-form-post";
 import { useState, memo } from "react";
 import TransactionProvider from "../transaction/context/context";
 

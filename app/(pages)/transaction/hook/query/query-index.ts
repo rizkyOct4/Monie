@@ -20,6 +20,7 @@ export const useQueryIdTransactions = ({
 }: UseQueryTransactionsProps) => {
   const [isOpenIdTransaction, setIsOpenIdTransaction] = useState(false);
 
+  // * ID TRANSACTIONS ======================
   const { data: fIdTransactionsList, refetch: idTransactionsListRefetch } =
     useInfiniteQuery({
       queryKey: ["keyIdTransactionsList", publicId],
@@ -52,21 +53,7 @@ export const useQueryIdTransactions = ({
     [fIdTransactionsList?.pages],
   );
 
-  return {
-    IdTransactionsListData,
-    idTransactionsListRefetch,
-    queryKeyIdTransactions: ["keyIdTransactionsList", publicId],
-    isOpenIdTransaction,
-    setIsOpenIdTransaction,
-  };
-};
-
-// * SEARCH ID TRANSACTIONS ======================
-export const useQuerySearchIdTransactions = ({
-  publicId,
-}: {
-  publicId: string;
-}) => {
+  // * SEARCH ID TRANSACTIONS ======================
   const [search, setSearch] = useState("");
   const [debounceSearch, setDebounceSearch] = useState("");
 
@@ -97,12 +84,19 @@ export const useQuerySearchIdTransactions = ({
     retry: false,
   });
 
-  const SearchIdTransactionData = useMemo(
+  const SearchIdTransactionData: IdTransactionsDataType[] = useMemo(
     () => searchIdTransaction ?? [],
     [searchIdTransaction],
   );
 
   return {
+    IdTransactionsListData,
+    idTransactionsListRefetch,
+    queryKeyIdTransactions: ["keyIdTransactionsList", publicId],
+    isOpenIdTransaction,
+    setIsOpenIdTransaction,
+
+    // * SEARCH
     search,
     setSearch,
     SearchIdTransactionData,
@@ -171,50 +165,3 @@ export const useQueryTransactions = ({
     queryKeyTransactions: ["keyTransactionsList", publicId, date],
   };
 };
-
-// * GET PUT TRANSACTIONS ======================
-// type UseQueryGetPutTransactionsProps = {
-//   publicId: string;
-//   currentPath: string;
-// };
-// export const useQueryGetPutTransactions = ({
-//   publicId,
-//   currentPath,
-// }: UseQueryGetPutTransactionsProps) => {
-//   const [idTransaction, setIdTransaction] = useState("");
-
-//   const { data: PutIdTransaction, isFetching: isFetchingGetPutIdTransaction } =
-//     useQuery({
-//       queryKey: ["keyGetPutIdTransaction", publicId, idTransaction],
-//       queryFn: async () => {
-//         const URL = ROUTES_TRANSACTION.GET({
-//           key: "PutIdTransactions",
-//           currentPath: currentPath,
-//           idTransaction: idTransaction,
-//         });
-//         const { data } = await axios.get(URL);
-//         return data;
-//       },
-//       enabled: idTransaction !== "",
-//       refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-//       refetchOnMount: false, // "always" => refetch jika stale saja
-//       retry: false,
-//     });
-
-//   const PutIdTransactionData = useMemo(
-//     () => PutIdTransaction ?? [],
-//     [PutIdTransaction],
-//   );
-
-//   return {
-//     idTransaction,
-//     setIdTransaction,
-//     PutIdTransactionData,
-//     isFetchingGetPutIdTransaction,
-//     queryKeyGetPutTransaction: [
-//       "keyGetPutIdTransaction",
-//       publicId,
-//       idTransaction,
-//     ],
-//   };
-// };

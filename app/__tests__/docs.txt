@@ -10,3 +10,7 @@
 | ⭐⭐⭐       | `getByText()`            | Paragraf, span, button dengan teks                               |
 | ⭐⭐        | `getByDisplayValue()`    | Input yang sudah memiliki value                                  |
 | ⭐         | `getByTestId()`          | Kalau semua cara di atas tidak memungkinkan                      |
+
+
+method get..... -> ini langsung mencari elemnt
+    find.... -> async mengunngu jika element sampai ada 

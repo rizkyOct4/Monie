@@ -28,7 +28,6 @@ jest.mock("@/app/(pages)/transaction/components/transactions-list", () => ({
   __esModule: true,
   default: (props: {
     TransactionsListData: typeof MockTransactionsListData;
-    setIdTransaction: React.Dispatch<React.SetStateAction<string>>;
   }) => {
     mockPropsTransactionList(props);
 
@@ -40,7 +39,6 @@ const mockContext = {
   date: date,
   setDate: setDate,
   TransactionsListData: TransactionsListData,
-  setIdTransaction: jest.fn(),
   isFTransactionsListData: isFTransactionsListData,
 };
 
@@ -98,7 +96,6 @@ describe("Should render transaction modal client", () => {
     expect(mockPropsTransactionList).toHaveBeenCalledWith(
       expect.objectContaining({
         TransactionsListData: mockContext.TransactionsListData,
-        setIdTransaction: mockContext.setIdTransaction,
       }),
     );
 

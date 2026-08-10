@@ -3,11 +3,16 @@
 import { Search, Loader2 } from "lucide-react";
 import { useState, useContext } from "react";
 import { TransactionContext } from "@/app/context/context";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormPostType, FormPostSchema } from "../../../z-schema/z-schema";
 
-const SearchIdTransaction = () => {
+type SearchIdTransactionProps = {
+  setIdExisted: React.Dispatch<React.SetStateAction<string>>;
+  setValue: any
+};
+
+const SearchIdTransaction = ({
+  setIdExisted,
+  setValue,
+}: SearchIdTransactionProps) => {
   const {
     IdTransactionsListData,
     search,
@@ -15,11 +20,6 @@ const SearchIdTransaction = () => {
     SearchIdTransactionData,
     isFetchingSearchIdTransaction,
   } = useContext(TransactionContext);
-
-  const { setValue } = useForm<FormPostType>({
-    resolver: zodResolver(FormPostSchema),
-    mode: "onChange",
-  });
 
   const [showSearch, setShowSearch] = useState(false);
   const [open, setOpen] = useState(false);
@@ -78,7 +78,7 @@ const SearchIdTransaction = () => {
                       onClick={() => {
                         setSelected(i.initialName);
                         setValue("nameTransaction", i.initialName);
-                        setValue("existId", i.id);
+                        setIdExisted(i.id);
                         setOpen(false);
                       }}
                       className="block w-full px-3 py-2 text-left text-sm text-gray-200 transition hover:bg-white/5"
@@ -87,7 +87,9 @@ const SearchIdTransaction = () => {
                     </button>
                   ))
                 ) : (
-                  <p role="status" aria-label="Has No Data">No ID</p>
+                  <p role="status" aria-label="Has No Data">
+                    No ID
+                  </p>
                 )}
               </div>
             )}
@@ -121,7 +123,8 @@ const SearchIdTransaction = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
           <div
-            className={`w-full h-auto px-4 py-2 mt-2 bg-gray-900 rounded-lg flex flex-col gap-4 ${search ? "block" : "hidden"}`}>
+            className={`w-full h-auto px-4 py-2 mt-2 bg-gray-900 rounded-lg flex flex-col gap-4 ${search ? "block" : "hidden"}`}
+          >
             {isFetchingSearchIdTransaction ? (
               <Loader2
                 className="h-4 w-4 animate-spin text-emerald-400"
@@ -139,7 +142,7 @@ const SearchIdTransaction = () => {
                   onClick={() => {
                     setSelected(i.initialName);
                     setValue("nameTransaction", i.initialName);
-                    setValue("existId", i.id);
+                    setIdExisted(i.id);
                     setShowSearch(false);
                   }}
                 >

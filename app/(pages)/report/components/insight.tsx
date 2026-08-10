@@ -19,57 +19,104 @@ export type ReportInsightProps = {
 };
 
 const ReportInsight = ({ insightData }: ReportInsightProps) => {
-  // console.log(insightData);
   return (
-    <section
-      className="border-b border-zinc-200 py-6"
-      data-testid="insight-report-section"
-    >
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-        Insight Keuangan
-      </h2>
+    <section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm">
+      {/* Header */}
+      <div className="mb-6">
+        <div className="mb-2 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
+            <span className="text-sm font-semibold text-emerald-400">✦</span>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold tracking-tight text-white">
+              Insight Keuangan
+            </h2>
+
+            <p className="mt-1 text-sm text-zinc-500">
+              Ringkasan aktivitas keuangan kamu
+            </p>
+          </div>
+        </div>
+      </div>
 
       {Array.isArray(insightData) && insightData.length > 0
         ? insightData.map((i, idx) => (
-            <div className="flex flex-col gap-4" key={idx}>
-              <div className="flex justify-between">
-                <span className="text-white">Total Transaksi</span>
+            <div className="flex flex-col gap-3" key={idx}>
+              {/* Total Transaksi */}
+              <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
+                <div>
+                  <span className="text-sm font-medium text-zinc-200">
+                    Total Transaksi
+                  </span>
+
+                  <p className="mt-1 text-xs text-zinc-500">
+                    Jumlah transaksi pada periode ini
+                  </p>
+                </div>
 
                 <span
-                  className="font-medium text-white"
+                  className="text-lg font-semibold text-white"
                   data-testid="insight-report-total-transaction"
                 >
                   {i.totalTransaction}
                 </span>
               </div>
 
-              <div className="flex justify-between">
-                <span className="text-white">Pengeluaran Terbesar</span>
+              {/* Pengeluaran Terbesar */}
+              <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
+                <div>
+                  <span className="text-sm font-medium text-zinc-200">
+                    Pengeluaran Terbesar
+                  </span>
+
+                  <p className="mt-1 text-xs text-zinc-500">
+                    Transaksi dengan nominal terbesar
+                  </p>
+                </div>
 
                 <span
-                  className="font-medium text-red-500"
+                  className="text-right text-sm font-semibold text-red-400"
                   data-testid="insight-report-biggest-expense"
                 >
                   {FormatCurrency(i.biggestExpense.amount)}
                 </span>
               </div>
 
-              <div className="flex justify-between">
-                <span className="text-white">Rata-rata Pengeluaran / Hari</span>
+              {/* Rata-rata Pengeluaran */}
+              <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
+                <div>
+                  <span className="text-sm font-medium text-zinc-200">
+                    Rata-rata Pengeluaran / Hari
+                  </span>
+
+                  <p className="mt-1 text-xs text-zinc-500">
+                    Rata-rata dana yang digunakan setiap hari
+                  </p>
+                </div>
 
                 <span
-                  className="font-medium text-yellow-500"
+                  className="text-right text-sm font-semibold text-yellow-400"
                   data-testid="insight-report-average-expense"
                 >
                   {FormatCurrency(i.averageExpense)}
                 </span>
               </div>
 
-              <div className="flex justify-between">
-                <span className="text-white">Hari Paling Boros</span>
+              {/* Hari Paling Boros */}
+              <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
+                <div>
+                  <span className="text-sm font-medium text-zinc-200">
+                    Hari Paling Boros
+                  </span>
+
+                  <p className="mt-1 text-xs text-zinc-500">
+                    Hari dengan total pengeluaran tertinggi
+                  </p>
+                </div>
 
                 <span
-                  className="font-medium text-orange-500"
+                  className="text-right text-sm font-semibold text-orange-400"
                   data-testid="insight-report-most-expensive-day"
                 >
                   {i.mostExpensiveDay.amount}

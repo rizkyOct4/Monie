@@ -24,7 +24,7 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
   const { postTransaction, isPendingPostTransaction, setIsOpenIdTransaction } =
     useContext(TransactionContext);
 
-  const [idExisted, setIdExisted] = useState<string>("")
+  const [idExisted, setIdExisted] = useState<string>("");
 
   const nanoId = nanoid(8);
 
@@ -33,8 +33,6 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
       resolver: zodResolver(FormPostSchema),
       mode: "onChange",
     });
-
-  const checkId = getValues("existId");
 
   // * IMAGES =================
   const images =
@@ -86,13 +84,14 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
       const post = {
         ...values,
         id: id,
+        existId: idExisted,
         nominal: Number(values.nominal),
-        images: images.length > 0 ? cloudImage : [],
+        images: cloudImage ?? [],
         status: "ACTIVE",
       };
 
-      // await postTransaction(post);
-      console.log(post);
+      await postTransaction(post);
+      // console.log(post);
     } catch (err) {
       console.error(err);
     } finally {
@@ -106,20 +105,242 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
 
   // console.log(errors);
 
+  // return (
+  //   <form
+  //     className="flex flex-col gap-4"
+  //     onSubmit={submit}
+  //     aria-label="Post Transaction Form"
+  //   >
+  //     <SearchIdTransaction setIdExisted={setIdExisted} setValue={setValue}/>
+
+  //     {idExisted !== "" && (
+  //       <div
+  //       role="dialog"
+  //       aria-label="List Form"
+  //       >
+  //         {/* Tanggal */}
+  //         <div>
+  //           <label
+  //             className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500"
+  //             htmlFor="date"
+  //           >
+  //             Tanggal
+  //           </label>
+
+  //           <input
+  //             id="date"
+  //             {...register("date", {
+  //               valueAsDate: true,
+  //             })}
+  //             type="datetime-local"
+  //             defaultValue={now.toISOString().slice(0, 16)}
+  //             required
+  //             className=" w-full border-b border-zinc-300 pb-2 text-black outline-none"
+  //           />
+  //         </div>
+
+  //         {/* Images Upload */}
+  //         <div>
+  //           <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500"
+  //             htmlFor="images"
+  //           >
+  //             Lampiran Foto
+  //           </label>
+
+  //           <div className="mb-3 flex max-h-60 flex-wrap gap-3 overflow-y-auto">
+  //             {previewImagePath.length > 0 &&
+  //               previewImagePath.map((src, idx) => (
+  //                 <div
+  //                   key={idx}
+  //                   className="
+  //                       relative
+  //                       h-24
+  //                       w-24
+  //                       overflow-hidden
+  //                       border
+  //                       border-zinc-200
+  //                     "
+  //                 >
+  //                   <Image
+  //                     src={src}
+  //                     alt={`Preview ${idx}`}
+  //                     fill
+  //                     className="object-cover"
+  //                   />
+
+  //                   <button
+  //                     aria-label={`Delete button images ${idx}`}
+  //                     type="button"
+  //                     onClick={() => {
+  //                       const updated =
+  //                         images?.filter((_, index) => index !== idx) ?? [];
+
+  //                       setValue("images", updated);
+  //                     }}
+  //                     className=" absolute top-1 right-1 flex h-5 w-5 items-center justify-center bg-white text-xs text-red-500"
+  //                   >
+  //                     ✕
+  //                   </button>
+  //                 </div>
+  //               ))}
+  //           </div>
+
+  //           <input
+  //             id="images"
+  //             type="file"
+  //             accept="image/*"
+  //             multiple
+  //             className="
+  //                 text-sm
+  //                 text-zinc-600
+  //                 file:border
+  //                 file:border-zinc-200
+  //                 file:bg-transparent
+  //                 file:px-3
+  //                 file:py-2
+  //                 file:text-sm
+  //               "
+  //             onChange={(e) => {
+  //               const files = e.target.files;
+  //               if (!files) return;
+
+  //               Array.from(files).forEach((file) => {
+  //                 const reader = new FileReader();
+
+  //                 reader.onloadend = () => {
+  //                   const base64 = reader.result as string;
+
+  //                   const currentImages = getValues("images") || [];
+
+  //                   setValue(
+  //                     "images",
+  //                     [
+  //                       ...currentImages,
+  //                       {
+  //                         name: file.name,
+  //                         path: base64,
+  //                       },
+  //                     ],
+  //                     {
+  //                       shouldValidate: true,
+  //                     },
+  //                   );
+  //                 };
+
+  //                 reader.readAsDataURL(file);
+  //               });
+
+  //               e.target.value = "";
+  //             }}
+  //           />
+  //         </div>
+
+  //         {/* Keterangan */}
+  //         <div>
+  //           <label
+  //             className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500"
+  //             htmlFor="information"
+  //           >
+  //             Keterangan
+  //           </label>
+
+  //           <textarea
+  //             id="information"
+  //             {...register("information")}
+  //             rows={4}
+  //             className="
+  //                 w-full
+  //                 resize-none
+  //                 border-b
+  //                 border-zinc-300
+  //                 pb-2
+  //                 text-black
+  //                 outline-none
+  //               "
+  //           />
+  //         </div>
+
+  //         {/* Nominal */}
+  //         <div>
+  //           <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500"
+  //           htmlFor="nominal"
+  //           >
+  //             Nominal
+  //           </label>
+
+  //           <input
+  //             id="nominal"
+  //             {...register("nominal")}
+  //             type="number"
+  //             placeholder="0"
+  //             className="
+  //                 w-full
+  //                 border-b
+  //                 border-zinc-300
+  //                 pb-2
+  //                 text-black
+  //                 outline-none
+  //               "
+  //           />
+  //         </div>
+
+  //         {/* Action */}
+  //         <div className="flex justify-end gap-6 border-t border-zinc-200 pt-6">
+  //           <button
+  //             type="submit"
+  //             disabled={isPendingPostTransaction}
+  //             className=" flex h-12 items-center justify-center gap-2 rounded-2xl bg-black px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+  //           >
+  //             {isPendingPostTransaction ? (
+  //               <div role="status" aria-label="Is Loading Post">
+  //                 <Spokes className="size-4 animate-spin" />
+  //                 <span>Dalam Progres...</span>
+  //               </div>
+  //             ) : (
+  //               "Submit"
+  //             )}
+  //           </button>
+  //         </div>
+  //       </div>
+  //     )}
+  //   </form>
+  // );
   return (
     <form
       className="flex flex-col gap-4"
       onSubmit={submit}
       aria-label="Post Transaction Form"
     >
-      <SearchIdTransaction />
+      <SearchIdTransaction setIdExisted={setIdExisted} setValue={setValue} />
 
-      {checkId && (
-        <div>
+      {idExisted !== "" && (
+        <div
+          role="dialog"
+          aria-label="List Form"
+          className="
+          flex
+          flex-col
+          gap-6
+          rounded-2xl
+          border
+          border-zinc-800
+          bg-zinc-950
+          p-5
+          text-zinc-200
+        "
+        >
           {/* Tanggal */}
           <div>
             <label
-              className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500"
+              className="
+              mb-2
+              block
+              text-xs
+              font-semibold
+              uppercase
+              tracking-wide
+              text-zinc-500
+            "
               htmlFor="date"
             >
               Tanggal
@@ -133,29 +354,72 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
               type="datetime-local"
               defaultValue={now.toISOString().slice(0, 16)}
               required
-              className=" w-full border-b border-zinc-300 pb-2 text-black outline-none"
+              className="
+              h-11
+              w-full
+              rounded-xl
+              border
+              border-zinc-800
+              bg-zinc-900
+              px-3
+              text-sm
+              text-zinc-200
+              outline-none
+              transition
+              hover:border-zinc-700
+              focus:border-emerald-500/50
+              focus:ring-2
+              focus:ring-emerald-500/10
+            "
             />
           </div>
 
-          {/* Upload */}
+          {/* Images Upload */}
           <div>
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            <label
+              className="
+              mb-2
+              block
+              text-xs
+              font-semibold
+              uppercase
+              tracking-wide
+              text-zinc-500
+            "
+              htmlFor="images"
+            >
               Lampiran Foto
             </label>
 
-            <div className="mb-3 flex max-h-60 flex-wrap gap-3 overflow-y-auto">
+            <div
+              className="
+              mb-3
+              flex
+              max-h-60
+              flex-wrap
+              gap-3
+              overflow-y-auto
+              rounded-xl
+              border
+              border-zinc-800
+              bg-zinc-900/50
+              p-3
+            "
+            >
               {previewImagePath.length > 0 &&
                 previewImagePath.map((src, idx) => (
                   <div
                     key={idx}
                     className="
-                        relative
-                        h-24
-                        w-24
-                        overflow-hidden
-                        border
-                        border-zinc-200
-                      "
+                    relative
+                    h-24
+                    w-24
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-zinc-700
+                    bg-zinc-900
+                  "
                   >
                     <Image
                       src={src}
@@ -165,6 +429,7 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
                     />
 
                     <button
+                      aria-label={`Delete button images ${idx}`}
                       type="button"
                       onClick={() => {
                         const updated =
@@ -172,7 +437,26 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
 
                         setValue("images", updated);
                       }}
-                      className=" absolute top-1 right-1 flex h-5 w-5 items-center justify-center bg-white text-xs text-red-500"
+                      className="
+                      absolute
+                      right-1.5
+                      top-1.5
+                      flex
+                      h-6
+                      w-6
+                      items-center
+                      justify-center
+                      rounded-lg
+                      border
+                      border-black/20
+                      bg-black/70
+                      text-xs
+                      text-zinc-300
+                      backdrop-blur-sm
+                      transition
+                      hover:bg-red-500/80
+                      hover:text-white
+                    "
                     >
                       ✕
                     </button>
@@ -181,19 +465,33 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
             </div>
 
             <input
+              id="images"
               type="file"
               accept="image/*"
               multiple
               className="
-                  text-sm
-                  text-zinc-600
-                  file:border
-                  file:border-zinc-200
-                  file:bg-transparent
-                  file:px-3
-                  file:py-2
-                  file:text-sm
-                "
+              w-full
+              rounded-xl
+              border
+              border-zinc-800
+              bg-zinc-900
+              px-3
+              py-2.5
+              text-sm
+              text-zinc-500
+              outline-none
+              transition
+              file:mr-3
+              file:rounded-lg
+              file:border-0
+              file:bg-emerald-500
+              file:px-3
+              file:py-1.5
+              file:text-xs
+              file:font-semibold
+              file:text-white
+              hover:border-zinc-700
+            "
               onChange={(e) => {
                 const files = e.target.files;
                 if (!files) return;
@@ -232,7 +530,15 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
           {/* Keterangan */}
           <div>
             <label
-              className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500"
+              className="
+              mb-2
+              block
+              text-xs
+              font-semibold
+              uppercase
+              tracking-wide
+              text-zinc-500
+            "
               htmlFor="information"
             >
               Keterangan
@@ -243,21 +549,40 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
               {...register("information")}
               rows={4}
               className="
-                  w-full
-                  resize-none
-                  border-b
-                  border-zinc-300
-                  pb-2
-                  text-black
-                  outline-none
-                "
+              w-full
+              resize-none
+              rounded-xl
+              border
+              border-zinc-800
+              bg-zinc-900
+              px-3
+              py-3
+              text-sm
+              text-zinc-200
+              outline-none
+              transition
+              placeholder:text-zinc-600
+              hover:border-zinc-700
+              focus:border-emerald-500/50
+              focus:ring-2
+              focus:ring-emerald-500/10
+            "
             />
           </div>
 
           {/* Nominal */}
           <div>
-            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-zinc-500"
-            htmlFor="nominal"
+            <label
+              className="
+              mb-2
+              block
+              text-xs
+              font-semibold
+              uppercase
+              tracking-wide
+              text-zinc-500
+            "
+              htmlFor="nominal"
             >
               Nominal
             </label>
@@ -268,28 +593,69 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
               type="number"
               placeholder="0"
               className="
-                  w-full
-                  border-b
-                  border-zinc-300
-                  pb-2
-                  text-black
-                  outline-none
-                "
+              h-11
+              w-full
+              rounded-xl
+              border
+              border-zinc-800
+              bg-zinc-900
+              px-3
+              text-sm
+              text-zinc-200
+              outline-none
+              transition
+              placeholder:text-zinc-600
+              hover:border-zinc-700
+              focus:border-emerald-500/50
+              focus:ring-2
+              focus:ring-emerald-500/10
+            "
             />
           </div>
 
           {/* Action */}
-          <div className="flex justify-end gap-6 border-t border-zinc-200 pt-6">
+          <div
+            className="
+            flex
+            justify-end
+            gap-6
+            border-t
+            border-zinc-800
+            pt-5
+          "
+          >
             <button
               type="submit"
               disabled={isPendingPostTransaction}
-              className=" flex h-12 items-center justify-center gap-2 rounded-2xl bg-black px-5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+              className="
+              flex
+              h-11
+              min-w-28
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              border
+              border-emerald-400/20
+              bg-emerald-500
+              px-5
+              text-sm
+              font-semibold
+              text-white
+              shadow-lg
+              shadow-emerald-950/20
+              transition
+              hover:bg-emerald-400
+              active:scale-[0.98]
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
             >
               {isPendingPostTransaction ? (
-                <>
+                <div role="status" aria-label="Is Loading Post">
                   <Spokes className="size-4 animate-spin" />
                   <span>Dalam Progres...</span>
-                </>
+                </div>
               ) : (
                 "Submit"
               )}

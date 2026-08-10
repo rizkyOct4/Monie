@@ -1,4 +1,4 @@
-import { useMutationNewTransaction } from "@/app/(pages)/transaction/hook/mutation/mutation-index";
+import { useMutationNewTransaction, useMutationTransaction } from "@/app/(pages)/transaction/hook/mutation/mutation-index";
 import { nanoid } from "nanoid";
 
 export const MockPostFormNewIdTransactionsData = {
@@ -13,4 +13,10 @@ export const MockUseQueryNewTransactions = (): ReturnType<
 > => ({
   newPostTransaction: jest.fn(),
   isPendingNewPostTransaction: false,
+});
+export const MockUseQueryExistedTransactions = (): ReturnType<
+  typeof useMutationTransaction
+> => ({
+  postTransaction: jest.fn(),
+  isPendingPostTransaction: false,
 });

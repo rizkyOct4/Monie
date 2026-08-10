@@ -14,10 +14,7 @@ export type FormNewPostType = z.infer<typeof FormNewPostSchema>;
 
 
 export const FormPostSchema = z.object({
-  existId: z.string(),
-  nameTransaction: z.string().refine((val) => !ForbiddenRegex().test(val), {
-    message: `* Contains invalid characters`,
-  }),
+  nameTransaction: z.string(),
 
   date: z.date(),
 

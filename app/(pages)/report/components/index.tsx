@@ -12,7 +12,7 @@ const ReportClient = () => {
   const insightData = IdPeriodTransactionData[0]?.insight
 
   return (
-    <main className="flex flex-col px-6 py-4 w-full">
+    <main className="flex flex-col px-6 w-full min-h-screen relative">
       {/* Header */}
       <HeaderReport />
 

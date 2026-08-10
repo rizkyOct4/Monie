@@ -3,8 +3,6 @@ import type { TransactionsDataType } from "@/app/(pages)/transaction/types/trans
 import { MockSession } from "../../session.mock";
 import type { PopUpDeleteTransactionProps } from "@/app/(pages)/transaction/components/pop-up/pop-up-delete";
 
-
-
 // ! TRANSACTIONS LIST DATA ==============
 export const MockTransactionsListData: TransactionsDataType[] = [
   {
@@ -44,10 +42,6 @@ export const MockDeleteFormTransactionsData = {
   nominal: MockTransactionsListData[0].nominal,
 };
 
-
-
-
-
 // * REACT QUERY ==================
 export const MockUseQueryTransactions = (): ReturnType<
   typeof useQueryTransactions
@@ -57,5 +51,9 @@ export const MockUseQueryTransactions = (): ReturnType<
   TransactionsListRefetch: jest.fn(),
   date: "2026-07-25",
   setDate: jest.fn(),
-  queryKeyTransactions: ["keyTransactionsList", MockSession.publicId, "2026-7-25"],
+  queryKeyTransactions: [
+    "keyTransactionsList",
+    MockSession.publicId,
+    "2026-7-25",
+  ],
 });

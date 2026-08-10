@@ -30,7 +30,7 @@ export const ROUTES_TRANSACTION = {
       case "idTransactions":
         return `${currentPath}/api?key=${key}&page-param=${pageParam}&limit=${limit}`;
       case "PutIdTransactions":
-        return `${currentPath}/api?key=${key}&id-transaction=${idTransaction}`;
+        return `/${currentPath}/api?key=${key}&id-transaction=${idTransaction}`;
       default:
         return "";
     }

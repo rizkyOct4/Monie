@@ -5,10 +5,18 @@ import { MockUseQueryIdTransactions } from "@/app/__mocks__/(pages)/transaction/
 
 const MockContext = MockUseQueryIdTransactions();
 
-const RenderSearchIdTransaction = (context = MockContext) => {
+const MockProps = {
+  setIdExisted: jest.fn(),
+  setValue: jest.fn()
+};
+
+const RenderSearchIdTransaction = (
+  props = MockProps,
+  context = MockContext,
+) => {
   return render(
     <TransactionContext.Provider value={context}>
-      <SearchIdTransaction />
+      <SearchIdTransaction {...props} />
     </TransactionContext.Provider>,
   );
 };
@@ -60,7 +68,7 @@ describe("Render search id transaction", () => {
     });
 
     it("Has No Data", () => {
-      RenderSearchIdTransaction({
+      RenderSearchIdTransaction(MockProps, {
         ...MockContext,
         IdTransactionsListData: [],
       });
@@ -125,7 +133,7 @@ describe("Render search id transaction", () => {
 
       rerender(
         <TransactionContext.Provider value={updateContextIsLoadingTrue}>
-          <SearchIdTransaction />
+          <SearchIdTransaction {...MockProps} />
         </TransactionContext.Provider>,
       );
 
@@ -143,7 +151,7 @@ describe("Render search id transaction", () => {
 
       rerender(
         <TransactionContext.Provider value={updateContextIsLoadingFalse}>
-          <SearchIdTransaction />
+          <SearchIdTransaction {...MockProps} />
         </TransactionContext.Provider>,
       );
 

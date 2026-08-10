@@ -7,7 +7,44 @@ import {
 } from "@/app/__mocks__/(pages)/transaction/actions/putTransaction.mock";
 import { MockUseSessionClient } from "@/app/__mocks__/session.mock";
 import { TransactionContext } from "@/app/context/context";
-import { MockUseQueryPutTransactions } from "@/app/__mocks__/(pages)/transaction/mutation/mutation.put.mock";
+import { MockError } from "@/app/__mocks__/error.mock";
+
+export const MockCloudinaryResponse = [
+  {
+    public_id: "random-id-1",
+    secure_url: "random-url-1",
+  },
+  {
+    public_id: "random-id-2",
+    secure_url: "random-url-2",
+  },
+];
+
+export const MockUploadMultipleToCloudinary = jest.fn();
+jest.mock("@/_utils/direct-upload-cloud", () => ({
+  uploadMultipleToCloudinary: jest.fn(
+    ({
+      files,
+      publicId,
+      type,
+      id,
+    }: {
+      files: string[];
+      publicId: string;
+      type: "images";
+      id: string;
+    }) => {
+      MockUploadMultipleToCloudinary({
+        files,
+        publicId,
+        type,
+        id,
+      });
+
+      return Promise.resolve(MockCloudinaryResponse);
+    },
+  ),
+}));
 
 jest.mock("@/_lib/c-session", () => ({
   useSessionClient: jest.fn(),
@@ -20,13 +57,51 @@ const MockProps = {
   onClose: jest.fn(),
 };
 
-const MockContext = MockUseQueryPutTransactions();
+const MockContext = {
+  putTransaction: jest.fn(),
+  isPendingPutTransaction: false,
+};
+// const MockContext = MockUseQueryPutTransactions();
 
 const RenderPutFormTransaction = (props = MockProps, context = MockContext) => {
   return render(
     <TransactionContext.Provider value={context}>
       <FormPut {...props} />
     </TransactionContext.Provider>,
+  );
+};
+
+const fillAndSubmitForm = async () => {
+  fireEvent.change(screen.getByLabelText("Tanggal"), {
+    target: { value: "2026-08-07T13:59" },
+  });
+
+  // // ? FIND EVENT
+  // const imageInput = screen.getByLabelText("Lampiran Foto") as HTMLInputElement;
+
+  // const { file1, file2 } = MockInputMultipleImages();
+
+  // fireEvent.change(imageInput, {
+  //   target: {
+  //     files: [file1, file2],
+  //   },
+  // });
+
+  // expect(await screen.findByAltText("Preview 0")).toBeInTheDocument();
+  // expect(await screen.findByAltText("Preview 1")).toBeInTheDocument();
+
+  fireEvent.change(screen.getByLabelText("Keterangan"), {
+    target: { value: MockValuePutTransaction.information },
+  });
+
+  fireEvent.change(screen.getByLabelText("Nominal"), {
+    target: { value: MockValuePutTransaction.nominal },
+  });
+
+  fireEvent.submit(
+    screen.getByRole("form", {
+      name: "Put Transaction Form",
+    }),
   );
 };
 
@@ -124,77 +199,119 @@ describe("Render Put Form Transaction", () => {
   });
 
   describe("Loading After Submit", () => {
-    const fillAndSubmitForm = () => {
-      fireEvent.change(screen.getByLabelText("Tanggal"), {
-        target: { value: MockValuePutTransaction.date },
-      });
+    const untilLoading = async () => {
+      const { rerender } = RenderPutFormTransaction();
 
-      // ? FIND EVENT
-      const imageInput = screen.getByLabelText(
-        "Lampiran Foto",
-      ) as HTMLInputElement;
+      await fillAndSubmitForm();
 
-      const { file1, file2 } = MockInputMultipleImages();
-
-      fireEvent.change(imageInput, {
-        target: {
-          files: [file1, file2],
-        },
-      });
-
-      fireEvent.change(screen.getByLabelText("Keterangan"), {
-        target: { value: MockValuePutTransaction.information },
-      });
-
-      fireEvent.change(screen.getByLabelText("Nominal"), {
-        target: { value: MockValuePutTransaction.nominal },
-      });
-
-      fireEvent.submit(
-        screen.getByRole("form", {
-          name: "Put Transaction Form",
-        }),
-      );
-    };
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it("Loading", () => {
-      RenderPutFormTransaction();
-
-      fillAndSubmitForm();
-
-      RenderPutFormTransaction(MockProps, {
+      const updateContext = {
         ...MockContext,
         isPendingPutTransaction: true,
-      });
+      };
+
+      rerender(
+        <TransactionContext.Provider value={updateContext}>
+          <FormPut {...MockProps} />
+        </TransactionContext.Provider>,
+      );
 
       expect(
         screen.getByRole("dialog", {
           name: "Is Loading",
         }),
       ).toBeInTheDocument();
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
 
-    it("success put transaction", async () => {
-      RenderPutFormTransaction();
+    it("Loading", async () => {
+      await untilLoading();
+    });
 
-      fillAndSubmitForm();
-      
-      RenderPutFormTransaction(MockProps, {
-        ...MockContext,
-        isPendingPutTransaction: true,
-      });
+    // it("success put transaction", async () => {
+    //   await untilLoading();
+
+    //   console.log("=== AFTER UNTIL LOADING ===");
+
+    //   console.log("Upload calls:", MockUploadMultipleToCloudinary.mock.calls);
+
+    //   console.log(
+    //     "putTransaction calls:",
+    //     MockContext.putTransaction.mock.calls,
+    //   );
+
+    //   console.log("onClose calls:", MockProps.onClose.mock.calls);
+
+    //   await waitFor(() => {
+    //     expect(MockUploadMultipleToCloudinary).toHaveBeenCalledTimes(1);
+
+    //     console.log(
+    //       "=== INSIDE WAIT FOR ===",
+    //       MockContext.putTransaction.mock.calls,
+    //     );
+
+    //     expect(MockContext.putTransaction).toHaveBeenCalledWith(
+    //       MockValuePutTransaction,
+    //     );
+
+    //     expect(MockContext.putTransaction).toHaveBeenCalledTimes(1);
+
+    //     expect(MockProps.onClose).toHaveBeenCalledTimes(1);
+    //   });
+    // });
+
+    it("success put transaction", async () => {
+      await untilLoading();
 
       await waitFor(() => {
-        expect(MockContext.putTransaction).toHaveBeenCalledWith(
-          MockValuePutTransaction,
-        );
+        expect(MockUploadMultipleToCloudinary).toHaveBeenCalledTimes(1);
         expect(MockContext.putTransaction).toHaveBeenCalledTimes(1);
-        expect(MockProps.onClose).toHaveBeenCalledTimes(1);
       });
+
+      const actual = MockContext.putTransaction.mock.calls[0][0];
+
+      console.log("========== ACTUAL PUT ==========");
+      console.dir(actual, { depth: null });
+
+      console.log("========== EXPECTED PUT ==========");
+      console.dir(MockValuePutTransaction, { depth: null });
+
+      console.log("========== UPLOAD ==========");
+      console.dir(MockUploadMultipleToCloudinary.mock.calls, { depth: null });
+
+      console.log("========== ON CLOSE ==========");
+      console.dir(MockProps.onClose.mock.calls, { depth: null });
+
+      expect(actual).toEqual(MockValuePutTransaction);
+
+      expect(MockProps.onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it("errors put transaction", async () => {
+      const { RejectedMock, consoleSpy, error } = MockError();
+
+      const errorContext = {
+        ...MockContext,
+        putTransaction: RejectedMock,
+      };
+      RenderPutFormTransaction(MockProps, errorContext);
+
+      await fillAndSubmitForm();
+
+      await waitFor(() => {
+        expect(RejectedMock).toHaveBeenCalledWith(MockValuePutTransaction);
+
+        expect(RejectedMock).toHaveBeenCalledTimes(1);
+
+        expect(consoleSpy).toHaveBeenCalledWith(error);
+      });
+
+      consoleSpy.mockRestore();
     });
   });
 });
+
+// TODO dalamnya ketika di submit !!! LIAT LOGIC DI CLIENT KAU !! SEMUA DATA MOCK MASUK KE LOGIC JUGA !!!
+// ! INPUT VALUE =>>>>>>> NOT AN OBJECT !! STRING !!!!

@@ -22,7 +22,7 @@ export default proxy;
 
 export const config = {
   matcher: [
-    "/((?!auth|api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json).*)",
+    "/((?!auth|docs|cv|api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json).*)",
     // `/((?!|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)`,
   ],
 };

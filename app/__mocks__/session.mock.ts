@@ -15,8 +15,13 @@ const mockedUseSessionClient = useSessionClient as jest.MockedFunction<
 >;
 
 export const MockUseSessionClient = () => {
-  return mockedUseSessionClient.mockReturnValue({
+  mockedUseSessionClient.mockReturnValue({
     publicId: MockSession.publicId,
     name: MockSession.name,
   });
+
+  return {
+    publicId: MockSession.publicId,
+    name: MockSession.name,
+  };
 };

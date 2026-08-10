@@ -6,7 +6,7 @@ import AuthForm from "./auth-form";
 
 const AuthLayout = () => {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-black text-white z-2000">
       <section className="mx-auto flex min-h-screen max-w-[1920px]">
         {/* Left Side */}
         <div className="hidden w-1/2 border-r border-zinc-800 lg:flex">

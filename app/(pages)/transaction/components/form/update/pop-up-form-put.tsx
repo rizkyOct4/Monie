@@ -9,7 +9,7 @@ import { nanoid } from "nanoid";
 import { uploadMultipleToCloudinary } from "@/_utils/direct-upload-cloud";
 import { useSessionClient } from "@/_lib/c-session";
 import { TransactionContext } from "@/app/context/context";
-import { FormPutType, FormPutSchema } from "../../z-schema/z-schema";
+import { FormPutType, FormPutSchema } from "../../../z-schema/z-schema";
 import { ConvertDateLocalIntoDate } from "@/_utils/format-date";
 
 export type PutFormTransactionsProps = {
@@ -106,6 +106,7 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
         newImages: cloudImage ?? [],
         deleteImages: imageDeleted,
         wrongDate: checkPutWrongDate,
+        date: new Date(values.date)
       };
 
       await putTransaction(put);

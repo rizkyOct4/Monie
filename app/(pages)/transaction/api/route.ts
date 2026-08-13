@@ -29,14 +29,29 @@ export async function GET(req: NextRequest) {
           limit,
           offset,
         });
-        return NextResponse.json(output);
+
+        if (output.data.length === 0) {
+          return NextResponse.json(
+            { message: "Data tidak ditemukan" },
+            { status: 404 },
+          );
+        } else {
+          return NextResponse.json(output);
+        }
       }
       case "searchTransactions": {
         const output = await GetSearchIdTransactions({
           publicId,
           search,
         });
-        return NextResponse.json(output);
+        if (output.length === 0) {
+          return NextResponse.json(
+            { message: "Data tidak ditemukan" },
+            { status: 404 },
+          );
+        } else {
+          return NextResponse.json(output);
+        }
       }
       case "transactions": {
         const output = await GetTransactionList({
@@ -45,15 +60,24 @@ export async function GET(req: NextRequest) {
           offset,
           limit,
         });
-        return NextResponse.json(output);
+        if (output.data.length === 0) {
+          return NextResponse.json(
+            { message: "Data tidak ditemukan" },
+            { status: 404 },
+          );
+        } else {
+          return NextResponse.json(output);
+        }
       }
-      case "PutIdTransactions": {
-        const output = await GetPutIdTransactions({
-          publicId,
-          idTransaction,
-        });
-        return NextResponse.json(output);
-      }
+      // case "PutIdTransactions": {
+      //   const output = await GetPutIdTransactions({
+      //     publicId,
+      //     idTransaction,
+      //   });
+      //   return NextResponse.json(output);
+      // }
+      default:
+        return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });

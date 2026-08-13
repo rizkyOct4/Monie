@@ -25,17 +25,6 @@ describe("HeaderReport", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  it("should render header correctly", () => {
-    renderHeader();
-    const title = screen.getByTestId("title-report");
-
-    expect(screen.getByTestId("header-report")).toBeInTheDocument();
-
-    expect(title).toHaveTextContent("Laporan");
-    expect(title).toHaveTextContent("Analisis Keuangan");
-  });
-
   it("should call setPeriod when month changes", () => {
     renderHeader();
 

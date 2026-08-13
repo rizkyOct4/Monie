@@ -32,7 +32,9 @@ describe("Insight Report", () => {
   it("Should render Insight Report", () => {
     renderInsight();
 
-    const title = screen.getByTestId("insight-report-section");
+    const title = screen.getByRole("dialog", {
+      name: "Insight Section"
+    });
     const totalTransaction = screen.getByTestId(
       "insight-report-total-transaction",
     );

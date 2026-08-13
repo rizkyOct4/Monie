@@ -35,7 +35,7 @@ const HeaderReport = () => {
   );
 
 return (
-  <section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm sticky top-6">
+  <section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm sticky top-6 backdrop-blur-sm">
     {/* Header */}
     <div className="mb-6">
       <div className="mb-2 flex items-center gap-3">

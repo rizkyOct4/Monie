@@ -88,6 +88,7 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
         nominal: Number(values.nominal),
         images: cloudImage ?? [],
         status: "ACTIVE",
+        date: new Date(values.date).toISOString()
       };
 
       await postTransaction(post);

@@ -20,7 +20,10 @@ export type ReportInsightProps = {
 
 const ReportInsight = ({ insightData }: ReportInsightProps) => {
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm">
+    <section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm"
+      role="dialog"
+      aria-label="Insight Section"
+    >
       {/* Header */}
       <div className="mb-6">
         <div className="mb-2 flex items-center gap-3">

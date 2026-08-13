@@ -131,14 +131,14 @@ describe("Render Transaction List", () => {
 
       const nominal = screen.getByTestId("nominal-transaction");
       expect(nominal).toHaveTextContent("(Hemat Oy !!)");
-      expect(nominal).toHaveClass("text-red-500");
+      expect(nominal).toHaveClass("text-red-400");
     });
     it("check nominal less than <= 50.000", () => {
       renderTransactionsList();
 
       const nominal = screen.getByTestId("nominal-transaction");
       expect(nominal).toHaveTextContent("-");
-      expect(nominal).toHaveClass("text-emerald-600");
+      expect(nominal).toHaveClass("text-emerald-400");
     });
     it("should has transactions data", () => {
       renderTransactionsList();
@@ -167,7 +167,7 @@ describe("Render Transaction List", () => {
         name: "Has Transactions",
       });
 
-      expect(hasTransaction).toHaveClass("bg-white");
+      expect(hasTransaction).toHaveClass("bg-zinc-950");
     });
     it("constainer status FINISH", () => {
       renderTransactionsList({
@@ -182,7 +182,7 @@ describe("Render Transaction List", () => {
         name: "Has Transactions",
       });
 
-      expect(hasTransaction).toHaveClass("bg-red-50");
+      expect(hasTransaction).toHaveClass("bg-red-500/5");
     });
   });
 

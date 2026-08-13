@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import FormPut from "@/app/(pages)/transaction/components/pop-up/pop-up-form-put";
+import FormPut from "@/app/(pages)/transaction/components/form/update/pop-up-form-put";
 import {
   MockPutValueProps,
   MockInputMultipleImages,
@@ -116,7 +116,7 @@ describe("Render Put Form Transaction", () => {
     it("Close Button", () => {
       fireEvent.click(
         screen.getByRole("button", {
-          name: "Close Btn",
+          name: "Close Popup",
         }),
       );
       expect(MockProps.onClose).toHaveBeenCalledTimes(1);

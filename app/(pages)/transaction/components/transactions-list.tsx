@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useMemo } from "react";
 import type { TransactionsDataType } from "../types/transaction.type";
-import FormPut from "./pop-up/pop-up-form-put";
-import PopUpDeleteTransaction from "./pop-up/pop-up-delete";
+import FormPut from "./form/update/pop-up-form-put";
+import PopUpDeleteTransaction from "./form/delete/pop-up-delete";
 import PopUpShowImages from "./pop-up/pop-up-show-image";
 import { FormatDate } from "@/_utils/format-date";
 import { FormatCurrency } from "@/_utils/format-currency";
@@ -214,7 +214,9 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
     >
       {/* HEADER */}
       <div className="border-b border-zinc-800 pb-5">
-        <h2 className="text-lg font-semibold tracking-tight text-white">
+        <h2 className="text-lg font-semibold tracking-tight text-white"
+          aria-label="Title"
+        >
           Riwayat Transaksi
         </h2>
 

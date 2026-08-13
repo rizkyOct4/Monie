@@ -106,12 +106,10 @@ describe("Render New Transaction", () => {
       fillAndSubmitForm();
 
       await waitFor(() => {
-        expect(MockContext.newPostTransaction).toHaveBeenCalledWith(
-          expect.objectContaining({
-            ...MockPostFormNewIdTransactionsData,
-            date: expect.any(Date),
-          }),
-        );
+        expect(MockContext.newPostTransaction).toHaveBeenCalledWith({
+          ...MockPostFormNewIdTransactionsData,
+          date: expect.any(Date),
+        });
         expect(MockContext.newPostTransaction).toHaveBeenCalledTimes(1);
       });
     });
@@ -129,12 +127,10 @@ describe("Render New Transaction", () => {
       fillAndSubmitForm();
 
       await waitFor(() => {
-        expect(MockContext.newPostTransaction).toHaveBeenCalledWith(
-          expect.objectContaining({
-            ...MockPostFormNewIdTransactionsData,
-            date: expect.any(Date),
-          }),
-        );
+        expect(MockContext.newPostTransaction).toHaveBeenCalledWith({
+          ...MockPostFormNewIdTransactionsData,
+          date: expect.any(Date),
+        });
         expect(MockContext.newPostTransaction).toHaveBeenCalledTimes(1);
         expect(consoleSpy).toHaveBeenCalledWith(error);
       });
@@ -144,5 +140,4 @@ describe("Render New Transaction", () => {
 });
 
 // ! FORM VALIDASI ZOD IS ASYNC FUNCTION !!!!
-// TODO besok buat project baru, bersih" !!!! DEPLOY JUGA !! 
-
+// TODO besok buat project baru, bersih" !!!! DEPLOY JUGA !!

@@ -28,7 +28,9 @@ export const MockPostTransactionForm = {
 };
 
 export const MockSendPostTransactionForm = {
-  date: new Date("2026-08-09T14:30"),
+  id: nanoid(),
+  existId: "random-id-1",
+  nominal: 150000,
   images: [
     {
       id: "mock-id",
@@ -43,10 +45,8 @@ export const MockSendPostTransactionForm = {
       imageUrl: "random-url-2",
     },
   ],
-  information: "Pembelian kebutuhan sehari-hari",
-  nominal: 150000,
-  id: nanoid(),
-  status: "ACTIVE",
-  existId: "random-id-1",
   nameTransaction: "janea-1",
+  information: "Pembelian kebutuhan sehari-hari",
+  status: "ACTIVE",
+  date: new Date("2026-08-09T14:30"),
 };

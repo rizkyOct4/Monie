@@ -19,12 +19,12 @@ export const PostNewTransaction = async ({
     await tx.$executeRaw`
         INSERT INTO initial_salary (ref_id_user, id, initial_name, salary_income, salary_remaining, created_at, updated_at)
           VALUES
-        ((SELECT id FROM users WHERE public_id = ${publicId}), ${id}, ${nameTransaction}, ${initialNominal}, ${initialNominal} ,${date}::timestamp, ${date}::timestamp)
+        ((SELECT id FROM users WHERE public_id = ${publicId}), ${id}, ${nameTransaction}, ${initialNominal}, ${initialNominal} ,${date}, ${date})
       `;
   });
 };
 
-// * DELETE TRANSACTION ==============
+// * CURRENT TRANSACTION ==============
 type PostCurrentTransactionProps = {
   publicId: string;
   id: string;
@@ -41,6 +41,7 @@ type PostCurrentTransactionProps = {
   nameTransaction: string;
   date: Date;
   information?: string | undefined;
+  status: string;
 };
 
 export const PostCurrentTransaction = async ({
@@ -52,18 +53,19 @@ export const PostCurrentTransaction = async ({
   nameTransaction,
   date,
   information,
+  status,
 }: PostCurrentTransactionProps) => {
   return prisma.$transaction(async (tx) => {
     await tx.$executeRaw`
       UPDATE initial_salary
-        SET salary_remaining = salary_remaining - ${nominal}, updated_at = ${date}::timestamp
+        SET salary_remaining = salary_remaining - ${nominal}, updated_at = ${date}
       WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND id = ${existId}`;
 
     // ? TRANSACTIONS DB =========
     await tx.$executeRaw`
         INSERT INTO transactions (id, ref_id_user, ref_id, name_transaction, information, nominal, created_at, updated_at)
             VALUES
-        (${id} ,(SELECT id FROM users WHERE public_id = ${publicId}), ${existId}, ${nameTransaction}, ${information}, ${nominal} ,${date}::timestamp, ${date}::timestamp)`;
+        (${id} ,(SELECT id FROM users WHERE public_id = ${publicId}), ${existId}, ${nameTransaction}, ${information}, ${nominal} ,${date}, ${date})`;
 
     // * TRANSACTION IMAGES DB
     if (images.length > 0) {

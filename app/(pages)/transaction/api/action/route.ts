@@ -19,10 +19,13 @@ export async function POST(req: NextRequest) {
       nameTransaction,
       initialNominal,
       date,
+      status,
       nominal,
       images,
       information,
     } = await req.json();
+
+    const convDate = new Date(date);
 
     switch (key) {
       case "newPostTransaction": {
@@ -31,7 +34,7 @@ export async function POST(req: NextRequest) {
           initialNominal,
           id,
           nameTransaction,
-          date,
+          date: convDate,
         });
         return NextResponse.json({
           message: "New Transaction Success",
@@ -45,13 +48,16 @@ export async function POST(req: NextRequest) {
           nominal,
           images,
           nameTransaction,
-          date,
+          date: convDate,
           information,
+          status,
         });
         return NextResponse.json({
           message: "Transaction Success",
         });
       }
+      default:
+        return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });
@@ -73,22 +79,24 @@ export async function PUT(req: NextRequest) {
       information,
       newImages,
       deleteImages,
-      wrongDate
+      wrongDate,
     } = await req.json();
+
+    const convDate = new Date(date);
 
     switch (key) {
       case "putTransaction": {
         await PutTransaction({
           publicId,
           existId,
-          date,
+          date: convDate,
           lastNominal,
           nominal,
           images,
           information,
           newImages,
           deleteImages,
-          wrongDate
+          wrongDate,
         });
         return NextResponse.json({
           message: "Update Transaction Success",
@@ -105,6 +113,8 @@ export async function PUT(req: NextRequest) {
       //     message: "Delete Transaction Success",
       //   });
       // }
+      default:
+        return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });
@@ -131,6 +141,8 @@ export async function DELETE(req: NextRequest) {
           message: "Delete Transaction Success",
         });
       }
+      default:
+        return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });

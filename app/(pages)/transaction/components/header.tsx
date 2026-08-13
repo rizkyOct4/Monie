@@ -52,7 +52,12 @@ const DateInput = ({ date, setDate }: IDateInput) => {
   // );
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-zinc-200">{formatDate}</span>
+      <span
+        className="text-sm font-medium text-zinc-200"
+        data-testid="formatted-date"
+      >
+        {formatDate}
+      </span>
 
       <input
         id="transaction-date"
@@ -60,31 +65,8 @@ const DateInput = ({ date, setDate }: IDateInput) => {
         type="date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
-        className="
-        h-8
-        w-8
-        cursor-pointer
-        rounded-lg
-        border
-        border-zinc-800
-        bg-zinc-900
-        p-1
-        text-transparent
-        outline-none
-        transition
-        hover:border-emerald-500/40
-        hover:bg-zinc-800
-        focus:border-emerald-500/50
-        focus:ring-2
-        focus:ring-emerald-500/10
-
-        [&::-webkit-datetime-edit]:hidden
-        [&::-webkit-calendar-picker-indicator]:m-0
-        [&::-webkit-calendar-picker-indicator]:h-5
-        [&::-webkit-calendar-picker-indicator]:w-5
-        [&::-webkit-calendar-picker-indicator]:cursor-pointer
-        [&::-webkit-calendar-picker-indicator]:opacity-70
-        hover:[&::-webkit-calendar-picker-indicator]:opacity-100
+        className="bg-white h-8 w-8 cursor-pointer rounded-lg border border-zinc-800 p-1 text-transparent outline-none transition hover:border-emerald-500/40 hover:bg-zinc-800 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10
+        [&::-webkit-datetime-edit]:hidden [&::-webkit-calendar-picker-indicator]:m-0 [&::-webkit-calendar-picker-indicator]:h-5 [&::-webkit-calendar-picker-indicator]:w-5 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-70 hover:[&::-webkit-calendar-picker-indicator]:opacity-100
       "
       />
     </div>

@@ -11,7 +11,7 @@ const TransactionModalClient = () => {
     useContext(TransactionContext);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-4 min-h-screen">
       <DateInput date={date} setDate={setDate} />
       {isFTransactionsListData ? (
         <TransactionListSkeleton />

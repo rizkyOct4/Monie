@@ -12,7 +12,7 @@ export const GetIdTransactions = async ({
   limit,
   offset,
 }: GetIdTransactionsProps) => {
-  const query = await prisma.$queryRaw`
+  const query = await prisma.$queryRaw<{ id: string; initial_name: string }[]>`
     SELECT id, initial_name 
       FROM initial_salary
     WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND status != 'FINISH'::"IdStatus"
@@ -21,7 +21,12 @@ export const GetIdTransactions = async ({
     OFFSET ${offset}
   `;
 
-  if (!query) return [];
+  if (query.length === 0) {
+    return {
+      data: [],
+      hasMore: false,
+    };
+  }
 
   const queryCheck = await prisma.$queryRaw<{ amount_id: number }[]>`
     SELECT COALESCE(COUNT(id), 0) AS amount_id
@@ -43,14 +48,14 @@ export const GetSearchIdTransactions = async ({
   publicId,
   search,
 }: GetSearchIdTransactionsProps) => {
-  const query = await prisma.$queryRaw`
+  const query = await prisma.$queryRaw<{ id: string; initial_name: string }[]>`
     SELECT id, initial_name
       FROM initial_salary
     WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
     AND initial_name ILIKE ${`%${search}%`} AND status != 'FINISH'::"IdStatus"
     LIMIT 20`;
 
-  if (!query) return [];
+  if (query.length === 0) return [];
   return camelcaseKeys(query);
 };
 
@@ -67,7 +72,7 @@ export const GetTransactionList = async ({
   offset,
   limit,
 }: GetTransactionListProps) => {
-  const query = await prisma.$queryRaw`
+  const query = await prisma.$queryRaw<any>`
   SELECT s.status, t.id, t.ref_id, t.information, t.nominal, t.created_at, t.updated_at,
    COALESCE(
       (
@@ -89,7 +94,12 @@ export const GetTransactionList = async ({
     AND t.ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
   ORDER BY t.updated_at DESC`;
 
-  if (!query) return [];
+  if (query.length === 0) {
+    return {
+      data: [],
+      hasMore: false,
+    };
+  }
 
   const queryMore = await prisma.$queryRaw<{ amount_transaction: number }[]>`
   SELECT COALESCE(COUNT(created_at), 0)::int AS amount_transaction

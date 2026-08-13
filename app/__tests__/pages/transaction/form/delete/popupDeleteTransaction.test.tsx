@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import PopUpDeleteTransaction from "@/app/(pages)/transaction/components/pop-up/pop-up-delete";
+import PopUpDeleteTransaction from "@/app/(pages)/transaction/components/form/delete/pop-up-delete";
 import { MockDeleteFormTransactionsData } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
 import { TransactionContext } from "@/app/context/context";
-import type { PopUpDeleteTransactionProps } from "@/app/(pages)/transaction/components/pop-up/pop-up-delete";
+import type { PopUpDeleteTransactionProps } from "@/app/(pages)/transaction/components/form/delete/pop-up-delete";
 import { MockUseMutationDeleteTransactions } from "@/app/__mocks__/(pages)/transaction/mutation/mutation.delete.mock";
 
 const mockContext = MockUseMutationDeleteTransactions();

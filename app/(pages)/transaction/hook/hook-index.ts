@@ -13,7 +13,7 @@ import {
 
 export const useHookTransaction = (publicId: string, currentPath: string) => {
   // * QUERY =======
-  const QIdGet = useQueryIdTransactions({ publicId, currentPath });
+  const QIdGet = useQueryIdTransactions({ publicId });
   const QGet = useQueryTransactions({ publicId, currentPath });
 
   // * MUTATION =======
@@ -22,7 +22,7 @@ export const useHookTransaction = (publicId: string, currentPath: string) => {
     refetchIdTransactions: QIdGet.idTransactionsListRefetch,
   });
   const MPost = useMutationTransaction({
-    queryKeyTransactions: QGet.queryKeyTransactions,
+    publicId: publicId,
   });
   const MPut = useMutationPutTranscation({
     publicId,

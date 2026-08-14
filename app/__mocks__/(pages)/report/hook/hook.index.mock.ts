@@ -3,7 +3,6 @@ import {
   useQueryPeriodIdTransactions,
 } from "@/app/(pages)/report/hook/query/query-index";
 
-
 // ! ReturnType *****
 // ! TypeScript akan langsung memeriksa apakah bentuk mock masih sesuai.
 // ! Kalau ada perubahan yang membuat tipe tidak cocok, kamu akan mendapat error saat compile, sehingga mock ikut diperbarui.

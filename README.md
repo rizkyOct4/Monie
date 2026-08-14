@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Monie
 
-## Getting Started
+Monie adalah aplikasi manajemen keuangan pribadi yang dibuat untuk membantu pengguna mencatat, mengelola, dan memantau transaksi keuangan secara lebih terstruktur.
 
-First, run the development server:
+Aplikasi ini berfokus pada pencatatan pemasukan dan pengeluaran, pengelolaan saldo, serta penyajian laporan keuangan agar pengguna dapat memahami kondisi keuangannya dengan lebih mudah.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 🔐 Authentication menggunakan Auth.js
+- 💰 Pencatatan pemasukan dan pengeluaran
+- 📝 Menambahkan informasi/keterangan transaksi
+- 📅 Pengelolaan tanggal transaksi
+- 💵 Pengelolaan initial salary / saldo awal
+- 📊 Report dan insight keuangan
+- 🔎 Search transaksi berdasarkan ID
+- ✏️ Edit transaksi
+- 🗑️ Delete transaksi
+- 🖼️ Upload multiple images
+- ☁️ Image storage menggunakan Cloudinary
+- ⚡ Data fetching dan caching menggunakan TanStack React Query
+- 🗄️ PostgreSQL sebagai database
+- 🔷 Prisma ORM
+- 🎨 Tailwind CSS
+- 🧪 Unit dan component testing menggunakan Jest dan React Testing Library
+- 📱 Responsive interface
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+### Frontend
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- TanStack React Query
+- React Hook Form
+- Zod
+- Lucide React
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Backend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Next.js Route Handlers
+- Auth.js
+- Prisma ORM
+- PostgreSQL
 
-## Deploy on Vercel
+### Storage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Cloudinary
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Testing
+
+- Jest
+- React Testing Library
+- Jest DOM
+- MSW
+
+### Deployment
+
+- Vercel
+- Neon PostgreSQL
+
+---
+
+## 📂 Project Structure
+
+```text
+app/
+├── _components/
+│   ├── auth/
+│   ├── report/
+│   ├── transaction/
+│   └── ...
+│
+├── _hooks/
+│   └── ...
+│
+├── _lib/
+│   ├── prisma/
+│   ├── ...
+│   └── auth.ts
+│
+├── _utils/
+│   └── ...
+│
+├── api/
+│   └── transaction/
+│       └── ...
+│
+├── transaction/
+│   └── ...
+│
+├── report/
+│   └── ...
+│
+├── layout.tsx
+└── page.tsx
+
+__tests__/
+├── mocks/
+├── components/
+├── hooks/
+└── ...
+
+prisma/
+└── schema.prisma
+
+public/
+└── ...
+
+jest.setup.ts
+next.config.ts
+package.json
+tsconfig.json

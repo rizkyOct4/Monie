@@ -15,8 +15,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Monie",
+  title: {
+    default: "Monie",
+    template: "%s | Monie 1.0",
+  },
   description: "Still Prototype 1.0",
+  verification: {
+    google: "aWNC-dVpCVjb4h0JZ0MKa3Hm510TlbiuOemU5QJavo8",
+  },
 };
 
 export default function RootLayout({

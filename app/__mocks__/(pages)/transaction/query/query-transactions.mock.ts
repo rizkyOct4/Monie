@@ -1,4 +1,7 @@
-import { useQueryIdTransactions } from "@/app/(pages)/transaction/hook/query/query-index";
+import {
+  useQueryIdTransactions,
+  useQueryTransactions,
+} from "@/app/(pages)/transaction/hook/query/query-index";
 
 export const MockUseQueryIdTransactions = (): ReturnType<
   typeof useQueryIdTransactions
@@ -28,4 +31,15 @@ export const MockUseQueryIdTransactions = (): ReturnType<
     },
   ],
   isFetchingSearchIdTransaction: false,
+});
+
+export const MockUseQueryTransactions = (): ReturnType<
+  typeof useQueryTransactions
+> => ({
+  TransactionsListData: [],
+  isFTransactionsListData: false,
+  TransactionsListRefetch: jest.fn(),
+  date: "2026-08-01",
+  setDate: jest.fn(),
+  queryKeyTransactions: ["keyTransactionsList", "ss12", "2026-08-01"],
 });

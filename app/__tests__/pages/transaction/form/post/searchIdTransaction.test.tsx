@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import SearchIdTransaction from "@/app/(pages)/transaction/components/form/post/search-id-transactions";
 import { TransactionContext } from "@/app/context/context";
-import { MockUseQueryIdTransactions } from "@/app/__mocks__/(pages)/transaction/query/transactions.mock";
+import { MockUseQueryIdTransactions } from "@/app/__mocks__/(pages)/transaction/query/query-transactions.mock";
 
 const MockContext = MockUseQueryIdTransactions();
 

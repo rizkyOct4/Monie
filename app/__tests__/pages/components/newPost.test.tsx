@@ -1,6 +1,8 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import TransactionProvider from "@/app/(pages)/transaction/context/context";
 import NewPostBtn from "@/app/(pages)/components/new-post-btn";
+import { useSessionClient } from "@/_lib/c-session";
+
 
 // ! while used provider its makes everything inside those must be testing!! so do it instead
 jest.mock("@/app/(pages)/transaction/context/context", () => ({
@@ -8,8 +10,12 @@ jest.mock("@/app/(pages)/transaction/context/context", () => ({
   default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+jest.mock("@/_lib/c-session", () => ({
+  useSessionClient: jest.fn(),
+}));
+
 const mockPropsFormPost = jest.fn();
-jest.mock("@/app/(pages)/components/options-form-post", () => ({
+jest.mock("@/app/(pages)/transaction/components/form/post/options-form-post", () => ({
   __esModule: true,
   default: ({ onClose }: { onClose: () => void }) => {
     mockPropsFormPost({ onClose });
@@ -25,6 +31,15 @@ jest.mock("@/app/(pages)/components/options-form-post", () => ({
     );
   },
 }));
+
+const mockedUseSessionClient = useSessionClient as jest.MockedFunction<
+  typeof useSessionClient
+>;
+
+mockedUseSessionClient.mockReturnValue({
+  publicId: "ss12",
+  name: "Asking",
+});
 
 describe("Render New Post Btn", () => {
   beforeEach(() => {

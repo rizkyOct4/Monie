@@ -25,7 +25,7 @@ describe("HeaderReport", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  it("should call setPeriod when month changes", () => {
+  it("should call setPeriod when month changes and automatically open ID Transaction after", () => {
     renderHeader();
 
     // ? FIND EVENT
@@ -39,22 +39,12 @@ describe("HeaderReport", () => {
     });
 
     expect(mockContext.setPeriod).toHaveBeenCalledWith("2026-07");
-  });
 
-  it("should open transaction dropdown", () => {
-    renderHeader();
+    const dropdownIDTransaction = screen.getByRole("dialog", {
+      name: "Transaction ID Dropdown",
+    });
 
-    // ? BEFORE OPEN TRANSACTION
-    expect(screen.queryByText("Asking")).not.toBeInTheDocument();
-
-    const button = screen.getByTestId("transaction-button");
-
-    // ? OPEN BUTTON
-    fireEvent.click(button);
-
-    const loading = screen.getByTestId("loading-transaction");
-
-    expect(loading).toBeInTheDocument();
+    expect(dropdownIDTransaction).toBeInTheDocument();
   });
 
   it("should close transaction dropdown and selected id transaction", () => {
@@ -62,13 +52,21 @@ describe("HeaderReport", () => {
 
     // ! why do i have to open that state first ? =====
     // ? OPEN
-    const openButton = screen.getByTestId("transaction-button");
+    const openButton = screen.getByRole("button", {
+      name: "ID Transaction Button"
+    });
     fireEvent.click(openButton);
 
-    const parent = screen.getByTestId("transaction-dropdown");
-    expect(parent).toBeInTheDocument();
+    const dropdownIDTransaction = screen.getByRole("dialog", {
+      name: "Transaction ID Dropdown",
+    });
+    expect(dropdownIDTransaction).toBeInTheDocument();
 
-    expect(screen.getByTestId("loading-transaction")).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", {
+        name: "Loading ID Transaction",
+      }),
+    ).toBeInTheDocument();
 
     // ! UPDATE CONTEXT MOCK ====
     const updateContext = {
@@ -81,16 +79,25 @@ describe("HeaderReport", () => {
         <HeaderReport />
       </ReportContext.Provider>,
     );
+    expect(
+      screen.queryByRole("status", {
+        name: "Loading ID Transaction",
+      }),
+    ).not.toBeInTheDocument();
 
-    expect(screen.queryByTestId("loading-transaction")).not.toBeInTheDocument();
+    const selectedID = screen.getByRole("button", {
+      name: "ID Transaction Items 1"
+    });
 
-    const button = screen.getByTestId("transaction-item-1");
-
-    fireEvent.click(button);
+    fireEvent.click(selectedID);
 
     expect(mockContext.setIdPeriod).toHaveBeenCalledWith("1");
 
-    expect(screen.queryByTestId("transaction-dropdown")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("dialog", {
+        name: "Transaction ID Dropdown"
+      }),
+    ).not.toBeInTheDocument();
 
     expect(openButton).toHaveTextContent("Asking");
   });

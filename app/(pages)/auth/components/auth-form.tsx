@@ -26,13 +26,13 @@ const AuthForm = () => {
       </div>
 
       {/* Divider */}
-      {/* <Divider className="my-8" text="Or continue with email" /> */}
+      <Divider className="my-8" text="Or continue with email" />
 
       {/* Login Form */}
-      {/* <LoginForm /> */}
+      <LoginForm />
 
       {/* Footer */}
-      {/* <div className="mt-8 text-center text-sm text-zinc-400">
+      <div className="mt-8 text-center text-sm text-zinc-400">
         <p>Dont have an account? </p>
         <Link
           href="/register"
@@ -40,7 +40,7 @@ const AuthForm = () => {
         >
           Sign Up
         </Link>
-      </div> */}
+      </div>
     </div>
   );
 };

@@ -104,107 +104,6 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
     }
   }, [deleteValue, imageValue, popup, putValue]);
 
-  // return (
-  //   <div role="dialog" aria-modal="true" aria-labelledby="transactions-list">
-  //     {/* HEADER */}
-  //     <div className="pb-4" id="transactions-list">
-  //       <h2
-  //         className="text-sm font-semibold uppercase tracking-wide text-zinc-500"
-  //         aria-label="Title"
-  //       >
-  //         Riwayat Transaksi
-  //       </h2>
-  //     </div>
-
-  //     {/* LIST */}
-  //     <div className="flex flex-col gap-4">
-  //       {TransactionsListData.length > 0 ? (
-  //         TransactionsListData.map((i, idx) => (
-  //           <div
-  //             role="dialog"
-  //             aria-label="Has Transactions"
-  //             key={idx}
-  //             className={`group flex items-center justify-between rounded-2xl border p-5 transition-colors ${
-  //               i.status === "FINISH"
-  //                 ? "border-red-200 bg-red-50"
-  //                 : "border-zinc-200 bg-white hover:border-zinc-300"
-  //             }`}
-  //           >
-  //             {/* LEFT */}
-  //             <div className="flex flex-col">
-  //               <h3
-  //                 className="text-base font-semibold text-zinc-900"
-  //                 aria-label="Information Transaction"
-  //               >
-  //                 {i.information || "Transaction"}
-  //               </h3>
-
-  //               <p className="mt-1 text-sm text-zinc-500">
-  //                 {FormatDate(i.createdAt)}
-  //               </p>
-
-  //               <div className="mt-4 flex flex-wrap gap-2">
-  //                 {ListOptionBtn.map((b, idx) => (
-  //                   <button
-  //                     aria-label={`Button Popup ${b.value}`}
-  //                     key={idx}
-  //                     onClick={() =>
-  //                       handleAction(
-  //                         b.value,
-  //                         i.id,
-  //                         i.refId,
-  //                         i.images,
-  //                         i.information,
-  //                         i.nominal,
-  //                         i.createdAt,
-  //                       )
-  //                     }
-  //                     className="
-  //                 rounded-lg
-  //                 border
-  //                 border-zinc-200
-  //                 px-3
-  //                 py-1.5
-  //                 text-xs
-  //                 font-medium
-  //                 text-zinc-600
-  //                 transition-colors
-  //                 hover:bg-zinc-100
-  //               "
-  //                   >
-  //                     {b.text}
-  //                   </button>
-  //                 ))}
-  //               </div>
-  //             </div>
-
-  //             {/* RIGHT */}
-  //             <div className="text-right">
-  //               <p
-  //                 data-testid="nominal-transaction"
-  //                 className={`text-lg font-bold ${
-  //                   i.nominal <= 50000 ? "text-emerald-600" : "text-red-500"
-  //                 }`}
-  //               >
-  //                 {i.nominal <= 50000 ? "-" : "(Hemat Oy !!)"}{" "}
-  //                 {FormatCurrency(i.nominal)}
-  //               </p>
-
-  //               <p className="mt-1 text-sm text-zinc-500">{i.information}</p>
-  //             </div>
-  //           </div>
-  //         ))
-  //       ) : (
-  //         <div className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 py-10 text-center">
-  //           <p className="text-sm text-zinc-500">Tidak ada transaksi</p>
-  //         </div>
-  //       )}
-  //     </div>
-
-  //     {/* POPUP */}
-  //     {PopUpRender}
-  //   </div>
-  // );
   return (
     <div
       className="flex flex-col gap-6 "
@@ -212,18 +111,6 @@ const TransactionList = ({ TransactionsListData }: TranscationListProps) => {
       aria-modal="true"
       aria-labelledby="transactions-list"
     >
-      {/* HEADER */}
-      <div className="border-b border-zinc-800 pb-5">
-        <h2 className="text-lg font-semibold tracking-tight text-white"
-          aria-label="Title"
-        >
-          Riwayat Transaksi
-        </h2>
-
-        <p className="mt-1 text-sm text-zinc-500">
-          Daftar transaksi yang telah dicatat
-        </p>
-      </div>
 
       {/* LIST */}
       <div className="flex flex-col gap-3">

@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import OptionsFormPost from "@/app/(pages)/transaction/components/form/post/options-form-post";
 
 const mockPropsNewTransaction = jest.fn();
-jest.mock("@/app/(pages)/components/new-transaction", () => ({
+jest.mock("@/app/(pages)/transaction/components/form/post/new-transaction", () => ({
   __esModule: true,
   default: ({
     onClose,
@@ -20,7 +20,7 @@ jest.mock("@/app/(pages)/components/new-transaction", () => ({
 }));
 
 const mockPropsExistedTransaction = jest.fn();
-jest.mock("@/app/(pages)/components/existed-transaction", () => ({
+jest.mock("@/app/(pages)/transaction/components/form/post/existed-transaction", () => ({
   __esModule: true,
   default: ({ onClose }: { onClose: () => void }) => {
     mockPropsExistedTransaction({ onClose });

@@ -20,7 +20,7 @@ import {
 
 const SettingModal = () => {
   return (
-    <main className="min-h-screen w-full bg-zinc-950 px-4 py-6 text-zinc-100 sm:px-6 lg:px-8">
+    <main className="min-h-screen w-full px-4 py-6 text-zinc-100 sm:px-6 lg:px-8">
       <div className="mx-auto w-full">
         {/* Header */}
         <div className="mb-6">

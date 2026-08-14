@@ -24,8 +24,8 @@ const transactions = [
 
 export default function DashboardPage() {
   return (
-    <main className="min-h-screen bg-zinc-950 px-4 py-6 text-zinc-100 sm:px-6 lg:px-8">
-      <div className="mx-auto w-full max-w-5xl">
+    <main className="min-h-screen px-4 py-6 text-zinc-100 sm:px-6 lg:px-8">
+      <div className="w-full">
         {/* Header */}
         <section className="mb-6">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">

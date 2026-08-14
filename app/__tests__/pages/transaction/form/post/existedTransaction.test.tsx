@@ -319,7 +319,6 @@ describe("Render Existed Transactions", () => {
       expect(MockContext.postTransaction).toHaveBeenCalledWith(
         expect.objectContaining({
           ...MockSendPostTransactionForm,
-          date: new Date(MockSendPostTransactionForm.date).toISOString(),
           images: expect.arrayContaining([
             expect.objectContaining({
               imageId: "random-id-1",
@@ -354,10 +353,7 @@ describe("Render Existed Transactions", () => {
       fillAndSubmitForm();
 
       await waitFor(() => {
-        expect(RejectedMock).toHaveBeenCalledWith({
-          ...MockSendPostTransactionForm,
-          date: new Date(MockSendPostTransactionForm.date).toISOString(),
-        });
+        expect(RejectedMock).toHaveBeenCalledWith(MockSendPostTransactionForm);
 
         expect(RejectedMock).toHaveBeenCalledTimes(1);
 

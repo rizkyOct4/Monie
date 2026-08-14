@@ -7,6 +7,7 @@ import {
   MockPutFormTransactionsData,
   MockDeleteFormTransactionsData,
 } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
+import FormPut from "@/app/(pages)/transaction/components/form/update/pop-up-form-put";
 
 const mockProps = {
   TransactionsListData: MockTransactionsListData,
@@ -42,7 +43,7 @@ jest.mock(
 // ? POP UP UPDATE
 const mockPropsPutImage = jest.fn();
 jest.mock(
-  "@/app/(pages)/transaction/components/pop-up/pop-up-form-put",
+  "@/app/(pages)/transaction/components/form/update/pop-up-form-put",
   () => ({
     __esModule: true,
     default: ({
@@ -65,7 +66,7 @@ jest.mock(
 
 // ? POP UP DELETE
 const mockPropsDeleteImage = jest.fn();
-jest.mock("@/app/(pages)/transaction/components/pop-up/pop-up-delete", () => ({
+jest.mock("@/app/(pages)/transaction/components/form/delete/pop-up-delete", () => ({
   __esModule: true,
   default: ({
     deleteValue,

@@ -7,20 +7,24 @@ import { useContext } from "react";
 import { ReportContext } from "@/app/context/context";
 
 const ReportClient = () => {
-  const { IdPeriodTransactionData } = useContext(ReportContext);
+  const { IdPeriodTransactionData, idPeriod } = useContext(ReportContext);
 
-  const insightData = IdPeriodTransactionData[0]?.insight
+  const salaryIncome = idPeriod ? IdPeriodTransactionData[0]?.salaryIncome : 0;
+  const salaryRemaining = idPeriod
+    ? IdPeriodTransactionData[0]?.salaryRemaining
+    : 0;
+  const insightData = idPeriod ? IdPeriodTransactionData[0]?.insight : [];
 
   return (
     <main className="flex flex-col p-6 w-full min-h-screen relative gap-4">
-      {/* Header */}
       <HeaderReport />
 
-      {/* Kesehatan Finansial */}
-      <FinanceHealth />
+      <FinanceHealth
+        salaryIncome={salaryIncome}
+        salaryRemaining={salaryRemaining}
+      />
 
-      {/* Insight */}
-      <ReportInsight insightData={insightData}/>
+      <ReportInsight insightData={insightData} />
     </main>
   );
 };

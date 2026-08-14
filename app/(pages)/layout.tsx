@@ -38,7 +38,7 @@ const MainLayout = ({ children }: RootLayoutProps) => {
         </div>
 
         {/* Content */}
-        <div className="relative z-100 w-full">
+        <div className="relative z-100 mx-auto w-full max-w-5xl">
           {children}
 
           <NewPostBtn />

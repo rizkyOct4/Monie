@@ -14,10 +14,12 @@ import type {
 } from "../../types/transaction.type";
 
 // * ID TRANSACTIONS ======================
+type UseQueryIdTransactionsProps = {
+  publicId: string;
+};
 export const useQueryIdTransactions = ({
   publicId,
-  currentPath,
-}: UseQueryTransactionsProps) => {
+}: UseQueryIdTransactionsProps) => {
   const [isOpenIdTransaction, setIsOpenIdTransaction] = useState(false);
 
   // * ID TRANSACTIONS ======================

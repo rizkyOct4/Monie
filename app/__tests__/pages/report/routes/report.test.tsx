@@ -27,7 +27,7 @@ import { GET } from "@/app/(pages)/report/api/route";
 
 // ? DI CAST INI UNTUK CASE TYPESCRIPT AGAR TAU INI MOCK
 const mockedSession = GetSession as jest.MockedFunction<typeof GetSession>;
-const mockedGetPeriod = GetPeriodTransaction as jest.MockedFunction<
+const mockedGetPeriodTransaction = GetPeriodTransaction as jest.MockedFunction<
   typeof GetPeriodTransaction
 >;
 const mockedGetIdPeriod = GetIdPeriodTransaction as jest.MockedFunction<
@@ -61,7 +61,7 @@ describe("GET /report/api", () => {
 
     it("should return 200 when data exists", async () => {
       // ? RETURN MOCK DATA =====
-      mockedGetPeriod.mockResolvedValue([
+      mockedGetPeriodTransaction.mockResolvedValue([
         {
           id: "period-1",
           initialName: "Asking",
@@ -85,11 +85,11 @@ describe("GET /report/api", () => {
       );
 
       // ! Memastikan service dipanggil dengan parameter yang benar.
-      expect(mockedGetPeriod).toHaveBeenCalledWith(expectedPeriod);
+      expect(mockedGetPeriodTransaction).toHaveBeenCalledWith(expectedPeriod);
     });
     it("should return 404 when data didn't exists", async () => {
       // ? RETURN MOCK DATA =====
-      mockedGetPeriod.mockResolvedValue([]);
+      mockedGetPeriodTransaction.mockResolvedValue([]);
 
       const res = await GET(req);
 
@@ -105,10 +105,10 @@ describe("GET /report/api", () => {
       });
 
       // ! Memastikan service dipanggil dengan parameter yang benar.
-      expect(mockedGetPeriod).toHaveBeenCalledWith(expectedPeriod);
+      expect(mockedGetPeriodTransaction).toHaveBeenCalledWith(expectedPeriod);
     });
     it("should return 500 when service throws an error", async () => {
-      mockedGetPeriod.mockRejectedValue(new Error("Internal Server Error"));
+      mockedGetPeriodTransaction.mockRejectedValue(new Error("Internal Server Error"));
 
       const res = await GET(req);
       const body = await res.json();
@@ -119,7 +119,7 @@ describe("GET /report/api", () => {
         message: "Internal Server Error",
       });
 
-      expect(mockedGetPeriod).toHaveBeenCalledWith(expectedPeriod);
+      expect(mockedGetPeriodTransaction).toHaveBeenCalledWith(expectedPeriod);
     });
   });
 

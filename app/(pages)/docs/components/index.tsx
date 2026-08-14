@@ -8,9 +8,7 @@ import {
   ChevronRight,
   CircleDollarSign,
   FileChartColumn,
-  Image as ImageIcon,
   Lightbulb,
-  ListChecks,
   Plus,
   ShieldCheck,
   Wallet,
@@ -81,14 +79,9 @@ const benefits = [
 
 export default function DocsIndex() {
   return (
-    <main className="min-h-screen bg-[#050505] text-white">
-      {/* Background */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-200px] h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-emerald-500/[0.07] blur-[140px]" />
-        <div className="absolute bottom-[-200px] right-[-100px] h-[400px] w-[400px] rounded-full bg-blue-500/[0.04] blur-[120px]" />
-      </div>
-
+    <main className="min-h-screen text-white">
       <div className="relative mx-auto max-w-6xl px-5 py-8 sm:px-8 lg:px-10">
+
         {/* NAVBAR */}
         <nav className="flex items-center justify-between border-b border-white/10 pb-6">
           <Link
@@ -149,8 +142,8 @@ export default function DocsIndex() {
 
         {/* PROBLEM */}
         <section className="border-t border-white/10 py-20">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div>
+          <div className="flex flex-col gap-12 lg:flex-row lg:items-center">
+            <div className="w-full lg:w-1/2">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
                 Kenapa aplikasi ini?
               </p>
@@ -160,7 +153,7 @@ export default function DocsIndex() {
               </h2>
             </div>
 
-            <div className="space-y-5 text-sm leading-7 text-zinc-400">
+            <div className="w-full space-y-5 text-sm leading-7 text-zinc-400 lg:w-1/2">
               <p>
                 Banyak orang mengetahui berapa uang yang mereka miliki, tetapi
                 tidak benar-benar mengetahui ke mana uang tersebut pergi.
@@ -198,14 +191,14 @@ export default function DocsIndex() {
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-wrap gap-4">
             {features.map((feature) => {
               const Icon = feature.icon;
 
               return (
                 <div
                   key={feature.title}
-                  className="group rounded-2xl border border-white/10 bg-white/[0.025] p-6 transition hover:border-emerald-500/20 hover:bg-white/[0.04]"
+                  className="group w-full rounded-2xl border border-white/10 bg-white/[0.025] p-6 transition hover:border-emerald-500/20 hover:bg-white/[0.04] sm:w-[calc(50%-0.5rem)]"
                 >
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/[0.08] text-emerald-400">
                     <Icon size={20} />
@@ -236,17 +229,19 @@ export default function DocsIndex() {
             </h2>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="flex flex-wrap gap-4">
             {steps.map((step) => (
               <div
                 key={step.number}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6"
+                className="w-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]"
               >
                 <span className="text-sm font-bold text-emerald-400">
                   {step.number}
                 </span>
 
-                <h3 className="mt-5 font-semibold text-white">{step.title}</h3>
+                <h3 className="mt-5 font-semibold text-white">
+                  {step.title}
+                </h3>
 
                 <p className="mt-2 text-sm leading-6 text-zinc-500">
                   {step.description}
@@ -258,8 +253,8 @@ export default function DocsIndex() {
 
         {/* WHAT YOU CAN SEE */}
         <section className="border-t border-white/10 py-20">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div>
+          <div className="flex flex-col gap-12 lg:flex-row lg:items-center">
+            <div className="w-full lg:w-1/2">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
                 Lebih dari sekadar pencatatan
               </p>
@@ -274,11 +269,13 @@ export default function DocsIndex() {
               </p>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl">
+            <div className="w-full rounded-3xl border border-white/10 bg-zinc-950 p-5 shadow-2xl lg:w-1/2">
               <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-zinc-500">Kesehatan Finansial</p>
+                    <p className="text-xs text-zinc-500">
+                      Kesehatan Finansial
+                    </p>
 
                     <p className="mt-1 text-lg font-semibold">
                       Kondisi Keuangan
@@ -303,8 +300,8 @@ export default function DocsIndex() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+                  <div className="flex flex-wrap gap-3">
+                    <div className="w-full rounded-xl border border-white/10 bg-black/30 p-4 sm:w-[calc(50%-0.375rem)]">
                       <p className="text-[10px] uppercase tracking-wide text-zinc-600">
                         Transaksi
                       </p>
@@ -312,7 +309,7 @@ export default function DocsIndex() {
                       <p className="mt-2 text-lg font-semibold">24</p>
                     </div>
 
-                    <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+                    <div className="w-full rounded-xl border border-white/10 bg-black/30 p-4 sm:w-[calc(50%-0.375rem)]">
                       <p className="text-[10px] uppercase tracking-wide text-zinc-600">
                         Pengeluaran
                       </p>
@@ -344,8 +341,8 @@ export default function DocsIndex() {
 
         {/* BENEFITS */}
         <section className="border-t border-white/10 py-20">
-          <div className="grid gap-12 lg:grid-cols-2">
-            <div>
+          <div className="flex flex-col gap-12 lg:flex-row">
+            <div className="w-full lg:w-1/2">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
                 Apa yang Anda dapatkan?
               </p>
@@ -361,7 +358,7 @@ export default function DocsIndex() {
               </p>
             </div>
 
-            <div className="grid gap-3">
+            <div className="flex w-full flex-col gap-3 lg:w-1/2">
               {benefits.map((benefit) => (
                 <div
                   key={benefit}
@@ -421,11 +418,17 @@ export default function DocsIndex() {
               Transaksi
             </Link>
 
-            <Link href="/report" className="transition hover:text-zinc-300">
+            <Link
+              href="/report"
+              className="transition hover:text-zinc-300"
+            >
               Laporan
             </Link>
 
-            <Link href="/setting" className="transition hover:text-zinc-300">
+            <Link
+              href="/setting"
+              className="transition hover:text-zinc-300"
+            >
               Pengaturan
             </Link>
 

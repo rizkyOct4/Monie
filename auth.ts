@@ -57,6 +57,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   secret: process.env.AUTH_SECRET,
+  // cookies: {
+  //   sessionToken: {
+  //     name: "session-token",
+  //     options: {
+  //       httpOnly: true,
+  //       secure: process.env.NODE_ENV === "production",
+  //       sameSite: "lax",
+  //       path: "/",
+  //     },
+  //   },
+  // },
 });
 
 // ? TOKEN DARI AUTH.js ??? user -> users sendiri ???

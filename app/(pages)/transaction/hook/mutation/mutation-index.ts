@@ -13,7 +13,11 @@ import type {
   IdTransactionsDataType,
   TransactionsDataType,
 } from "../../types/transaction.type";
-import type { TPutTransaction } from "../../types/action/action.type";
+import type {
+  TPostNewIDTransaction,
+  TPostExistedTransaction,
+  TPutTransaction,
+} from "../../types/action/action.type";
 import { ConvertDateLocalIntoDate } from "@/_utils/format-date";
 
 // * NEW TRANSACTIONS ======================
@@ -38,7 +42,7 @@ export const useMutationNewTransaction = ({
       const res = await axios.post(URL, data);
       return res.data;
     },
-    onMutate: async (mutate: any) => {
+    onMutate: async (mutate: TPostNewIDTransaction) => {
       await Promise.all([
         queryClient.cancelQueries({ queryKey: queryKeyIdTransactions }),
         // queryClient.cancelQueries({ queryKey: queryKeyProjectList }),
@@ -89,75 +93,90 @@ export const useMutationNewTransaction = ({
 };
 
 // * EXISTS TRANSACTIONS ======================
+const convertISOIntoNewDate = (values: Date) => {
+  return values.toISOString().split("T")[0];
+};
 type UseMutationTransactionProps = {
-  queryKeyTransactions: QueryKey;
+  publicId: string;
 };
 export const useMutationTransaction = ({
-  queryKeyTransactions,
+  publicId,
 }: UseMutationTransactionProps) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: postTransaction, isPending: isPendingPostTransaction } = useMutation({
-    mutationFn: async (data) => {
-      const URL = ROUTES_TRANSACTION.POST({
-        key: "postTransaction",
-      });
-      const res = await axios.post(URL, data);
-      return res.data;
-    },
-    onMutate: async (mutate: any) => {
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: queryKeyTransactions }),
-        // queryClient.cancelQueries({ queryKey: queryKeyProjectList }),
-      ]);
-
-      const prevTransactions = queryClient.getQueryData(queryKeyTransactions);
-
-      if (!prevTransactions) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeyTransactions,
+  const { mutateAsync: postTransaction, isPending: isPendingPostTransaction } =
+    useMutation({
+      mutationFn: async (data) => {
+        const URL = ROUTES_TRANSACTION.POST({
+          key: "postTransaction",
         });
-      }
+        const res = await axios.post(URL, data);
+        return res.data;
+      },
+      onMutate: async (mutate: TPostExistedTransaction) => {
+        const conv = convertISOIntoNewDate(mutate.date);
+        const usedQuery = ["keyTransactionsList", publicId, conv];
 
-      queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
-        queryKeyTransactions,
-        (oldData) => {
-          if (!oldData) return oldData;
+        await Promise.all([
+          queryClient.cancelQueries({ queryKey: usedQuery }),
+          // queryClient.cancelQueries({ queryKey: queryKeyProjectList }),
+        ]);
 
-          return {
-            ...oldData,
-            pages: oldData?.pages.map((page: any) => ({
-              ...page,
-              data: [
-                ...page.data,
-                {
-                  id: mutate.id,
-                  refId: mutate.existId,
-                  information: mutate.information,
-                  nominal: mutate.nominal,
-                  createdAt: mutate.date,
-                  updatedAt: mutate.date,
-                  status: mutate.status,
-                  images: mutate.images,
-                },
-              ],
-            })),
-          };
-        },
-      );
+        const prevTransactions = queryClient.getQueryData(usedQuery);
 
-      return { prevTransactions };
-    },
-    onError: (error, _variables, context) => {
-      console.error(error);
-      if (context?.prevTransactions) {
-        queryClient.setQueryData(
-          queryKeyTransactions,
-          context.prevTransactions,
-        );
-      }
-    },
-  });
+        if (prevTransactions) {
+          // queryClient.invalidateQueries({
+          //   queryKey: usedQuery,
+          // });
+          queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
+            usedQuery,
+            (oldData) => {
+              if (!oldData) return oldData;
+
+              return {
+                ...oldData,
+                pages: oldData?.pages.map((page: any) => ({
+                  ...page,
+                  data: [
+                    ...page.data,
+                    {
+                      id: mutate.id,
+                      refId: mutate.existId,
+                      information: mutate.information,
+                      nominal: mutate.nominal,
+                      createdAt: mutate.date,
+                      updatedAt: mutate.date,
+                      status: mutate.status,
+                      images: mutate.images,
+                    },
+                  ],
+                })),
+              };
+            },
+          );
+        }
+
+        return { prevTransactions, usedQuery };
+      },
+      onSuccess: (data, variables, context) => {
+        const conv = convertISOIntoNewDate(variables.date);
+        const usedQuery = ["keyTransactionsList", publicId, conv];
+
+        const newQuery = queryClient.getQueryData(usedQuery);
+
+        if (!newQuery) {
+          queryClient.invalidateQueries({
+            queryKey: usedQuery,
+          });
+        }
+      },
+      onError: (error, _variables, context) => {
+        console.error(error);
+        if (context?.prevTransactions) {
+          queryClient.setQueryData(context.usedQuery, context.prevTransactions);
+        }
+      },
+    });
 
   return { postTransaction, isPendingPostTransaction };
 };

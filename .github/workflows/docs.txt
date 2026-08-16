@@ -1,0 +1,1065 @@
+============================================================
+CI PIPELINE DOCUMENTATION
+============================================================
+
+File:
+.github/workflows/ci.yml
+
+Purpose:
+Continuous Integration (CI) untuk memastikan source code
+dapat di-install, di-lint, di-generate Prisma Client,
+di-type-check, di-test, dan di-build sebelum perubahan
+masuk ke branch production (main).
+
+------------------------------------------------------------
+1. CI PIPELINE
+------------------------------------------------------------
+
+name: CI Pipeline
+
+Bagian "name" menentukan nama workflow yang akan muncul
+di GitHub Actions.
+
+Contoh tampilan di GitHub:
+
+    CI Pipeline
+
+Nama ini hanya untuk identifikasi workflow dan tidak
+mempengaruhi proses CI.
+
+
+------------------------------------------------------------
+2. WORKFLOW TRIGGER
+------------------------------------------------------------
+
+on:
+  push:
+    branches:
+      - development
+
+  pull_request:
+    branches:
+      - main
+
+
+Bagian "on" menentukan kapan GitHub Actions menjalankan
+workflow ini.
+
+
+------------------------------------------------------------
+2.1 PUSH KE DEVELOPMENT
+------------------------------------------------------------
+
+push:
+  branches:
+    - development
+
+
+CI akan dijalankan setiap kali terdapat push ke branch
+"development".
+
+Contoh:
+
+    git switch development
+    git add .
+    git commit -m "feat: add transaction report"
+    git push
+
+
+Alurnya:
+
+    development
+         |
+         | git push
+         v
+    GitHub Actions
+         |
+         v
+        CI
+
+
+Tujuannya adalah memastikan kode yang sedang dikembangkan
+tidak mengalami error.
+
+
+------------------------------------------------------------
+2.2 PULL REQUEST KE MAIN
+------------------------------------------------------------
+
+pull_request:
+  branches:
+    - main
+
+
+CI akan dijalankan ketika terdapat Pull Request yang
+target-nya adalah branch "main".
+
+Contoh:
+
+    development
+          |
+          | Pull Request
+          v
+        main
+
+
+CI akan memeriksa perubahan sebelum perubahan tersebut
+digabungkan ke main.
+
+
+Catatan:
+
+"branches" pada pull_request menunjukkan branch tujuan
+(target/base branch), bukan branch asal.
+
+Jadi:
+
+    pull_request:
+      branches:
+        - main
+
+berarti:
+
+    Pull Request menuju main
+
+
+------------------------------------------------------------
+3. JOBS
+------------------------------------------------------------
+
+jobs:
+  test:
+
+
+"jobs" berisi pekerjaan yang akan dilakukan oleh GitHub
+Actions.
+
+Pada workflow ini hanya terdapat satu job:
+
+    test
+
+
+Nama "test" adalah ID job.
+
+Nama tersebut dapat berupa:
+
+    test
+    ci
+    quality-check
+
+Nama ini bebas ditentukan developer.
+
+
+------------------------------------------------------------
+4. RUNNER
+------------------------------------------------------------
+
+runs-on: ubuntu-latest
+
+
+Menentukan operating system yang digunakan untuk
+menjalankan job.
+
+Pada workflow ini digunakan:
+
+    Ubuntu Linux
+
+
+GitHub menyediakan runner sementara untuk menjalankan
+proses CI.
+
+Setelah job selesai, runner tersebut tidak digunakan
+sebagai server aplikasi production.
+
+
+------------------------------------------------------------
+5. STEPS
+------------------------------------------------------------
+
+steps:
+
+
+"steps" berisi daftar perintah yang dijalankan secara
+berurutan.
+
+Urutan pada workflow ini adalah:
+
+    1. Checkout repository
+    2. Setup pnpm
+    3. Setup Node.js
+    4. Install dependencies
+    5. Lint
+    6. Prisma Client
+    7. Type check
+    8. Unit test
+    9. Build
+
+
+Jika salah satu step menghasilkan exit code selain 0,
+workflow akan dianggap gagal dan step berikutnya tidak
+dijalankan.
+
+
+------------------------------------------------------------
+6. CHECKOUT REPOSITORY
+------------------------------------------------------------
+
+- name: Checkout repository
+  uses: actions/checkout@v4
+
+
+Step ini menggunakan GitHub Action:
+
+    actions/checkout@v4
+
+
+Fungsinya adalah mengambil source code dari repository
+GitHub ke runner.
+
+Tanpa checkout, runner belum memiliki source code project.
+
+
+Alurnya:
+
+    GitHub Repository
+          |
+          | checkout
+          v
+    GitHub Runner
+          |
+          v
+    Source Code tersedia
+
+
+------------------------------------------------------------
+7. SETUP PNPM
+------------------------------------------------------------
+
+- name: Setup pnpm
+  uses: pnpm/action-setup@v4
+  with:
+    version: 9
+
+
+Step ini meng-install dan menyiapkan pnpm pada runner.
+
+Project ini menggunakan pnpm sebagai package manager.
+
+
+    version: 9
+
+
+Menentukan versi major pnpm yang digunakan oleh CI.
+
+
+Tujuannya adalah memastikan environment CI menggunakan
+package manager yang sesuai dengan project.
+
+
+------------------------------------------------------------
+8. SETUP NODE.JS
+------------------------------------------------------------
+
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: 22
+    cache: pnpm
+
+
+Step ini menyiapkan Node.js versi 22.
+
+    node-version: 22
+
+
+Project menggunakan Node.js 22 ketika menjalankan CI.
+
+
+------------------------------------------------------------
+8.1 PNPM CACHE
+------------------------------------------------------------
+
+    cache: pnpm
+
+
+Mengaktifkan caching dependency pnpm.
+
+Tujuannya adalah mempercepat CI berikutnya karena dependency
+yang sudah pernah di-download dapat digunakan kembali.
+
+
+Tanpa cache:
+
+    download dependency
+          |
+          v
+        install
+
+
+Dengan cache:
+
+    cache dependency
+          |
+          v
+        install lebih cepat
+
+
+Cache bukan pengganti pnpm-lock.yaml.
+Lockfile tetap digunakan untuk menentukan versi dependency.
+
+
+------------------------------------------------------------
+9. INSTALL DEPENDENCIES
+------------------------------------------------------------
+
+- name: Install dependencies
+  run: pnpm install --frozen-lockfile
+
+
+Step ini meng-install semua dependency yang diperlukan
+project.
+
+
+Perintah:
+
+    pnpm install --frozen-lockfile
+
+
+"--frozen-lockfile" memastikan pnpm-lock.yaml tidak boleh
+berubah selama proses CI.
+
+
+Artinya:
+
+    package.json
+          +
+    pnpm-lock.yaml
+          |
+          v
+    harus konsisten
+
+
+Jika package.json dan pnpm-lock.yaml tidak sinkron,
+CI akan gagal.
+
+
+Hal ini penting untuk reproducible build.
+
+CI harus menggunakan dependency yang sudah ditentukan
+repository, bukan membuat perubahan lockfile secara
+otomatis.
+
+
+------------------------------------------------------------
+10. LINT
+------------------------------------------------------------
+
+- name: Lint
+  run: pnpm run lint
+
+
+Menjalankan ESLint berdasarkan script package.json.
+
+
+Contoh:
+
+    "lint": "eslint"
+
+
+CI menjalankan:
+
+    pnpm run lint
+
+
+Tujuannya mendeteksi masalah pada source code seperti:
+
+    - unused variable
+    - invalid React Hooks usage
+    - static component issues
+    - syntax/code quality problems
+    - aturan ESLint lainnya
+
+
+Jika ESLint menemukan error:
+
+    lint
+      |
+      v
+    ERROR
+      |
+      v
+    CI FAILED
+
+
+Warning belum tentu menyebabkan CI gagal.
+Error biasanya menyebabkan command memiliki exit code
+bukan 0.
+
+
+------------------------------------------------------------
+11. PRISMA CLIENT
+------------------------------------------------------------
+
+- name: Prisma Client
+  run: pnpm prisma generate
+
+
+Step ini menjalankan Prisma Client generation.
+
+
+Perintah:
+
+    pnpm prisma generate
+
+
+Prisma membaca schema:
+
+    _lib/prisma/schema.prisma
+
+
+kemudian menghasilkan Prisma Client yang digunakan oleh
+application.
+
+
+Contohnya kode aplikasi dapat menggunakan:
+
+    import { PrismaClient } from "@prisma/client";
+
+
+Prisma Client harus tersedia sebelum proses yang
+membutuhkan Prisma dijalankan.
+
+
+Step ini diletakkan sebelum TypeScript check dan test
+karena source code atau test dapat membutuhkan generated
+Prisma Client.
+
+
+------------------------------------------------------------
+12. TYPE CHECK
+------------------------------------------------------------
+
+- name: Type check
+  run: pnpm run type-check
+
+
+Menjalankan script:
+
+    "type-check": "tsc --noEmit"
+
+
+TypeScript akan memeriksa tipe source code tanpa
+menghasilkan file JavaScript.
+
+
+Contoh error yang dapat ditemukan:
+
+    string tidak sesuai dengan number
+    property tidak tersedia
+    argument salah tipe
+    return type tidak sesuai
+
+
+"--noEmit" berarti TypeScript hanya melakukan pemeriksaan
+dan tidak menghasilkan output build.
+
+
+Contoh:
+
+    TypeScript error
+          |
+          v
+    type-check FAILED
+          |
+          v
+        CI FAILED
+
+
+------------------------------------------------------------
+13. UNIT TEST
+------------------------------------------------------------
+
+- name: Unit test
+  run: pnpm test -- --runInBand
+
+
+Menjalankan Jest.
+
+
+Script package.json:
+
+    "test": "jest"
+
+
+Sehingga command:
+
+    pnpm test -- --runInBand
+
+
+akan menjalankan:
+
+    jest --runInBand
+
+
+"--runInBand" membuat Jest menjalankan test secara
+serial dalam satu process.
+
+
+Hal ini dapat membantu mengurangi masalah resource
+pada CI environment.
+
+
+Unit test memastikan perubahan kode tidak merusak
+behavior yang sudah diuji.
+
+
+Contoh:
+
+    Test Suites: 28 passed
+    Tests:       102 passed
+
+
+berarti seluruh test berhasil.
+
+
+Jika terdapat test gagal:
+
+    Test failed
+         |
+         v
+    CI FAILED
+
+
+------------------------------------------------------------
+14. BUILD
+------------------------------------------------------------
+
+- name: Build
+  run: pnpm run build
+
+
+Menjalankan script:
+
+    "build": "next build --turbopack"
+
+
+Tujuannya memastikan aplikasi Next.js dapat melakukan
+production build.
+
+
+Build dapat menemukan masalah yang mungkin tidak
+terdeteksi oleh:
+
+    lint
+    type-check
+    unit test
+
+
+Contohnya:
+
+    Next.js build error
+    invalid page configuration
+    server/client boundary problem
+    import problem
+    production compilation problem
+
+
+Jika build berhasil:
+
+    next build
+        |
+        v
+      PASS
+
+
+Jika build gagal:
+
+    next build
+        |
+        v
+      ERROR
+        |
+        v
+    CI FAILED
+
+
+------------------------------------------------------------
+15. URUTAN CI
+------------------------------------------------------------
+
+Workflow menjalankan proses berikut:
+
+    Checkout
+       |
+       v
+    Setup pnpm
+       |
+       v
+    Setup Node.js
+       |
+       v
+    Install dependencies
+       |
+       v
+    Lint
+       |
+       v
+    Prisma Client
+       |
+       v
+    Type check
+       |
+       v
+    Unit test
+       |
+       v
+    Build
+
+
+Semua step harus berhasil.
+
+
+Jika:
+
+    Lint        PASS
+    Prisma      PASS
+    Type check  PASS
+    Unit test   PASS
+    Build       PASS
+
+
+maka:
+
+    CI PASSED
+
+
+Jika salah satu gagal:
+
+    CI FAILED
+
+
+------------------------------------------------------------
+16. HUBUNGAN CI DENGAN DEVELOPMENT
+------------------------------------------------------------
+
+Developer bekerja pada branch:
+
+    development
+
+
+Contoh:
+
+    git switch development
+
+    coding...
+
+    git add .
+    git commit -m "feat: add transaction report"
+    git push
+
+
+Karena workflow memiliki:
+
+    push:
+      branches:
+        - development
+
+
+GitHub Actions akan menjalankan CI.
+
+
+Alurnya:
+
+    development
+         |
+      git push
+         |
+         v
+    GitHub Actions
+         |
+         v
+        CI
+         |
+      PASS/FAIL
+
+
+------------------------------------------------------------
+17. HUBUNGAN CI DENGAN PULL REQUEST
+------------------------------------------------------------
+
+Setelah perubahan di development selesai, developer dapat
+membuat Pull Request:
+
+    development -> main
+
+
+Karena workflow memiliki:
+
+    pull_request:
+      branches:
+        - main
+
+
+GitHub Actions akan menjalankan CI pada Pull Request.
+
+
+Alurnya:
+
+    development
+         |
+         | Pull Request
+         v
+        main
+         |
+         v
+        CI
+         |
+         +---- FAIL -> jangan merge
+         |
+         +---- PASS -> boleh merge
+
+
+------------------------------------------------------------
+18. MAIN SEBAGAI PRODUCTION BRANCH
+------------------------------------------------------------
+
+Branch:
+
+    main
+
+
+digunakan sebagai production branch.
+
+
+Development:
+
+    development
+
+
+digunakan untuk development.
+
+
+Alur yang digunakan:
+
+    development
+         |
+         | git push
+         v
+        CI
+         |
+       PASS
+         |
+         v
+    Pull Request
+         |
+         v
+       main
+         |
+         v
+      Vercel
+         |
+         v
+    Production
+
+
+Developer sebaiknya tidak melakukan push langsung ke main
+untuk pekerjaan sehari-hari.
+
+
+------------------------------------------------------------
+19. CI DAN DEPLOYMENT
+------------------------------------------------------------
+
+CI bertanggung jawab untuk memeriksa kualitas dan
+kebenaran kode.
+
+
+Contoh pekerjaan CI:
+
+    - install dependencies
+    - lint
+    - type-check
+    - unit test
+    - build
+
+
+Vercel bertanggung jawab terhadap deployment.
+
+
+Contoh:
+
+    main berubah
+       |
+       v
+    Vercel mendeteksi perubahan
+       |
+       v
+    vercel-build
+       |
+       v
+    Prisma generate
+       |
+       v
+    Next.js build
+       |
+       v
+    Production deployment
+
+
+Dengan demikian:
+
+    GitHub Actions = CI
+
+    Vercel = CD / Deployment
+
+
+------------------------------------------------------------
+20. VERCEL BUILD
+------------------------------------------------------------
+
+package.json memiliki:
+
+    "vercel-build":
+      "prisma generate --schema=_lib/prisma/schema.prisma && next build"
+
+
+Script tersebut digunakan untuk kebutuhan build di Vercel.
+
+
+Berbeda dengan CI:
+
+CI menjalankan:
+
+    pnpm run build
+
+
+Sedangkan Vercel dapat menjalankan:
+
+    pnpm run vercel-build
+
+
+Tujuannya adalah memastikan Prisma Client dibuat
+sebelum Next.js production build.
+
+
+------------------------------------------------------------
+21. CI FAILURE
+------------------------------------------------------------
+
+Jika terdapat error:
+
+    Lint       FAIL
+    Type check FAIL
+    Test       FAIL
+    Build      FAIL
+
+
+maka GitHub Actions memberikan status:
+
+    FAILED
+
+
+Developer harus memperbaiki masalah tersebut.
+
+
+Contoh:
+
+    development
+         |
+         v
+        CI
+         |
+        FAIL
+         |
+         v
+      perbaiki
+         |
+         v
+       commit
+         |
+         v
+       push
+         |
+         v
+        CI lagi
+
+
+Tidak perlu membuat Pull Request baru jika Pull Request
+sebelumnya masih terbuka.
+
+
+Commit baru pada branch development akan otomatis masuk
+ke Pull Request yang sama.
+
+
+------------------------------------------------------------
+22. CI SUCCESS
+------------------------------------------------------------
+
+Jika semua step berhasil:
+
+    Checkout       PASS
+    pnpm            PASS
+    Node.js         PASS
+    Install         PASS
+    Lint            PASS
+    Prisma          PASS
+    Type check      PASS
+    Unit test       PASS
+    Build           PASS
+
+
+maka:
+
+    CI PASSED
+
+
+Jika perubahan sedang berada pada Pull Request:
+
+    development -> main
+
+
+dan branch protection digunakan, status CI dapat
+digunakan sebagai requirement sebelum merge.
+
+
+------------------------------------------------------------
+23. BRANCH PROTECTION
+------------------------------------------------------------
+
+Untuk membuat CI menjadi quality gate, branch "main"
+sebaiknya dilindungi.
+
+
+Konsepnya:
+
+    CI FAILED
+        |
+        v
+    Merge tidak diperbolehkan
+
+
+    CI PASSED
+        |
+        v
+    Merge diperbolehkan
+
+
+Branch protection membuat CI bukan hanya sebagai
+informasi, tetapi menjadi pengaman production branch.
+
+
+------------------------------------------------------------
+24. FINAL WORKFLOW
+------------------------------------------------------------
+
+Workflow project:
+
+    Developer
+        |
+        v
+    development
+        |
+        | git push
+        v
+    GitHub Actions
+        |
+        +--> Lint
+        |
+        +--> Prisma Generate
+        |
+        +--> Type Check
+        |
+        +--> Unit Test
+        |
+        +--> Build
+        |
+        +-------- PASS
+                    |
+                    v
+              Pull Request
+                    |
+                    v
+            development -> main
+                    |
+                    v
+                  Merge
+                    |
+                    v
+                  Vercel
+                    |
+                    v
+              Production
+
+
+Jika CI gagal:
+
+    development
+         |
+         v
+        CI
+         |
+        FAIL
+         |
+         v
+      perbaiki
+         |
+         v
+       git push
+         |
+         v
+        CI lagi
+
+
+------------------------------------------------------------
+25. SUMMARY
+------------------------------------------------------------
+
+CI digunakan untuk memastikan kode project dalam kondisi
+layak sebelum masuk ke production.
+
+Pipeline project ini melakukan:
+
+    1. Checkout source code
+    2. Setup pnpm
+    3. Setup Node.js
+    4. Install dependencies
+    5. ESLint
+    6. Generate Prisma Client
+    7. TypeScript checking
+    8. Jest unit testing
+    9. Next.js production build
+
+
+Branch workflow:
+
+    development
+        |
+        | push
+        v
+       CI
+        |
+      PASS
+        |
+        v
+       PR
+        |
+        v
+      main
+        |
+        v
+     Vercel
+        |
+        v
+   Production
+
+
+Tujuan akhirnya adalah:
+
+    "Kode yang masuk ke main sudah melewati
+     automated quality checks."
+
+
+============================================================
+END OF DOCUMENTATION
+============================================================

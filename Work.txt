@@ -1,0 +1,21 @@
+ci
+
+
+
+lvl 3
+→ Matrix testing
+→ Node.js version testing
+→ Test coverage
+→ Artifacts
+→ Playwright / E2E
+→ Separate CI dan deployment
+→ Staging environment
+
+lvl 4
+→ Docker
+→ Self-hosted runner
+→ Deployment strategy
+→ Rollback
+→ Database migration dalam deployment
+→ Preview deployments
+→ Production approval

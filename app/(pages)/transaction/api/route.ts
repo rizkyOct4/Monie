@@ -3,7 +3,6 @@ import {
   GetIdTransactions,
   GetSearchIdTransactions,
   GetTransactionList,
-  GetPutIdTransactions,
 } from "@/_lib/services/transaction/services-transaction-index";
 import GetSession from "@/_lib/session";
 
@@ -69,13 +68,6 @@ export async function GET(req: NextRequest) {
           return NextResponse.json(output);
         }
       }
-      // case "PutIdTransactions": {
-      //   const output = await GetPutIdTransactions({
-      //     publicId,
-      //     idTransaction,
-      //   });
-      //   return NextResponse.json(output);
-      // }
       default:
         return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }

@@ -129,7 +129,6 @@ type PutTransactionTypes = {
       }[]
     | [];
 };
-
 type GetPutIdTransactionsProps = {
   publicId: string;
   idTransaction: string;

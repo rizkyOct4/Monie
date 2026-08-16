@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
-    "test:cover": "npm run test -- --coverage",
+    "test:cover": "pnpm run test -- --coverage",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"
   },

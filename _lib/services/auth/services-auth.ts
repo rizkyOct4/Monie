@@ -1,4 +1,5 @@
 import { prisma } from "@/_lib/prisma/prisma-client";
+import { Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
 import camelcaseKeys from "camelcase-keys";
 import { nanoid } from "nanoid";
@@ -49,7 +50,7 @@ export const CredentialRegister = async ({
   password: string;
   userType: string;
 }) => {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
     const publicId = nanoid(8);

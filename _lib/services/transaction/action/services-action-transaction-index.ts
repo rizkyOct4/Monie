@@ -1,4 +1,5 @@
 import { prisma } from "@/_lib/prisma/prisma-client";
+import { Prisma } from "@prisma/client";
 
 type PostNewTransactionProps = {
   publicId: string;
@@ -14,7 +15,7 @@ export const PostNewTransaction = async ({
   nameTransaction,
   date,
 }: PostNewTransactionProps) => {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     // ? INITIAL SALARY DB
     await tx.$executeRaw`
         INSERT INTO initial_salary (ref_id_user, id, initial_name, salary_income, salary_remaining, created_at, updated_at)
@@ -55,7 +56,7 @@ export const PostCurrentTransaction = async ({
   information,
   status,
 }: PostCurrentTransactionProps) => {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.$executeRaw`
       UPDATE initial_salary
         SET salary_remaining = salary_remaining - ${nominal}, updated_at = ${date}
@@ -114,7 +115,7 @@ export const PutTransaction = async ({
   deleteImages,
   wrongDate,
 }: PutTransactionProps) => {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     // ? UPDATE TRANSACTION ============
     // ! CHECK NOMINAL
     if (lastNominal > nominal) {
@@ -123,7 +124,7 @@ export const PutTransaction = async ({
       // ? UPDATE INTIAL SALARY ============
       await tx.$executeRaw`
         UPDATE initial_salary
-          SET salary_remaining = salary_remaining + ${nominalFix}, updated_at = ${date}::timestamp
+          SET salary_remaining = salary_remaining + ${nominalFix}, updated_at = ${date}
         WHERE id = (SELECT ref_id FROM transactions WHERE id = ${existId}) AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
       `;
     } else {
@@ -132,7 +133,7 @@ export const PutTransaction = async ({
       // ? UPDATE INTIAL SALARY ============
       await tx.$executeRaw`
         UPDATE initial_salary
-          SET salary_remaining = salary_remaining - ${nominalFix}, updated_at = ${date}::timestamp
+          SET salary_remaining = salary_remaining - ${nominalFix}, updated_at = ${date}
         WHERE id = (SELECT ref_id FROM transactions WHERE id = ${existId}) AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
       `;
     }
@@ -140,12 +141,12 @@ export const PutTransaction = async ({
     if (wrongDate) {
       await tx.$executeRaw`
         UPDATE transactions
-          SET information = ${information}, nominal = ${nominal}, created_at = ${date}::timestamp, updated_at = ${date}::timestamp
+          SET information = ${information}, nominal = ${nominal}, created_at = ${date}, updated_at = ${date}
         WHERE id = ${existId}`;
     } else {
       await tx.$executeRaw`
         UPDATE transactions
-          SET information = ${information}, nominal = ${nominal}, updated_at = ${date}::timestamp
+          SET information = ${information}, nominal = ${nominal}, updated_at = ${date}
         WHERE id = ${existId}`;
     }
 
@@ -189,7 +190,7 @@ export const DeleteTransaction = async ({
   id,
   nominal,
 }: DeleteTransactionProps) => {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     // ? UPDATE INITIAL TRANSACTION ========
     await tx.$executeRaw`
       UPDATE initial_salary
@@ -210,5 +211,3 @@ export const DeleteTransaction = async ({
     `;
   });
 };
-
-// todo DIKIT LAGI UNTUK TRANSACTION INI !!!

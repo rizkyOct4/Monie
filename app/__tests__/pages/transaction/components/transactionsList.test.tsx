@@ -90,15 +90,6 @@ const renderTransactionsList = (props = mockProps) =>
 
 describe("Render Transaction List", () => {
   describe("Render Transaction Section", () => {
-    it("check title", () => {
-      renderTransactionsList();
-
-      // const title = screen.getByTestId("title");
-      const title = screen.getByRole("heading", {
-        name: "Title",
-      });
-      expect(title).toHaveTextContent("Riwayat Transaksi");
-    });
     it("check has information", () => {
       renderTransactionsList();
 

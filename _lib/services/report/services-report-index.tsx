@@ -66,7 +66,7 @@ export const GetIdPeriodTransaction = async ({
                 FROM (
                     SELECT
                         COUNT(*) AS "totalTransaction",
-                        (
+                        COALESCE((
                           SELECT json_build_object(
                             'date', DATE(created_at),
                             'amount', MAX(nominal)
@@ -76,20 +76,30 @@ export const GetIdPeriodTransaction = async ({
                           GROUP BY DATE(created_at) 
                           ORDER BY MAX(nominal) DESC
                           LIMIT 1
-                        ) AS "biggestExpense",
-                        AVG(nominal) AS "averageExpense",
-                        SUM(nominal) AS "amountNominal",
-                        (
-                              SELECT json_build_object(
-                                  'date', DATE(created_at),
-                                  'amount', SUM(nominal)
-                              )
-                              FROM transactions
-                              WHERE ref_id = ${idPeriod}
-                              GROUP BY DATE(created_at) 
-                              ORDER BY SUM(nominal) DESC
-                              LIMIT 1
-                        ) AS "mostExpensiveDay"
+                        ),
+                         json_build_object(
+                          'date', NULL,
+                          'amount', 0
+                        )
+                        )AS "biggestExpense",
+                        COALESCE(AVG(nominal), 0) AS "averageExpense",
+                        COALESCE(SUM(nominal), 0) AS "amountNominal",
+                        COALESCE((
+                        SELECT json_build_object(
+                            'date', DATE(created_at),
+                            'amount', SUM(nominal)
+                        )
+                        FROM transactions
+                        WHERE ref_id = ${idPeriod}
+                        GROUP BY DATE(created_at) 
+                        ORDER BY SUM(nominal) DESC
+                        LIMIT 1
+                        ), 
+                           json_build_object(
+                          'date', NULL,
+                          'amount', 0
+                        )
+                        )AS "mostExpensiveDay"
                     FROM transactions
                     WHERE ref_id = ${idPeriod}
                 ) result
@@ -106,3 +116,7 @@ export const GetIdPeriodTransaction = async ({
 
   return camelcaseKeys(query);
 };
+
+
+
+// ! json_build_object(...) bertipe json, jika data yg ingin dikembalikan dalam bentuk ini harus berbentuk JSON juga !!!

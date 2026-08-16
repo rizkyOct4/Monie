@@ -17,6 +17,7 @@ export const MockUseQueryIdTransactions = (): ReturnType<
     },
   ],
   idTransactionsListRefetch: jest.fn(),
+  isFetchingIdTransactionsList: false,
   queryKeyIdTransactions: ["keyIdTransactionsList", "ss12"],
   isOpenIdTransaction: false,
   setIsOpenIdTransaction: jest.fn(),

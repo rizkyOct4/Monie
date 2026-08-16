@@ -1,79 +1,102 @@
-type GetProps = {
-  key:
-    | "transactions"
-    | "searchTransactions"
-    | "idTransactions"
-    | "PutIdTransactions";
+export type GetProps =
+  | {
+      key: "transactions";
+      currentPath: string;
+      date?: string;
+      pageParam: number;
+      limit: number;
+    }
+  | {
+      key: "searchTransactions";
+      currentPath: string;
+      search: string;
+    }
+  | {
+      key: "idTransactions";
+      currentPath: string;
+      pageParam: number;
+      limit: number;
+    }
+  | {
+      key: "unknown";
+      currentPath: "/transaction";
+    };
+
+export type PostProps = {
+  key: "newPostTransaction" | "postTransaction";
+};
+export type PutProps = {
+  key: "putTransaction";
   currentPath: string;
-  date?: string;
-  search?: string;
-  pageParam?: number;
-  limit?: number;
-  idTransaction?: string;
+};
+export type DeleteProps = {
+  key: "deleteTransaction";
+  currentPath: string;
 };
 
 export const ROUTES_TRANSACTION = {
-  GET: ({
-    key,
-    currentPath,
-    date,
-    search,
-    pageParam,
-    limit,
-    idTransaction,
-  }: GetProps) => {
+  GET: (props: GetProps) => {
+    const { key, currentPath } = props;
+    const params = new URLSearchParams(); // ! karakter khusus akan otomatis di-encode. contoh: ayam & goreng
+
+    params.set("key", key);
+
     switch (key) {
       case "transactions":
-        return `${currentPath}/api?key=${key}&date-transaction=${date}&page-param=${pageParam}&limit=${limit}`;
+        params.set("date-transaction", props.date ?? "");
+        params.set("page-param", String(props.pageParam));
+        params.set("limit", String(props.limit));
+        break;
+
       case "searchTransactions":
-        return `${currentPath}/api?key=${key}&search-transaction=${search}`;
+        params.set("search-transaction", props.search);
+        break;
+
       case "idTransactions":
-        return `${currentPath}/api?key=${key}&page-param=${pageParam}&limit=${limit}`;
-      case "PutIdTransactions":
-        return `/${currentPath}/api?key=${key}&id-transaction=${idTransaction}`;
+        params.set("page-param", String(props.pageParam));
+        params.set("limit", String(props.limit));
+        break;
+
       default:
         return "";
     }
+
+    return `${currentPath}/api?${params.toString()}`;
   },
-  POST: ({
-    key,
-    currentPath,
-  }: {
-    key: "newPostTransaction" | "postTransaction";
-    currentPath?: string;
-  }) => {
+  POST: (props: PostProps) => {
+    const { key } = props;
+    const params = new URLSearchParams(); // ! karakter khusus akan otomatis di-encode. contoh: ayam & goreng
+
+    params.set("key", key);
+
     switch (key) {
       case "newPostTransaction":
       case "postTransaction":
-        return `/transaction/api/action?key=${key}`;
+        return `/transaction/api?${params.toString()}`;
       default:
         return "";
     }
   },
-  PUT: ({
-    key,
-    currentPath,
-  }: {
-    key: "putTransaction";
-    currentPath: string;
-  }) => {
+  PUT: (props: PutProps) => {
+    const { key, currentPath } = props;
+    const params = new URLSearchParams(); // ! karakter khusus akan otomatis di-encode. contoh: ayam & goreng
+
+    params.set("key", key);
     switch (key) {
       case "putTransaction":
-        return `${currentPath}/api/action?key=${key}`;
+        return `${currentPath}/api/action?${params.toString()}`;
       default:
         return "";
     }
   },
-  DELETE: ({
-    key,
-    currentPath,
-  }: {
-    key: "deleteTransaction";
-    currentPath: string;
-  }) => {
+  DELETE: (props: DeleteProps) => {
+    const { key, currentPath } = props;
+    const params = new URLSearchParams(); // ! karakter khusus akan otomatis di-encode. contoh: ayam & goreng
+
+    params.set("key", key);
     switch (key) {
       case "deleteTransaction":
-        return `${currentPath}/api/action?key=${key}`;
+        return `${currentPath}/api/action?${params.toString()}`;
       default:
         return "";
     }

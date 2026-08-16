@@ -9,7 +9,7 @@ import { JWT } from "next-auth/jwt";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 12, // ? 0.5 hari -> login bertahan
+    maxAge: 60 * 60 * 24 * 3, // ? 3 hari
     // updateAge: 60 * 60 * 12, // ? refreshh login
   },
   ...authConfig,

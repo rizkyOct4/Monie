@@ -10,7 +10,8 @@
     "lint": "eslint",
     "test": "jest",
     "test:cover": "npm run test -- --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "type-check": "tsc --noEmit"
   },
   "prisma": {
     "schema": "_lib/prisma/schema.prisma"

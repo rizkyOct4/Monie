@@ -21,15 +21,16 @@ const DateInput = ({ date, setDate }: IDateInput) => {
   return (
     <div className="flex items-center justify-between max-sm:flex-col gap-2 sticky top-6  backdrop-blur-sm p-4 rounded-2xl border border-zinc-800">
       <div className="flex items-center justify-center gap-2">
-        <h2
+        <label
+          htmlFor="Date"
           className="text-sm font-medium text-zinc-200"
           data-testid="formatted-date"
         >
           {formatDate}
-        </h2>
+        </label>
 
         <input
-          id="transaction-date"
+          id="Date"
           aria-label="Transaction Date"
           type="date"
           value={date}

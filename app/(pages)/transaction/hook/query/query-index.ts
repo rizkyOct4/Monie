@@ -23,7 +23,7 @@ export const useQueryIdTransactions = ({
   const [isOpenIdTransaction, setIsOpenIdTransaction] = useState(false);
 
   // * ID TRANSACTIONS ======================
-  const { data: fIdTransactionsList, refetch: idTransactionsListRefetch } =
+  const { data: fIdTransactionsList, refetch: idTransactionsListRefetch, isFetching: isFetchingIdTransactionsList } =
     useInfiniteQuery({
       queryKey: ["keyIdTransactionsList", publicId],
       queryFn: async ({ pageParam = 1 }) => {
@@ -94,6 +94,7 @@ export const useQueryIdTransactions = ({
   return {
     IdTransactionsListData,
     idTransactionsListRefetch,
+    isFetchingIdTransactionsList,
     queryKeyIdTransactions: ["keyIdTransactionsList", publicId],
     isOpenIdTransaction,
     setIsOpenIdTransaction,

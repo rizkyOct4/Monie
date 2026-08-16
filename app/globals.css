@@ -53,6 +53,19 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+/* Chrome, Edge, Safari, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
 
 body {
   font-variant-ligatures: contextual;

@@ -3,10 +3,11 @@
 import { Search, Loader2 } from "lucide-react";
 import { useState, useContext } from "react";
 import { TransactionContext } from "@/app/context/context";
+import { Spokes } from "@/components/ui/spokes";
 
 type SearchIdTransactionProps = {
   setIdExisted: React.Dispatch<React.SetStateAction<string>>;
-  setValue: any
+  setValue: any;
 };
 
 const SearchIdTransaction = ({
@@ -19,6 +20,7 @@ const SearchIdTransaction = ({
     setSearch,
     SearchIdTransactionData,
     isFetchingSearchIdTransaction,
+    isFetchingIdTransactionsList,
   } = useContext(TransactionContext);
 
   const [showSearch, setShowSearch] = useState(false);
@@ -68,6 +70,17 @@ const SearchIdTransaction = ({
                 role="dialog"
                 aria-label="Container List ID Transaction"
               >
+                {isFetchingIdTransactionsList && (
+                  <div
+                    role="status"
+                    aria-label="Loading ID Transaction"
+                    className="flex items-center gap-2 px-3 py-3 text-sm text-zinc-500"
+                  >
+                    <Spokes className="size-4 animate-spin text-emerald-400" />
+                    <span>Dalam Progres...</span>
+                  </div>
+                )}
+
                 {Array.isArray(IdTransactionsListData) &&
                 IdTransactionsListData.length > 0 ? (
                   IdTransactionsListData.map((i) => (
@@ -126,11 +139,14 @@ const SearchIdTransaction = ({
             className={`w-full h-auto px-4 py-2 mt-2 bg-gray-900 rounded-lg flex flex-col gap-4 ${search ? "block" : "hidden"}`}
           >
             {isFetchingSearchIdTransaction ? (
-              <Loader2
-                className="h-4 w-4 animate-spin text-emerald-400"
+              <div
                 aria-label="Is Loading Search"
                 role="status"
-              />
+                className="flex items-center gap-2 px-3 py-3 text-sm text-zinc-500"
+              >
+                <Spokes className="size-4 animate-spin text-emerald-400" />
+                <span>Dalam Progres...</span>
+              </div>
             ) : (
               Array.isArray(SearchIdTransactionData) &&
               SearchIdTransactionData.length > 0 &&

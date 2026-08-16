@@ -19,7 +19,8 @@ export const metadata: Metadata = {
     default: "Monie",
     template: "%s | Monie 1.0",
   },
-  description: "Still Prototype 1.0",
+  description:
+    "Monie adalah aplikasi keuangan untuk mencatat transaksi, memantau saldo, dan memahami pola pengeluaran dengan lebih mudah.",
   verification: {
     google: "aWNC-dVpCVjb4h0JZ0MKa3Hm510TlbiuOemU5QJavo8",
   },

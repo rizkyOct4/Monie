@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ReportClient from "./components";
 
 export const metadata: Metadata = {
-  title: "Laporan | My App",
+  title: "Laporan",
   description: "Halaman laporan keuangan pengguna.",
 };
 

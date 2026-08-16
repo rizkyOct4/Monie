@@ -125,9 +125,6 @@ export const useMutationTransaction = ({
         const prevTransactions = queryClient.getQueryData(usedQuery);
 
         if (prevTransactions) {
-          // queryClient.invalidateQueries({
-          //   queryKey: usedQuery,
-          // });
           queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
             usedQuery,
             (oldData) => {

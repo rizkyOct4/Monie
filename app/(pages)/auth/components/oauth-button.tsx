@@ -41,7 +41,7 @@ const thirdParty = [
 ];
 
 const OAuthButton = () => {
-  const redirect = useSearchParams().get("redirect");
+  const redirect = useSearchParams().get("redirect") ?? "/";
 
   return (
     <>
@@ -51,7 +51,7 @@ const OAuthButton = () => {
           type="button"
           onClick={async () =>
             await signIn(i.value, {
-              callbackUrl: "/",
+              redirectTo: redirect,
             })
           }
           className=" flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950 text-sm font-medium text-white transition-all hover:border-zinc-700 hover:bg-zinc-900 active:scale-[0.98]"

@@ -14,7 +14,7 @@ describe("ReportPage", () => {
   });
 
   it("should have correct metadata", () => {
-    expect(metadata.title).toBe("Laporan | My App");
+    expect(metadata.title).toBe("Laporan");
     expect(metadata.description).toBe("Halaman laporan keuangan pengguna.");
   });
 });

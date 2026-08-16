@@ -18,7 +18,7 @@ describe("should render transaction page", () => {
   });
 
   it("should have correct metadata", () => {
-    expect(metadata.title).toBe("Transaksi | My App");
+    expect(metadata.title).toBe("Transaksi");
     expect(metadata.description).toBe("Halaman transaksi user.");
   });
 });

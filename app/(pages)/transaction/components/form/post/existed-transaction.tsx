@@ -16,9 +16,6 @@ type TransactionsProps = {
   onClose: () => void;
 };
 
-// const convertISOIntoNewDate = (values: any) => {
-//   return values.toISOString().split("T")[0];
-// };
 
 const ExistedTransactions = ({ onClose }: TransactionsProps) => {
   const { publicId } = useSessionClient();

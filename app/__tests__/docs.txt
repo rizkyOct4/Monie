@@ -14,3 +14,13 @@
 
 method get..... -> ini langsung mencari elemnt
     find.... -> async mengunngu jika element sampai ada 
+
+
+Karakter	Encoded  => for config-routes !!!!
+&	%26
+=	%3D
+?	%3F
+/	%2F
+#	%23
+%	%25
++	%2B

@@ -1,26 +1,6 @@
-// import Footer from "./components/footer";
-// import NewPostBtn from "./components/new-post-btn";
-
-// type RootLayoutProps = {
-//   children: React.ReactNode;
-// };
-
-// const MainLayout = ({ children }: RootLayoutProps) => {
-//   return (
-//     <>
-//       <main className="flex flex-col items-center font-sans bg-black max-w-8xl min-h-screen relative pb-16">
-//         {children}
-//         <NewPostBtn />
-//       </main>
-//       <Footer />
-//     </>
-//   );
-// };
-
-// export default MainLayout;
-
 import Footer from "./components/footer";
 import NewPostBtn from "./components/new-post-btn";
+import CookieBanner from "./auth/components/cookies-banner";
 
 type RootLayoutProps = {
   children: React.ReactNode;
@@ -39,6 +19,7 @@ const MainLayout = ({ children }: RootLayoutProps) => {
 
         {/* Content */}
         <div className="relative z-100 mx-auto w-full max-w-5xl">
+          {/* <CookieBanner /> */}
           {children}
 
           <NewPostBtn />

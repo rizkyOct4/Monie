@@ -72,7 +72,7 @@ export const ROUTES_TRANSACTION = {
     switch (key) {
       case "newPostTransaction":
       case "postTransaction":
-        return `/transaction/api?${params.toString()}`;
+        return `/transaction/api/action?${params.toString()}`;
       default:
         return "";
     }

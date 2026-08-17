@@ -14,6 +14,7 @@ enum UserType {
 
 enum IdStatus {
   ACTIVE
+  DEFAULT
   FINISH
 }
 
@@ -52,6 +53,8 @@ model InitialSalary {
   user      User     @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
   transaction  Transaction[]
 
+  @@index([ref_id_user])
+  @@index([initial_name])
   @@index([status])
   @@index([created_at])
   @@map("initial_salary")
@@ -74,6 +77,10 @@ model Transaction {
   transactionImage  TransactionImages[]
   
   @@map("transactions")
+
+  @@index([created_at, ref_id_user, updated_at])
+  @@index([created_at, ref_id_user])
+  @@index([created_at])
 }
 
 

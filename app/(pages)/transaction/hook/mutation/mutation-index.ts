@@ -69,6 +69,7 @@ export const useMutationNewTransaction = ({
                 {
                   id: mutate.id,
                   initialName: mutate.nameTransaction,
+                  status: "ACTIVE",
                 },
               ],
             })),
@@ -115,7 +116,12 @@ export const useMutationTransaction = ({
       },
       onMutate: async (mutate: TPostExistedTransaction) => {
         const conv = convertISOIntoNewDate(mutate.date);
-        const usedQuery = ["keyTransactionsList", publicId, conv];
+        const usedQuery = [
+          "keyTransactionsList",
+          publicId,
+          mutate.nameTransaction,
+          conv,
+        ];
 
         await Promise.all([
           queryClient.cancelQueries({ queryKey: usedQuery }),
@@ -124,46 +130,41 @@ export const useMutationTransaction = ({
 
         const prevTransactions = queryClient.getQueryData(usedQuery);
 
-        if (prevTransactions) {
-          queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
-            usedQuery,
-            (oldData) => {
-              if (!oldData) return oldData;
+        queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
+          usedQuery,
+          (oldData) => {
+            if (!oldData) return oldData;
 
-              return {
-                ...oldData,
-                pages: oldData?.pages.map((page: any) => ({
-                  ...page,
-                  data: [
-                    ...page.data,
-                    {
-                      id: mutate.id,
-                      refId: mutate.existId,
-                      information: mutate.information,
-                      nominal: mutate.nominal,
-                      createdAt: mutate.date,
-                      updatedAt: mutate.date,
-                      status: mutate.status,
-                      images: mutate.images,
-                    },
-                  ],
-                })),
-              };
-            },
-          );
-        }
+            return {
+              ...oldData,
+              pages: oldData?.pages.map((page: any) => ({
+                ...page,
+                data: [
+                  ...page.data,
+                  {
+                    id: mutate.id,
+                    refId: mutate.existId,
+                    information: mutate.information,
+                    nominal: mutate.nominal,
+                    createdAt: mutate.date,
+                    updatedAt: mutate.date,
+                    status: mutate.status,
+                    images: mutate.images,
+                  },
+                ],
+              })),
+            };
+          },
+        );
 
         return { prevTransactions, usedQuery };
       },
       onSuccess: (data, variables, context) => {
-        const conv = convertISOIntoNewDate(variables.date);
-        const usedQuery = ["keyTransactionsList", publicId, conv];
-
-        const newQuery = queryClient.getQueryData(usedQuery);
+        const newQuery = queryClient.getQueryData(context.usedQuery);
 
         if (!newQuery) {
           queryClient.invalidateQueries({
-            queryKey: usedQuery,
+            queryKey: context.usedQuery,
           });
         }
       },

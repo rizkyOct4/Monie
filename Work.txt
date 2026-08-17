@@ -19,3 +19,24 @@ lvl 4
 → Database migration dalam deployment
 → Preview deployments
 → Production approval
+
+
+
+// GIT 
+git branch
+git switch
+
+
+
+SECURITY
+Authorization
+IDOR
+CSRF
+XSS
+SQL Injection
+Rate limiting
+Headers
+Secrets
+
+
+// ! ERROR 404 -> jika mengacu ke sesuatu yg sangat spesifik dan tidak ditemukan !! ex: perpindahan page base on id

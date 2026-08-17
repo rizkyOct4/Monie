@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Loader2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState, useContext } from "react";
 import { TransactionContext } from "@/app/context/context";
 import { Spokes } from "@/components/ui/spokes";
@@ -70,7 +70,7 @@ const SearchIdTransaction = ({
                 role="dialog"
                 aria-label="Container List ID Transaction"
               >
-                {isFetchingIdTransactionsList && (
+                {isFetchingIdTransactionsList ? (
                   <div
                     role="status"
                     aria-label="Loading ID Transaction"
@@ -79,30 +79,27 @@ const SearchIdTransaction = ({
                     <Spokes className="size-4 animate-spin text-emerald-400" />
                     <span>Dalam Progres...</span>
                   </div>
-                )}
-
-                {Array.isArray(IdTransactionsListData) &&
-                IdTransactionsListData.length > 0 ? (
-                  IdTransactionsListData.map((i) => (
-                    <button
-                      aria-label={`List ID transaction ${i.id}`}
-                      key={i.id}
-                      type="button"
-                      onClick={() => {
-                        setSelected(i.initialName);
-                        setValue("nameTransaction", i.initialName);
-                        setIdExisted(i.id);
-                        setOpen(false);
-                      }}
-                      className="block w-full px-3 py-2 text-left text-sm text-gray-200 transition hover:bg-white/5"
-                    >
-                      {i.initialName}
-                    </button>
-                  ))
                 ) : (
-                  <p role="status" aria-label="Has No Data">
-                    No ID
-                  </p>
+                  <>
+                    {Array.isArray(IdTransactionsListData) &&
+                      IdTransactionsListData.length > 0 &&
+                      IdTransactionsListData.map((i) => (
+                        <button
+                          aria-label={`List ID transaction ${i.id}`}
+                          key={i.id}
+                          type="button"
+                          onClick={() => {
+                            setSelected(i.initialName);
+                            setValue("nameTransaction", i.initialName);
+                            setIdExisted(i.id);
+                            setOpen(false);
+                          }}
+                          className="block w-full px-3 py-2 text-left text-sm text-gray-200 transition hover:bg-white/5"
+                        >
+                          {i.initialName}
+                        </button>
+                      ))}
+                  </>
                 )}
               </div>
             )}

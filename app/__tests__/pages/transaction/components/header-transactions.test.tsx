@@ -1,7 +1,15 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import DateInput from "@/app/(pages)/transaction/components/header";
-import { MockUseQueryTransactions } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
 import { FormattedDate } from "@/app/(pages)/transaction/components/header";
+import { MockUseQueryTransactions } from "@/app/__mocks__/(pages)/transaction/query/query-transactions.mock";
+
+jest.mock(
+  "@/app/(pages)/transaction/components/options-id-transaction",
+  () => ({
+    __esModule: true,
+    default: () => <div role="dialog" aria-label="Options Id Trasactions" />,
+  }),
+);
 
 const { date, setDate } = MockUseQueryTransactions();
 
@@ -23,7 +31,7 @@ describe("Render date input", () => {
 
   it("users action change date", () => {
     // ? FIND EVENT
-    const input = screen.getByLabelText("Transaction Date");;
+    const input = screen.getByLabelText("Transaction Date");
 
     // ? CHANGE EVENT
     fireEvent.change(input, {

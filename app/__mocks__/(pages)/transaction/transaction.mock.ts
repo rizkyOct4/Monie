@@ -41,19 +41,3 @@ export const MockDeleteFormTransactionsData = {
   information: MockTransactionsListData[0].information,
   nominal: MockTransactionsListData[0].nominal,
 };
-
-// * REACT QUERY ==================
-export const MockUseQueryTransactions = (): ReturnType<
-  typeof useQueryTransactions
-> => ({
-  TransactionsListData: MockTransactionsListData,
-  isFTransactionsListData: true,
-  TransactionsListRefetch: jest.fn(),
-  date: "2026-07-25",
-  setDate: jest.fn(),
-  queryKeyTransactions: [
-    "keyTransactionsList",
-    MockSession.publicId,
-    "2026-7-25",
-  ],
-});

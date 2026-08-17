@@ -92,10 +92,7 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
         date: new Date(values.date),
       };
 
-      // const conv = convertISOIntoNewDate(values.date)
-
       await postTransaction(post);
-      // console.log(typeof conv);
     } catch (err) {
       console.error(err);
     } finally {

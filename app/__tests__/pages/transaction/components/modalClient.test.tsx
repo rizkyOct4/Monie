@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import TransactionModalClient from "@/app/(pages)/transaction/transcation-modal-client";
 import { TransactionContext } from "@/app/context/context";
 import { MockTransactionsListData } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
-import { MockUseQueryTransactions } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
+import { MockUseQueryTransactions } from "@/app/__mocks__/(pages)/transaction/query/query-transactions.mock";
 
 const { date, setDate, TransactionsListData, isFTransactionsListData } =
   MockUseQueryTransactions();
@@ -66,7 +66,10 @@ describe("Should render transaction modal client", () => {
   });
 
   it("show skeleton and then -> transaction list data", () => {
-    const { rerender } = renderTransactions();
+    const { rerender } = renderTransactions({
+      ...mockContext,
+      isFTransactionsListData: true,
+    });
 
     expect(
       screen.getByRole("status", {

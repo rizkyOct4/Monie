@@ -1,6 +1,7 @@
 export type IdTransactionsDataType = {
   id: string;
   initialName: string;
+  status: "ACTIVE" | "DEFAULT" | "FINISH";
 };
 
 export type TransactionsDataType = {

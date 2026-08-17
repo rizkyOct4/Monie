@@ -10,14 +10,17 @@ export const MockUseQueryIdTransactions = (): ReturnType<
     {
       id: "random-id-1",
       initialName: "janea-1",
+      status: "ACTIVE",
     },
     {
       id: "random-search-id-1",
       initialName: "yoinkMAster-1",
+      status: "ACTIVE",
     },
   ],
   idTransactionsListRefetch: jest.fn(),
   isFetchingIdTransactionsList: false,
+  isSuccessIdTransaction: false,
   queryKeyIdTransactions: ["keyIdTransactionsList", "ss12"],
   isOpenIdTransaction: false,
   setIsOpenIdTransaction: jest.fn(),
@@ -29,6 +32,7 @@ export const MockUseQueryIdTransactions = (): ReturnType<
     {
       id: "random-search-id-1",
       initialName: "yoinkMAster-1",
+      status: "ACTIVE",
     },
   ],
   isFetchingSearchIdTransaction: false,
@@ -42,5 +46,10 @@ export const MockUseQueryTransactions = (): ReturnType<
   TransactionsListRefetch: jest.fn(),
   date: "2026-08-01",
   setDate: jest.fn(),
-  queryKeyTransactions: ["keyTransactionsList", "ss12", "2026-08-01"],
+  queryKeyTransactions: [
+    "keyTransactionsList",
+    "ss12",
+    "random search params",
+    "2026-08-01",
+  ],
 });

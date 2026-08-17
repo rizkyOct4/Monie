@@ -14,12 +14,13 @@ describe("ROUTES_TRANSACTION", () => {
         key: "transactions",
         currentPath: "/transaction",
         date: "2026-08-16",
+        transactionName: "random-search-params",
         pageParam: 1,
         limit: 10,
       });
 
       expect(result).toBe(
-        "/transaction/api?key=transactions&date-transaction=2026-08-16&page-param=1&limit=10",
+        `/transaction/api?key=transactions&transaction-date=2026-08-16&transaction-name=random-search-params&page-param=1&limit=10`,
       );
     });
 

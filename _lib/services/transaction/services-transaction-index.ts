@@ -12,8 +12,10 @@ export const GetIdTransactions = async ({
   limit,
   offset,
 }: GetIdTransactionsProps) => {
-  const query = await prisma.$queryRaw<{ id: string; initial_name: string }[]>`
-    SELECT id, initial_name 
+  const query = await prisma.$queryRaw<
+    { id: string; initial_name: string; status: string }[]
+  >`
+    SELECT id, initial_name, status 
       FROM initial_salary
     WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND status != 'FINISH'::"IdStatus"
     ORDER BY updated_at DESC
@@ -21,17 +23,10 @@ export const GetIdTransactions = async ({
     OFFSET ${offset}
   `;
 
-  if (query.length === 0) {
-    return {
-      data: [],
-      hasMore: false,
-    };
-  }
-
   const queryCheck = await prisma.$queryRaw<{ amount_id: number }[]>`
     SELECT COALESCE(COUNT(id), 0) AS amount_id
       FROM initial_salary
-    WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND status != 'FINISH'::"IdStatus"`;
+    WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND status != 'FINISH'::"IdStatus"`
 
   const data = camelcaseKeys(query);
   const hasMore = Number(queryCheck[0].amount_id) > limit + offset;
@@ -55,19 +50,20 @@ export const GetSearchIdTransactions = async ({
     AND initial_name ILIKE ${`%${search}%`} AND status != 'FINISH'::"IdStatus"
     LIMIT 20`;
 
-  if (query.length === 0) return [];
   return camelcaseKeys(query);
 };
 
 // * TRANSACTION LIST ====================
 type GetTransactionListProps = {
   publicId: string;
+  transactionName: string;
   searchTransaction: Date | string;
   offset: number;
   limit: number;
 };
 export const GetTransactionList = async ({
   publicId,
+  transactionName,
   searchTransaction,
   offset,
   limit,
@@ -92,20 +88,17 @@ export const GetTransactionList = async ({
   JOIN initial_salary s ON s.id = t.ref_id
   WHERE t.created_at::date = ${searchTransaction}::date
     AND t.ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
+    AND s.initial_name = ${transactionName}
   ORDER BY t.updated_at DESC`;
 
-  if (query.length === 0) {
-    return {
-      data: [],
-      hasMore: false,
-    };
-  }
-
   const queryMore = await prisma.$queryRaw<{ amount_transaction: number }[]>`
-  SELECT COALESCE(COUNT(created_at), 0)::int AS amount_transaction
-    FROM transactions
-  WHERE created_at::date = ${searchTransaction}::date
-    AND ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})`;
+  SELECT COALESCE(COUNT(t.created_at), 0)::int AS amount_transaction
+    FROM transactions t
+  JOIN initial_salary s ON s.id = t.ref_id
+  WHERE t.created_at::date = ${searchTransaction}::date
+    AND t.ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
+    AND s.initial_name = ${transactionName}
+    `;
 
   const data = camelcaseKeys(query);
   const hasMore = Number(queryMore[0].amount_transaction) > limit + offset;

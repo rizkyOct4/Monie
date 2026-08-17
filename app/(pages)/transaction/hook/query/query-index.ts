@@ -12,6 +12,7 @@ import type {
   IdTransactionsDataType,
   TransactionsDataType,
 } from "../../types/transaction.type";
+import { useSearchParams } from "next/navigation";
 
 // * ID TRANSACTIONS ======================
 type UseQueryIdTransactionsProps = {
@@ -23,32 +24,36 @@ export const useQueryIdTransactions = ({
   const [isOpenIdTransaction, setIsOpenIdTransaction] = useState(false);
 
   // * ID TRANSACTIONS ======================
-  const { data: fIdTransactionsList, refetch: idTransactionsListRefetch, isFetching: isFetchingIdTransactionsList } =
-    useInfiniteQuery({
-      queryKey: ["keyIdTransactionsList", publicId],
-      queryFn: async ({ pageParam = 1 }) => {
-        const limit = 15;
-        const URL = ROUTES_TRANSACTION.GET({
-          key: "idTransactions",
-          currentPath: "/transaction",
-          pageParam: pageParam,
-          limit: limit,
-        });
-        const { data } = await axios.get(URL);
-        return data;
-      },
-      getNextPageParam: (lastPage, allPages) => {
-        return lastPage?.hasMore ? allPages.length + 1 : undefined;
-      },
-      staleTime: 1000 * 60 * 10,
-      gcTime: 1000 * 60 * 60,
-      initialPageParam: 1,
-      enabled: isOpenIdTransaction,
-      placeholderData: keepPreviousData,
-      refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-      refetchOnMount: false, // "always" => refetch jika stale saja
-      retry: false,
-    });
+  const {
+    data: fIdTransactionsList,
+    refetch: idTransactionsListRefetch,
+    isFetching: isFetchingIdTransactionsList,
+    isSuccess: isSuccessIdTransaction
+  } = useInfiniteQuery({
+    queryKey: ["keyIdTransactionsList", publicId],
+    queryFn: async ({ pageParam = 1 }) => {
+      const limit = 15;
+      const URL = ROUTES_TRANSACTION.GET({
+        key: "idTransactions",
+        currentPath: "/transaction",
+        pageParam: pageParam,
+        limit: limit,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage?.hasMore ? allPages.length + 1 : undefined;
+    },
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    initialPageParam: 1,
+    enabled: isOpenIdTransaction,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false, // "always" => refetch jika stale saja
+    retry: false,
+  });
 
   const IdTransactionsListData: IdTransactionsDataType[] = useMemo(
     () => fIdTransactionsList?.pages.flatMap((page) => page.data) ?? [],
@@ -95,6 +100,7 @@ export const useQueryIdTransactions = ({
     IdTransactionsListData,
     idTransactionsListRefetch,
     isFetchingIdTransactionsList,
+    isSuccessIdTransaction,
     queryKeyIdTransactions: ["keyIdTransactionsList", publicId],
     isOpenIdTransaction,
     setIsOpenIdTransaction,
@@ -120,6 +126,9 @@ export const useQueryTransactions = ({
   publicId,
   currentPath,
 }: UseQueryTransactionsProps) => {
+  const searchParams = useSearchParams();
+  const transactionName = searchParams.get("v") ?? "";
+
   // * INITIAL STATE ============
   const [date, setDate] = useState(getToday());
 
@@ -128,13 +137,14 @@ export const useQueryTransactions = ({
     isFetching: isFTransactionsListData,
     refetch: TransactionsListRefetch,
   } = useInfiniteQuery({
-    queryKey: ["keyTransactionsList", publicId, date],
+    queryKey: ["keyTransactionsList", publicId, transactionName, date],
     queryFn: async ({ pageParam = 1 }) => {
       const limit = 15;
       const URL = ROUTES_TRANSACTION.GET({
         key: "transactions",
         currentPath: currentPath,
         date: date,
+        transactionName: transactionName,
         pageParam: pageParam,
         limit: limit,
       });
@@ -147,7 +157,7 @@ export const useQueryTransactions = ({
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 60,
     initialPageParam: 1,
-    enabled: !!date && currentPath === "/transaction",
+    enabled: !!date && !!transactionName,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
@@ -165,6 +175,11 @@ export const useQueryTransactions = ({
     TransactionsListRefetch,
     date,
     setDate,
-    queryKeyTransactions: ["keyTransactionsList", publicId, date],
+    queryKeyTransactions: [
+      "keyTransactionsList",
+      publicId,
+      transactionName,
+      date,
+    ],
   };
 };

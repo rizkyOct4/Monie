@@ -1,6 +1,9 @@
 "use client";
 
-interface IDateInput {
+import OptionsIdTransactions from "./options-id-transaction";
+import { memo } from "react";
+
+interface IHeaderTransaction {
   date: string;
   setDate: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -15,7 +18,7 @@ export const FormattedDate = (date: string) => {
     : "Pilih Tanggal";
 };
 
-const DateInput = ({ date, setDate }: IDateInput) => {
+const HeaderTransaction = ({ date, setDate }: IHeaderTransaction) => {
   const formatDate = FormattedDate(date);
 
   return (
@@ -40,6 +43,9 @@ const DateInput = ({ date, setDate }: IDateInput) => {
       "
         />
       </div>
+
+      <OptionsIdTransactions />
+
       <div>
         <h2
           className="text-lg font-semibold tracking-tight text-white"
@@ -56,4 +62,4 @@ const DateInput = ({ date, setDate }: IDateInput) => {
   );
 };
 
-export default DateInput;
+export default memo(HeaderTransaction);

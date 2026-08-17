@@ -44,7 +44,6 @@ type PostCurrentTransactionProps = {
   information?: string | undefined;
   status: string;
 };
-
 export const PostCurrentTransaction = async ({
   publicId,
   id,
@@ -90,7 +89,10 @@ type PutTransactionProps = {
   date: Date;
   lastNominal: number;
   nominal: number;
-  images: string[];
+  images: {
+    name: string;
+    path: string;
+  }[];
   information: string;
   newImages:
     | {

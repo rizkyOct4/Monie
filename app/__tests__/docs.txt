@@ -24,3 +24,10 @@ Karakter	Encoded  => for config-routes !!!!
 #	%23
 %	%25
 +	%2B
+
+
+3 tahap TESTING
+
+1 => unit test -> mandiri (kecil) ex: utiliti
+2 => integration test => middle => menggabungkan 2 component bersama 
+3 => E2E bagaimana flow BERJALAN => DARI AWAL sampai AKHIR !!! 

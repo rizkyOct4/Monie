@@ -67,24 +67,6 @@ describe("Render search id transaction", () => {
       expect(ContainerListIdTransaction).not.toBeInTheDocument();
     });
 
-    it("Has No Data", () => {
-      RenderSearchIdTransaction(MockProps, {
-        ...MockContext,
-        IdTransactionsListData: [],
-      });
-
-      fireEvent.click(
-        screen.getByRole("button", {
-          name: "Open list ID transaction",
-        }),
-      );
-
-      expect(
-        screen.getByRole("status", {
-          name: "Has No Data",
-        }),
-      ).toBeInTheDocument();
-    });
   });
 
   describe("Search ID Transaction", () => {

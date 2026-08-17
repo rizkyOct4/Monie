@@ -3,6 +3,7 @@ export type GetProps =
       key: "transactions";
       currentPath: string;
       date?: string;
+      transactionName: string;
       pageParam: number;
       limit: number;
     }
@@ -43,7 +44,8 @@ export const ROUTES_TRANSACTION = {
 
     switch (key) {
       case "transactions":
-        params.set("date-transaction", props.date ?? "");
+        params.set("transaction-date", props.date ?? "");
+        params.set("transaction-name", props.transactionName);
         params.set("page-param", String(props.pageParam));
         params.set("limit", String(props.limit));
         break;

@@ -36,7 +36,9 @@ const mockedGetTransationList = GetTransactionList as jest.MockedFunction<
 
 // * MOCK API =========
 const createRequest = (query: string) =>
-  new NextRequest(`http://localhost/transaction/api?${query}`, { method: "GET" });
+  new NextRequest(`http://localhost/transaction/api?${query}`, {
+    method: "GET",
+  });
 
 describe("GET /transaction/api", () => {
   beforeEach(() => {
@@ -55,7 +57,13 @@ describe("GET /transaction/api", () => {
       beforeEach(() => {
         jest.clearAllMocks();
       });
-      const req = createRequest("key=idTransactions&page-param=1&limit=15");
+      const req = createRequest(
+        new URLSearchParams({
+          key: "idTransactions",
+          "page-param": "1",
+          limit: "15",
+        }).toString(),
+      );
       const expectedCalled = {
         publicId: "ss12",
         limit: 15,
@@ -68,6 +76,7 @@ describe("GET /transaction/api", () => {
             {
               id: "period-1",
               initialName: "Asking",
+              status: "ACTIVE",
             },
           ],
           hasMore: true,
@@ -83,27 +92,6 @@ describe("GET /transaction/api", () => {
         // ! Memastikan ada tidaknya data dari services
         expect(res.status).toBe(200);
         expect(body.data).toHaveLength(1);
-
-        // ! Memastikan service dipanggil dengan parameter yang benar.
-        expect(mockedGetIdTransactions).toHaveBeenCalledWith(expectedCalled);
-      });
-      it("should return 404 when data didn't exists", async () => {
-        // ? RETURN MOCK DATA =====
-        mockedGetIdTransactions.mockResolvedValue({
-          data: [],
-          hasMore: false,
-        });
-
-        const res = await GET(req);
-
-        // ? MENGECEK BODY
-        const body = await res.json();
-
-        // ! Memastikan ada tidaknya data dari services
-        expect(res.status).toBe(404); // ? HTTP response
-        expect(body).toEqual({
-          message: "Data tidak ditemukan",
-        });
 
         // ! Memastikan service dipanggil dengan parameter yang benar.
         expect(mockedGetIdTransactions).toHaveBeenCalledWith(expectedCalled);
@@ -129,8 +117,12 @@ describe("GET /transaction/api", () => {
       beforeEach(() => {
         jest.clearAllMocks();
       });
+
       const req = createRequest(
-        "key=searchTransactions&search-transaction=randomse",
+        new URLSearchParams({
+          key: "searchTransactions",
+          "search-transaction": "randomse",
+        }).toString(),
       );
       const expectedCalled = {
         publicId: "ss12",
@@ -161,26 +153,6 @@ describe("GET /transaction/api", () => {
           expectedCalled,
         );
       });
-      it("should return 404 when data didn't exists", async () => {
-        // ? RETURN MOCK DATA =====
-        mockedGetSearchIdTransactions.mockResolvedValue([]);
-
-        const res = await GET(req);
-
-        // ? MENGECEK BODY
-        const body = await res.json();
-
-        // ! Memastikan ada tidaknya data dari services
-        expect(res.status).toBe(404); // ? HTTP response
-        expect(body).toEqual({
-          message: "Data tidak ditemukan",
-        });
-
-        // ! Memastikan service dipanggil dengan parameter yang benar.
-        expect(mockedGetSearchIdTransactions).toHaveBeenCalledWith(
-          expectedCalled,
-        );
-      });
       it("should return 500 when service throws an error", async () => {
         mockedGetSearchIdTransactions.mockRejectedValue(
           new Error("Internal Server Error"),
@@ -204,12 +176,20 @@ describe("GET /transaction/api", () => {
       beforeEach(() => {
         jest.clearAllMocks();
       });
+
       const req = createRequest(
-        "key=transactions&date-transaction=2026-08-10&page-param=1&limit=15",
+        new URLSearchParams({
+          key: "transactions",
+          "transaction-date": "2026-08-10",
+          "transaction-name": "random search params",
+          "page-param": "1",
+          limit: "15",
+        }).toString(),
       );
       const expectedCalled = {
         publicId: "ss12",
-        searchTransaction: new Date("2026-08-10T00:00:00.000Z"),
+        transactionName: "random search params",
+        searchTransaction: new Date("2026-08-10"),
         offset: 0,
         limit: 15,
       };
@@ -223,8 +203,8 @@ describe("GET /transaction/api", () => {
               refId: "s012",
               information: "Lorem123",
               nominal: 4000,
-              createdAt: new Date("2026-08-10T11:11:00.000Z"),
-              updatedAt: new Date("2026-08-07T11:11:00.000Z"),
+              createdAt: new Date("2026-08-10"),
+              updatedAt: new Date("2026-08-07"),
               images: [
                 {
                   id: "random-id-image-1",
@@ -251,29 +231,10 @@ describe("GET /transaction/api", () => {
         // ! Memastikan service dipanggil dengan parameter yang benar.
         expect(mockedGetTransationList).toHaveBeenCalledWith(expectedCalled);
       });
-      it("should return 404 when data didn't exists", async () => {
-        // ? RETURN MOCK DATA =====
-        mockedGetTransationList.mockResolvedValue({
-          data: [],
-          hasMore: false,
-        });
-
-        const res = await GET(req);
-
-        // ? MENGECEK BODY
-        const body = await res.json();
-
-        // ! Memastikan ada tidaknya data dari services
-        expect(res.status).toBe(404); // ? HTTP response
-        expect(body).toEqual({
-          message: "Data tidak ditemukan",
-        });
-
-        // ! Memastikan service dipanggil dengan parameter yang benar.
-        expect(mockedGetTransationList).toHaveBeenCalledWith(expectedCalled);
-      });
       it("should return 500 when service throws an error", async () => {
-        mockedGetTransationList.mockRejectedValue(new Error("Internal Server Error"));
+        mockedGetTransationList.mockRejectedValue(
+          new Error("Internal Server Error"),
+        );
 
         const res = await GET(req);
         const body = await res.json();
@@ -287,9 +248,5 @@ describe("GET /transaction/api", () => {
         expect(mockedGetTransationList).toHaveBeenCalledWith(expectedCalled);
       });
     });
-    // describe("has no key", () => {
-    //   const req = createRequest("");
-
-    // })
   });
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext } from "react";
-import DateInput from "./components/header";
+import HeaderTransaction from "./components/header";
 import TransactionList from "./components/transactions-list";
 import { TransactionContext } from "@/app/context/context";
 import TransactionListSkeleton from "./skeleton/skeleton-transactions";
@@ -12,7 +12,7 @@ const TransactionModalClient = () => {
 
   return (
     <div className="flex flex-col gap-4 py-4 min-h-screen relative">
-      <DateInput date={date} setDate={setDate} />
+      <HeaderTransaction date={date} setDate={setDate} />
       {isFTransactionsListData ? (
         <TransactionListSkeleton />
       ) : (

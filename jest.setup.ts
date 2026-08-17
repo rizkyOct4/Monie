@@ -4,5 +4,4 @@ import "@testing-library/jest-dom";
 
 jest.mock("nanoid", () => ({
   nanoid: () => "mock-id",
-  publicId: () => "mock-id",
 }));

@@ -57,6 +57,7 @@ const HeaderTransaction = ({ date, setDate }: IHeaderTransaction) => {
         <p className="mt-1 text-sm text-zinc-500">
           Daftar transaksi yang telah dicatat
         </p>
+        {/* <p className="shimmer text-muted-foreground">Generating response&hellip;</p> */}
       </div>
     </div>
   );

@@ -189,7 +189,7 @@ describe("GET /transaction/api", () => {
       const expectedCalled = {
         publicId: "ss12",
         transactionName: "random search params",
-        searchTransaction: new Date("2026-08-10"),
+        convDate: new Date("2026-08-10"),
         offset: 0,
         limit: 15,
       };

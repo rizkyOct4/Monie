@@ -12,6 +12,9 @@ import FormPut from "@/app/(pages)/transaction/components/form/update/pop-up-for
 const mockProps = {
   TransactionsListData: MockTransactionsListData,
   setIdTransaction: jest.fn(),
+  fetchNextPage: jest.fn(),
+  hasNextPage: true,
+  isFetchingNextPage: false,
 };
 
 // * MOCK COMPONENTS ===============

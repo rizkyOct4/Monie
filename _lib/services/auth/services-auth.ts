@@ -44,11 +44,13 @@ export const CredentialRegister = async ({
   email,
   password,
   userType,
+  createdAt
 }: {
   name: string;
   email: string;
   password: string;
   userType: string;
+  createdAt: Date
 }) => {
   return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const salt = await bcrypt.genSalt(10);
@@ -56,9 +58,9 @@ export const CredentialRegister = async ({
     const publicId = nanoid(8);
 
     await tx.$executeRaw`
-      INSERT INTO users (public_id, name, email, password, user_type) 
+      INSERT INTO users (public_id, name, email, password, user_type, created_at) 
         VALUES 
-      (${publicId}, ${name}, ${email}, ${passwordHash}, ${userType}::"UserType")`;
+      (${publicId}, ${name}, ${email}, ${passwordHash}, ${userType}::"UserType", ${createdAt})`;
   });
 };
 

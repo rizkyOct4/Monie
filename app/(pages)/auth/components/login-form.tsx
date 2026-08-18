@@ -61,13 +61,6 @@ const LoginForm = () => {
             </p>
           )}
         </span>
-        {/* <label
-          htmlFor="email"
-          className="mb-2 block text-sm font-medium text-zinc-300"
-        >
-          Email
-        </label> */}
-
         <div className="relative">
           <Mail
             size={18}
@@ -144,7 +137,11 @@ const LoginForm = () => {
       >
         {isSubmit ? (
           <>
-            <div role="status" aria-label="Is Loading New Transaction">
+            <div
+              role="status"
+              aria-label="Is Loading New Transaction"
+              className="flex items-center justify-center gap-2"
+            >
               <Spokes className="size-4 animate-spin" />
               <span>Dalam Progres...</span>
             </div>

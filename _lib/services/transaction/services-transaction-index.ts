@@ -54,21 +54,35 @@ export const GetSearchIdTransactions = async ({
 };
 
 // * TRANSACTION LIST ====================
+export type TGetTransactions = {
+  status: string;
+  id: string;
+  ref_id: string;
+  information: string;
+  nominal: number;
+  created_at: Date;
+  updated_at: Date;
+  images: {
+    id: string;
+    imageName: string;
+    imageUrl: string;
+  }[];
+};
 type GetTransactionListProps = {
   publicId: string;
-  transactionName: string;
-  searchTransaction: Date | string;
+  transactionName: string | undefined;
+  convDate: Date | string;
   offset: number;
   limit: number;
 };
 export const GetTransactionList = async ({
   publicId,
   transactionName,
-  searchTransaction,
+  convDate,
   offset,
   limit,
 }: GetTransactionListProps) => {
-  const query = await prisma.$queryRaw<any>`
+  const query = await prisma.$queryRaw<TGetTransactions[]>`
   SELECT s.status, t.id, t.ref_id, t.information, t.nominal, t.created_at, t.updated_at,
    COALESCE(
       (
@@ -86,19 +100,18 @@ export const GetTransactionList = async ({
     ) AS images
     FROM transactions t
   JOIN initial_salary s ON s.id = t.ref_id
-  WHERE t.created_at::date = ${searchTransaction}::date
+  WHERE t.created_at::date = ${convDate}::date
     AND t.ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
     AND s.initial_name = ${transactionName}
   ORDER BY t.updated_at DESC`;
 
   const queryMore = await prisma.$queryRaw<{ amount_transaction: number }[]>`
-  SELECT COALESCE(COUNT(t.created_at), 0)::int AS amount_transaction
-    FROM transactions t
-  JOIN initial_salary s ON s.id = t.ref_id
-  WHERE t.created_at::date = ${searchTransaction}::date
-    AND t.ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
-    AND s.initial_name = ${transactionName}
-    `;
+    SELECT COALESCE(COUNT(t.created_at), 0)::int AS amount_transaction
+      FROM transactions t
+    JOIN initial_salary s ON s.id = t.ref_id
+    WHERE t.created_at::date = ${convDate}::date
+      AND t.ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
+      AND s.initial_name = ${transactionName}`;
 
   const data = camelcaseKeys(query);
   const hasMore = Number(queryMore[0].amount_transaction) > limit + offset;

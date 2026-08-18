@@ -40,3 +40,19 @@ Secrets
 
 
 // ! ERROR 404 -> jika mengacu ke sesuatu yg sangat spesifik dan tidak ditemukan !! ex: perpindahan page base on id
+
+
+
+
+
+Remove-Item -Recurse -Force coverage // ! menghapus coverage
+coverageThreshold: {
+  global: {
+    statements: 40,
+    branches: 70,
+    functions: 50,
+    lines: 40,
+  },
+},
+
+// todo EVERYTIME ADDING SOME TEST, MAKE SURE THRESHOLD ALSO WENT UP

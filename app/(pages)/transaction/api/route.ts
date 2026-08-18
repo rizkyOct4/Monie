@@ -5,6 +5,7 @@ import {
   GetTransactionList,
 } from "@/_lib/services/transaction/services-transaction-index";
 import GetSession from "@/_lib/session";
+import { RedisTransactionsLimit } from "../redis/transaction-limit";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,12 +13,16 @@ export async function GET(req: NextRequest) {
 
     const key = req.nextUrl.searchParams.get("key");
     const date = req.nextUrl.searchParams.get("transaction-date");
-    const transactionName = req.nextUrl.searchParams.get("transaction-name") ?? "";
+    const transactionName =
+      req.nextUrl.searchParams.get("transaction-name") ?? "";
     const search = req.nextUrl.searchParams.get("search-transaction") ?? "";
-    const searchTransaction = date ? new Date(date) : "";
+    const convDate = date ? new Date(date) : "";
     const pageParam = Number(req.nextUrl.searchParams.get("page-param"));
     const limit = Number(req.nextUrl.searchParams.get("limit"));
     const offset = (pageParam - 1) * limit;
+
+    const checkLimit = await RedisTransactionsLimit({ key, publicId });
+    if (checkLimit) return checkLimit;
 
     switch (key) {
       case "idTransactions": {
@@ -47,7 +52,7 @@ export async function GET(req: NextRequest) {
         const output = await GetTransactionList({
           publicId,
           transactionName,
-          searchTransaction,
+          convDate,
           offset,
           limit,
         });

@@ -5,9 +5,9 @@ const AuthBanner = () => {
   return (
     <div className="relative hidden h-full w-full overflow-hidden bg-[#050505] lg:block">
       {/* Background Blur */}
-      <div className="pointer-events-none absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-emerald-500/[0.08] blur-[140px]" />
+      <div className="pointer-events-none absolute -left-32 -top-32 h-125 w-125 rounded-full bg-emerald-500/8 blur-[140px]" />
 
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-[450px] w-[450px] rounded-full bg-blue-500/[0.06] blur-[130px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 h-112.5 w-112.5 rounded-full bg-blue-500/6 blur-[130px]" />
 
       {/* Decorative Gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.08),transparent_35%)]" />
@@ -39,7 +39,7 @@ const AuthBanner = () => {
 
           <h1 className="mt-8 text-5xl font-bold leading-tight tracking-tight text-white">
             Kelola uang dengan{" "}
-            <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
               lebih terarah.
             </span>
           </h1>

@@ -1,9 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import GetSession from "./_lib/session";
-// import { nanoid } from "nanoid";
+import { nanoid } from "nanoid";
+import { cookies } from "next/headers";
 
 const proxy = async (req: NextRequest) => {
+  const cookieStore = await cookies();
   const pathname = req.nextUrl.pathname;
+
+  let clientId = cookieStore.get("register-client-id")?.value;
+
+  if (!clientId) {
+    clientId = nanoid();
+
+    cookieStore.set("register-client-id", clientId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+  }
 
   if (pathname.startsWith("/auth") || pathname.startsWith("/api/auth")) {
     return NextResponse.next();
@@ -21,14 +37,12 @@ const proxy = async (req: NextRequest) => {
 };
 export default proxy;
 
-
 export const config = {
   matcher: [
     "/((?!auth|docs|cv|api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json).*)",
     // `/((?!|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)`,
   ],
 };
-
 
 // const TRIAL_DAYS = 30;
 
@@ -93,7 +107,6 @@ export const config = {
 // };
 
 // export default proxy;
-
 
 // export const config = {
 //   matcher: [

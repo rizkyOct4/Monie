@@ -16,5 +16,5 @@ export type TransactionsDataType = {
   nominal: number;
   createdAt: Date;
   updatedAt: Date;
-  status: "FINISH" | "ACTIVE";
+  status: string;
 };

@@ -7,8 +7,15 @@ import { TransactionContext } from "@/app/context/context";
 import TransactionListSkeleton from "./skeleton/skeleton-transactions";
 
 const TransactionModalClient = () => {
-  const { date, setDate, TransactionsListData, isFTransactionsListData } =
-    useContext(TransactionContext);
+  const {
+    date,
+    setDate,
+    TransactionsListData,
+    isFTransactionsListData,
+    FNPTransactionsList,
+    HNPTransactionList,
+    IFNPTransactionList
+  } = useContext(TransactionContext);
 
   return (
     <div className="flex flex-col gap-4 py-4 min-h-screen relative">
@@ -16,7 +23,12 @@ const TransactionModalClient = () => {
       {isFTransactionsListData ? (
         <TransactionListSkeleton />
       ) : (
-        <TransactionList TransactionsListData={TransactionsListData} />
+        <TransactionList
+          TransactionsListData={TransactionsListData}
+          fetchNextPage={FNPTransactionsList}
+          hasNextPage={HNPTransactionList}
+          isFetchingNextPage={IFNPTransactionList}
+        />
       )}
     </div>
   );

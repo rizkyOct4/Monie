@@ -9,14 +9,22 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const config: Config = {
   coverageProvider: "v8",
+  coverageDirectory: "<rootDir>/coverage",
   testEnvironment: "jsdom",
   modulePaths: ["<rootDir>/app"],
-  collectCoverage: true,
+  collectCoverage: false,
   verbose: true,
+  coverageThreshold: {
+    global: {
+      statements: 40,
+      branches: 70,
+      functions: 50,
+      lines: 40,
+    },
+  },
   collectCoverageFrom: [
     "app/**/*.{ts,tsx}",
     "!app/**/*.d.ts",
-    "!app/**/*.type.ts",
     "!<rootDir>/types/**",
     "!app/**/*.type.ts",
     "!<rootDir>/.next/**",

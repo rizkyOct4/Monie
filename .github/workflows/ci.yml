@@ -60,7 +60,14 @@ jobs:
         run: pnpm run type-check
 
       - name: Unit test
-        run: pnpm test -- --runInBand
+        run: pnpm test:cover -- --runInBand
+
+      - name: Upload Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
 
       - name: Build
         run: pnpm run build

@@ -6,7 +6,7 @@ export const zRegisterFormSchema = z.object({
   name: z
     .string()
     .min(0)
-    .max(12, "* Max 12 Characters")
+    .max(30, "* Max 30 Characters")
     .refine((val) => !ForbiddenRegex().test(val), {
       message: `* Contains invalid characters`,
     }),
@@ -19,7 +19,7 @@ export const zRegisterFormSchema = z.object({
     }),
 
   password: z.string().min(8, "* Password must be at least 8 characters"),
-  userType: z.string(),
+  confirmPassword: z.string(),
 });
 
 export const zLoginFormSchema = z.object({

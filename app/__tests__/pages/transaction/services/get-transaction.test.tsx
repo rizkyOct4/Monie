@@ -2,8 +2,10 @@ import { prisma } from "@/_lib/prisma/prisma-client";
 import {
   GetIdTransactions,
   GetSearchIdTransactions,
+  GetTransactionList,
 } from "@/_lib/services/transaction/services-transaction-index";
 import camelcaseKeys from "camelcase-keys";
+import { MockGetTransactionList } from "@/app/__mocks__/(pages)/transaction/query/query-transactions.mock";
 
 jest.mock("@/_lib/prisma/prisma-client", () => ({
   prisma: {
@@ -20,19 +22,18 @@ const MockQueryRaw = prisma.$queryRaw as jest.Mock;
 const CamelcaseKeysMockQ1 = camelcaseKeys as jest.Mock;
 const CamelcaseKeysMockQ2 = camelcaseKeys as jest.Mock;
 
-describe("SERVICES GET ID TRANSACTIONS", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    CamelcaseKeysMockQ1.mockImplementation((value) =>
-      value.map((item: any) => ({
-        id: item.id,
-        initialName: item.initial_name,
-        status: item.status,
-      })),
-    );
-  });
-
+describe("SERVICES TRANSACTIONS", () => {
   describe("GetIdTransactions", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      CamelcaseKeysMockQ1.mockImplementation((value) =>
+        value.map((item: any) => ({
+          id: item.id,
+          initialName: item.initial_name,
+          status: item.status,
+        })),
+      );
+    });
     it("should return data and hasMore true", async () => {
       const mockData = [
         {
@@ -180,89 +181,196 @@ describe("SERVICES GET ID TRANSACTIONS", () => {
       expect(MockQueryRaw).toHaveBeenCalledTimes(2);
     });
   });
-});
 
-describe("GetSearchIdTransactions", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    CamelcaseKeysMockQ2.mockImplementation((value) =>
-      value.map((item: any) => ({
-        id: item.id,
-        initialName: item.initial_name,
-      })),
-    );
-  });
-  it("should return data and hasMore true", async () => {
-    const mockData = [
-      {
-        id: "id-transaction-1",
-        initial_name: "Salary August",
-      },
-      {
-        id: "id-transaction-2",
-        initial_name: "Salary July",
-      },
-    ];
+  describe("GetSearchIdTransactions", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      CamelcaseKeysMockQ2.mockImplementation((value) =>
+        value.map((item: any) => ({
+          id: item.id,
+          initialName: item.initial_name,
+        })),
+      );
+    });
+    it("should return has data", async () => {
+      const mockData = [
+        {
+          id: "id-transaction-1",
+          initial_name: "Salary August",
+        },
+        {
+          id: "id-transaction-2",
+          initial_name: "Salary July",
+        },
+      ];
 
-    MockQueryRaw.mockResolvedValueOnce(mockData); // ! return query pertama
+      MockQueryRaw.mockResolvedValueOnce(mockData); // ! return query pertama
 
-    const result = await GetSearchIdTransactions({
-      publicId: "ss12",
-      search: "Testing Search",
+      const result = await GetSearchIdTransactions({
+        publicId: "ss12",
+        search: "Salary",
+      });
+
+      expect(MockQueryRaw).toHaveBeenCalledTimes(1);
+
+      expect(result).toEqual([
+        {
+          id: "id-transaction-1",
+          initialName: "Salary August",
+        },
+        {
+          id: "id-transaction-2",
+          initialName: "Salary July",
+        },
+      ]);
     });
 
-    expect(MockQueryRaw).toHaveBeenCalledTimes(1);
+    it("should return no data", async () => {
+      MockQueryRaw.mockResolvedValueOnce([]); // ! return query pertama
 
-    expect(result).toEqual([
-      {
-        id: "id-transaction-1",
-        initialName: "Salary August",
-      },
-      {
-        id: "id-transaction-2",
-        initialName: "Salary July",
-      },
-    ]);
+      const result = await GetSearchIdTransactions({
+        publicId: "ss12",
+        search: "Test",
+      });
+
+      expect(MockQueryRaw).toHaveBeenCalledTimes(1);
+
+      expect(result).toEqual([]);
+    });
   });
 
-  // it("should return empty array when no transaction is found", async () => {
-  //   const MockQueryResult: {
-  //     id: string;
-  //     initial_name: string;
-  //   }[] = [];
+  describe("GetTransactionList", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      CamelcaseKeysMockQ1.mockImplementation((value) =>
+        value.map((item: any) => ({
+          status: item.status,
+          id: item.id,
+          refId: item.ref_id,
+          information: item.information,
+          nominal: item.nominal,
+          createdAt: item.created_at,
+          updatedAt: item.updated_at,
+          images: item.images,
+        })),
+      );
+    });
 
-  //   const MockCamelcaseResult: {
-  //     id: string;
-  //     initialName: string;
-  //   }[] = [];
+    it("should return data and hasMore true", async () => {
+      const mockData = [
+        {
+          status: "ACTIVE",
+          id: "transaction-id-1",
+          ref_id: "initial-salary-id-1",
+          information: "Makan siang",
+          nominal: 25000,
+          created_at: new Date("2026-08-18T05:00:00.000Z"),
+          updated_at: new Date("2026-08-18T05:10:00.000Z"),
+          images: [
+            {
+              id: "transaction-image-id-1",
+              imageName: "receipt.jpg",
+              imageUrl: "https://example.com/receipt.jpg",
+            },
+          ],
+        },
+        {
+          status: "ACTIVE",
+          id: "transaction-id-2",
+          ref_id: "initial-salary-id-1",
+          information: "Transportasi",
+          nominal: 15000,
+          created_at: new Date("2026-08-18T03:00:00.000Z"),
+          updated_at: new Date("2026-08-18T03:30:00.000Z"),
+          images: [],
+        },
+      ];
 
-  //   PrismaQueryRawMock.mockResolvedValue(MockQueryResult);
-  //   CamelcaseKeysMock.mockReturnValue(MockCamelcaseResult);
+      MockQueryRaw.mockResolvedValueOnce(mockData) // ! return query pertama
+        .mockResolvedValueOnce([{ amount_transaction: 20 }]); // ! return query kedua
 
-  //   const result = await GetSearchIdTransactions({
-  //     publicId: "public-user-123",
-  //     search: "NotFound",
-  //   });
+      const result = await GetTransactionList({
+        publicId: "ss12",
+        transactionName: "random Transaction",
+        convDate: new Date("2026-08-18T05:00:00.000Z"),
+        offset: 0,
+        limit: 15,
+      });
 
-  //   expect(PrismaQueryRawMock).toHaveBeenCalledTimes(1);
-  //   expect(CamelcaseKeysMock).toHaveBeenCalledWith(MockQueryResult);
+      expect(MockQueryRaw).toHaveBeenCalledTimes(2);
 
-  //   expect(result).toEqual([]);
-  // });
+      expect(result).toEqual({
+        data: MockGetTransactionList,
+        hasMore: true,
+      });
+    });
+    it("should return data and hasMore false", async () => {
+      const mockData = [
+        {
+          status: "ACTIVE",
+          id: "transaction-id-1",
+          ref_id: "initial-salary-id-1",
+          information: "Makan siang",
+          nominal: 25000,
+          created_at: new Date("2026-08-18T05:00:00.000Z"),
+          updated_at: new Date("2026-08-18T05:10:00.000Z"),
+          images: [
+            {
+              id: "transaction-image-id-1",
+              imageName: "receipt.jpg",
+              imageUrl: "https://example.com/receipt.jpg",
+            },
+          ],
+        },
+        {
+          status: "ACTIVE",
+          id: "transaction-id-2",
+          ref_id: "initial-salary-id-1",
+          information: "Transportasi",
+          nominal: 15000,
+          created_at: new Date("2026-08-18T03:00:00.000Z"),
+          updated_at: new Date("2026-08-18T03:30:00.000Z"),
+          images: [],
+        },
+      ];
 
-  // it("should throw error when prisma query fails", async () => {
-  //   const MockError = new Error("Database error");
+      MockQueryRaw.mockResolvedValueOnce(mockData) // ! return query pertama
+        .mockResolvedValueOnce([{ amount_transaction: 5 }]); // ! return query kedua
 
-  //   PrismaQueryRawMock.mockRejectedValue(MockError);
+      const result = await GetTransactionList({
+        publicId: "ss12",
+        transactionName: "random Transaction no more data",
+        convDate: new Date("2026-08-18T05:00:00.000Z"),
+        offset: 0,
+        limit: 15,
+      });
 
-  //   await expect(
-  //     GetSearchIdTransactions({
-  //       publicId: "public-user-123",
-  //       search: "Salary",
-  //     }),
-  //   ).rejects.toThrow("Database error");
+      expect(MockQueryRaw).toHaveBeenCalledTimes(2);
 
-  //   expect(PrismaQueryRawMock).toHaveBeenCalledTimes(1);
-  //   expect(CamelcaseKeysMock).not.toHaveBeenCalled();
-  // });
+      expect(result).toEqual({
+        data: MockGetTransactionList,
+        hasMore: false,
+      });
+    });
+    it("should return empty data when query returns empty array", async () => {
+      MockQueryRaw.mockResolvedValueOnce([]).mockResolvedValueOnce([
+        { amount_transaction: 0 },
+      ]);
+
+      const result = await GetTransactionList({
+        publicId: "ss12",
+        transactionName: "empty DAta",
+        convDate: new Date("2026-08-18T05:00:00.000Z"),
+        offset: 0,
+        limit: 15,
+      });
+
+      expect(result).toEqual({
+        data: [],
+        hasMore: false,
+      });
+
+      expect(MockQueryRaw).toHaveBeenCalledTimes(2);
+    });
+  });
 });

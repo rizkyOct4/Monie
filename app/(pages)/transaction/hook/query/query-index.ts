@@ -136,6 +136,9 @@ export const useQueryTransactions = ({
     data: fTransactionsList,
     isFetching: isFTransactionsListData,
     refetch: TransactionsListRefetch,
+    fetchNextPage: FNPTransactionsList,
+    hasNextPage: HNPTransactionList,
+    isFetchingNextPage: IFNPTransactionList
   } = useInfiniteQuery({
     queryKey: ["keyTransactionsList", publicId, transactionName, date],
     queryFn: async ({ pageParam = 1 }) => {
@@ -173,6 +176,9 @@ export const useQueryTransactions = ({
     TransactionsListData,
     isFTransactionsListData,
     TransactionsListRefetch,
+    FNPTransactionsList,
+    HNPTransactionList,
+    IFNPTransactionList,
     date,
     setDate,
     queryKeyTransactions: [

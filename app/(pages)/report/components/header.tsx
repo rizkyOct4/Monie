@@ -37,7 +37,7 @@ const HeaderReport = () => {
   return (
     <section className="w-full sm:flex max-sm:flex-col rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm sticky top-6 backdrop-blur-sm">
       {/* Header */}
-      <div className="sm:w-[30%] max-sm:w-full">
+      <div className="sm:w-[30%] max-sm:w-full max-sm:mb-4">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
             <span className="text-sm font-semibold text-emerald-400">Rp</span>
@@ -53,9 +53,9 @@ const HeaderReport = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col gap-4 sm:flex-row sm:items-end">
+      <div className="flex gap-4 sm:items-end w-full">
         {/* PERIODE */}
-        <div className="relative w-full sm:w-48">
+        <div className="relative w-[50%]">
           <label
             htmlFor="period-input"
             className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-zinc-500"
@@ -78,7 +78,7 @@ const HeaderReport = () => {
         </div>
 
         {/* TRANSAKSI */}
-        <div className="relative w-full sm:w-60">
+        <div className="relative w-[50%]">
           <label
             htmlFor="transaction-button"
             className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-zinc-500"

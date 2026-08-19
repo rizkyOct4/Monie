@@ -53,6 +53,7 @@ const Footer = () => {
             <Link
               key={item.href}
               href={item.href}
+              // prefetch={false}
               className={`flex flex-col items-center gap-1 transition ${
                 isActive
                   ? "text-emerald-400 hover:text-emerald-300"

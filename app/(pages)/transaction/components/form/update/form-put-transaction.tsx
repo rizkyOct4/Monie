@@ -29,7 +29,7 @@ export type PutFormTransactionsProps = {
   onClose: () => void;
 };
 
-const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
+const FormPutTranscation = ({ putValue, onClose }: PutFormTransactionsProps) => {
   const { publicId } = useSessionClient();
   const now = new Date();
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -542,4 +542,4 @@ const FormPut = ({ putValue, onClose }: PutFormTransactionsProps) => {
   );
 };
 
-export default FormPut;
+export default FormPutTranscation;

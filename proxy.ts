@@ -1,25 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import GetSession from "./_lib/session";
-import { nanoid } from "nanoid";
 import { cookies } from "next/headers";
+import { AnonymousId, Authentication, Forbidden } from "./_lib/proxy";
 
 const proxy = async (req: NextRequest) => {
   const cookieStore = await cookies();
   const pathname = req.nextUrl.pathname;
 
-  let clientId = cookieStore.get("register-client-id")?.value;
+  const clientId = cookieStore.get("register-client-id")?.value;
 
-  if (!clientId) {
-    clientId = nanoid();
-
-    cookieStore.set("register-client-id", clientId, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365,
-    });
-  }
+  // ? CREATE NEW COOKIES ANONYMOUS =====
+  const anonymous = await AnonymousId(clientId);
+  if (anonymous) return anonymous;
 
   if (pathname.startsWith("/auth") || pathname.startsWith("/api/auth")) {
     return NextResponse.next();
@@ -27,11 +19,13 @@ const proxy = async (req: NextRequest) => {
 
   const { publicId } = await GetSession();
 
-  if (!publicId) {
-    return NextResponse.redirect(
-      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url),
-    );
-  }
+  // ? CHECK AUTH =====
+  const auth = Authentication(req, pathname, publicId);
+  if (auth) return auth;
+  
+  // ? FORBIDDEN =====
+  const forb = Forbidden(req, clientId, publicId);
+  if (forb) return forb;
 
   return NextResponse.next();
 };

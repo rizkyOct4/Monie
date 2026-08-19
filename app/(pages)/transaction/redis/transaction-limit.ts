@@ -7,12 +7,13 @@ interface IRedisTransactionsLimitProps {
 }
 
 export const RedisTransactionsLimit = async ({
-  key,
+  key = "transactions",
   publicId,
 }: IRedisTransactionsLimitProps) => {
   const { reset, remaining, success } = await GETTransactionsLimit.limit(
     `Get key:${key}, publicId:${publicId}`,
   );
+
   if (!success) {
     return NextResponse.json(
       {

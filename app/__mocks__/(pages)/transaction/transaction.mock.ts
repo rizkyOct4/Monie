@@ -1,7 +1,7 @@
 import { useQueryTransactions } from "@/app/(pages)/transaction/hook/query/query-index";
 import type { TransactionsDataType } from "@/app/(pages)/transaction/types/transaction.type";
 import { MockSession } from "../../session.mock";
-import type { PopUpDeleteTransactionProps } from "@/app/(pages)/transaction/components/form/delete/pop-up-delete";
+import type { PopUpDeleteTransactionProps } from "@/app/(pages)/transaction/components/form/delete/form-delete-transaction";
 
 // ! TRANSACTIONS LIST DATA ==============
 export const MockTransactionsListData: TransactionsDataType[] = [

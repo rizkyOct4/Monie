@@ -18,7 +18,7 @@ const TransactionModalClient = () => {
   } = useContext(TransactionContext);
 
   return (
-    <div className="flex flex-col gap-4 py-4 min-h-screen relative">
+    <div className="flex flex-col gap-4 py-4 relative">
       <HeaderTransaction date={date} setDate={setDate} />
       {isFTransactionsListData ? (
         <TransactionListSkeleton />

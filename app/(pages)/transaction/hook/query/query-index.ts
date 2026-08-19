@@ -142,7 +142,7 @@ export const useQueryTransactions = ({
   } = useInfiniteQuery({
     queryKey: ["keyTransactionsList", publicId, transactionName, date],
     queryFn: async ({ pageParam = 1 }) => {
-      const limit = 15;
+      const limit = 8;
       const URL = ROUTES_TRANSACTION.GET({
         key: "transactions",
         currentPath: currentPath,

@@ -11,11 +11,12 @@ import { useSessionClient } from "@/_lib/c-session";
 import { TransactionContext } from "@/app/context/context";
 import { FormPostType, FormPostSchema } from "../../../z-schema/z-schema";
 import SearchIdTransaction from "./search-id-transactions";
+import { toast } from "sonner";
+import { ToastPromise } from "@/_utils/toast";
 
 type TransactionsProps = {
   onClose: () => void;
 };
-
 
 const ExistedTransactions = ({ onClose }: TransactionsProps) => {
   const { publicId } = useSessionClient();
@@ -92,11 +93,19 @@ const ExistedTransactions = ({ onClose }: TransactionsProps) => {
         date: new Date(values.date),
       };
 
-      await postTransaction(post);
+      const promise = postTransaction(post);
+      toast.promise(promise, {
+        loading: "Loading...",
+        success: (data: { message: string }) =>
+          `${data.message}`,
+        error: "Failed to add transaction",
+      });
+
+      await promise;
+
+      onClose();
     } catch (err) {
       console.error(err);
-    } finally {
-      onClose();
     }
   });
 

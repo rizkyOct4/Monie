@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import FormPut from "@/app/(pages)/transaction/components/form/update/pop-up-form-put";
+import FormPut from "@/app/(pages)/transaction/components/form/update/form-put-transaction";
 import {
   MockPutValueProps,
   MockInputMultipleImages,

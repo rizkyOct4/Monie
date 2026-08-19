@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from "nextjs-toploader";
 import QueryProvider from "./query-provider";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,14 +37,17 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body>
         <NextTopLoader
           color="#ef4444"
           height={2}
           showSpinner={false}
           crawlSpeed={200}
         />
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <Toaster position="top-right" richColors closeButton />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

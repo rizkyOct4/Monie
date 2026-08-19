@@ -1,5 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import TransactionList from "@/app/(pages)/transaction/components/transactions-list";
+import { useInView } from "react-intersection-observer";
+import { LoadingIndicator } from "@/components/ui/loading-indicatior";
 
 // ? MOCK IMPORT
 import {
@@ -7,7 +9,6 @@ import {
   MockPutFormTransactionsData,
   MockDeleteFormTransactionsData,
 } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
-import FormPut from "@/app/(pages)/transaction/components/form/update/pop-up-form-put";
 
 const mockProps = {
   TransactionsListData: MockTransactionsListData,
@@ -16,6 +17,11 @@ const mockProps = {
   hasNextPage: true,
   isFetchingNextPage: false,
 };
+
+const useInViewMock = useInView as jest.Mock;
+jest.mock("react-intersection-observer", () => ({
+  useInView: jest.fn(),
+}));
 
 // * MOCK COMPONENTS ===============
 // ? POP UP IMAGES
@@ -46,7 +52,7 @@ jest.mock(
 // ? POP UP UPDATE
 const mockPropsPutImage = jest.fn();
 jest.mock(
-  "@/app/(pages)/transaction/components/form/update/pop-up-form-put",
+  "@/app/(pages)/transaction/components/form/update/form-put-transaction",
   () => ({
     __esModule: true,
     default: ({
@@ -69,29 +75,45 @@ jest.mock(
 
 // ? POP UP DELETE
 const mockPropsDeleteImage = jest.fn();
-jest.mock("@/app/(pages)/transaction/components/form/delete/pop-up-delete", () => ({
-  __esModule: true,
-  default: ({
-    deleteValue,
-    onClose,
-  }: {
-    deleteValue: typeof MockDeleteFormTransactionsData;
-    onClose: () => void;
-  }) => {
-    mockPropsDeleteImage({ deleteValue, onClose });
+jest.mock(
+  "@/app/(pages)/transaction/components/form/delete/form-delete-transaction",
+  () => ({
+    __esModule: true,
+    default: ({
+      deleteValue,
+      onClose,
+    }: {
+      deleteValue: typeof MockDeleteFormTransactionsData;
+      onClose: () => void;
+    }) => {
+      mockPropsDeleteImage({ deleteValue, onClose });
 
-    return (
-      <div role="dialog" aria-label="Mock Popup Delete Image">
-        <button onClick={onClose}>Close</button>
-      </div>
-    );
-  },
+      return (
+        <div role="dialog" aria-label="Mock Popup Delete Image">
+          <button onClick={onClose}>Close</button>
+        </div>
+      );
+    },
+  }),
+);
+
+jest.mock("@/components/ui/loading-indicatior", () => ({
+  __esModule: true,
+  default: () => <div role="status" aria-label="Loading Transactions" />,
 }));
 
 const renderTransactionsList = (props = mockProps) =>
   render(<TransactionList {...props} />);
 
 describe("Render Transaction List", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    useInViewMock.mockReturnValue({
+      ref: jest.fn(),
+      inView: false,
+    });
+  });
   describe("Render Transaction Section", () => {
     it("check has information", () => {
       renderTransactionsList();
@@ -266,6 +288,68 @@ describe("Render Transaction List", () => {
           name: "Mock Popup Delete Image",
         }),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Infinite Scroll", () => {
+    it("should fetch next page when transaction is in view", () => {
+      useInViewMock.mockReturnValue({
+        ref: jest.fn(),
+        inView: true,
+      });
+
+      renderTransactionsList({
+        ...mockProps,
+        hasNextPage: true,
+        isFetchingNextPage: false,
+      });
+
+      expect(mockProps.fetchNextPage).toHaveBeenCalled();
+    });
+
+    it("should not fetch next page when transaction is not in view", () => {
+      useInViewMock.mockReturnValue({
+        ref: jest.fn(),
+        inView: false,
+      });
+
+      renderTransactionsList({
+        ...mockProps,
+        hasNextPage: true,
+        isFetchingNextPage: false,
+      });
+
+      expect(mockProps.fetchNextPage).not.toHaveBeenCalled();
+    });
+
+    it("should not fetch next page when there is no next page", () => {
+      useInViewMock.mockReturnValue({
+        ref: jest.fn(),
+        inView: true,
+      });
+
+      renderTransactionsList({
+        ...mockProps,
+        hasNextPage: false,
+        isFetchingNextPage: false,
+      });
+
+      expect(mockProps.fetchNextPage).not.toHaveBeenCalled();
+    });
+
+    it("should not fetch next page while fetching next page", () => {
+      useInViewMock.mockReturnValue({
+        ref: jest.fn(),
+        inView: true,
+      });
+
+      renderTransactionsList({
+        ...mockProps,
+        hasNextPage: true,
+        isFetchingNextPage: true,
+      });
+
+      expect(mockProps.fetchNextPage).not.toHaveBeenCalled();
     });
   });
 });

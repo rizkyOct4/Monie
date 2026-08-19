@@ -2,12 +2,16 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import type { TransactionsDataType } from "../types/transaction.type";
-import FormPut from "./form/update/pop-up-form-put";
-import PopUpDeleteTransaction from "./form/delete/pop-up-delete";
-import PopUpShowImages from "./pop-up/pop-up-show-image";
 import { FormatDate } from "@/_utils/format-date";
 import { FormatCurrency } from "@/_utils/format-currency";
 import { useInView } from "react-intersection-observer";
+import { LoadingIndicator } from "@/components/ui/loading-indicatior";
+import {
+  LazyFormPutTransaction,
+  LazyDeleteTransaction,
+  PopUpShowImages,
+} from "./lazy-load/index.lazy";
+import { useSearchParams } from "next/navigation";
 
 export const ListOptionBtn = [
   { text: "Detail Foto", value: "detailImage" },
@@ -28,11 +32,11 @@ const TransactionList = ({
   hasNextPage,
   isFetchingNextPage,
 }: TranscationListProps) => {
+  const searchParams = useSearchParams();
+  const transactionName = searchParams.get("v") ?? "";
+
   // ? 🔹 ref untuk container scrollable
   const containerRef = useRef<HTMLDivElement | null>(null);
-
-  // ? 🔹 karena root belum ada saat render pertama, set setelah mount
-  const [root, setRoot] = useState<Element | null>(null);
 
   const [popup, setPopup] = useState("");
   const [imageValue, setImageValue] = useState([]);
@@ -100,11 +104,16 @@ const TransactionList = ({
         );
       }
       case "putImage": {
-        return <FormPut putValue={putValue} onClose={() => setPopup("")} />;
+        return (
+          <LazyFormPutTransaction
+            putValue={putValue}
+            onClose={() => setPopup("")}
+          />
+        );
       }
       case "deleteImage": {
         return (
-          <PopUpDeleteTransaction
+          <LazyDeleteTransaction
             deleteValue={deleteValue}
             onClose={() => setPopup("")}
           />
@@ -116,24 +125,26 @@ const TransactionList = ({
   // ? setup observer
   const { ref: lastItemRef, inView } = useInView({
     threshold: 0.2, // ! trigger ketika 20% elemen terlihat
-    root,
   });
 
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage();
-    setRoot(containerRef.current);
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
   }, [inView, hasNextPage, fetchNextPage, isFetchingNextPage]);
+
+  if (!transactionName) return null;
 
   return (
     <div
-      className="flex flex-col gap-6 "
+      className="flex flex-col gap-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="transactions-list"
     >
       {/* LIST */}
-      <div className="flex flex-col gap-3">
-        {TransactionsListData.length > 0 ? (
+      <div className="flex flex-col gap-3 h-auto" ref={containerRef}>
+        {Array.isArray(TransactionsListData) && TransactionsListData.length > 0 ? (
           TransactionsListData.map((i, idx) => {
             const isLast = idx === TransactionsListData.length - 1;
 
@@ -142,7 +153,7 @@ const TransactionList = ({
                 role="dialog"
                 aria-label="Has Transactions"
                 ref={isLast ? lastItemRef : null}
-                key={idx}
+                key={i.id}
                 className={`group flex items-center justify-between rounded-2xl border p-5 transition-all ${
                   i.status === "FINISH"
                     ? "border-red-500/20 bg-red-500/5"
@@ -223,6 +234,10 @@ const TransactionList = ({
           <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950 py-12 text-center">
             <p className="text-sm text-zinc-500">Tidak ada transaksi</p>
           </div>
+        )}
+
+        {isFetchingNextPage && (
+          <LoadingIndicator text="Loading more transactions..." />
         )}
       </div>
 

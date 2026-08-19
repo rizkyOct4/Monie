@@ -128,41 +128,65 @@ export const useMutationTransaction = ({
           // queryClient.cancelQueries({ queryKey: queryKeyProjectList }),
         ]);
 
-        const prevTransactions = queryClient.getQueryData(usedQuery);
+        const prevTransactions =
+          queryClient.getQueryData<InfiniteData<TransactionsDataType[]>>(
+            usedQuery,
+          );
 
-        queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
-          usedQuery,
-          (oldData) => {
-            if (!oldData) return oldData;
+        if (!prevTransactions) return;
 
-            return {
-              ...oldData,
-              pages: oldData?.pages.map((page: any) => ({
-                ...page,
-                data: [
-                  ...page.data,
-                  {
-                    id: mutate.id,
-                    refId: mutate.existId,
-                    information: mutate.information,
-                    nominal: mutate.nominal,
-                    createdAt: mutate.date,
-                    updatedAt: mutate.date,
-                    status: mutate.status,
-                    images: mutate.images,
-                  },
-                ],
-              })),
-            };
-          },
+        let rf = false;
+
+        const limit = 8;
+        const amountCacheData = prevTransactions.pageParams.length - 1;
+        const lastPageIndex = prevTransactions.pages.findLastIndex(
+          (page: any) => page.data[amountCacheData].length === limit,
         );
 
-        return { prevTransactions, usedQuery };
+        if (lastPageIndex) {
+          rf = true;
+        } else {
+          queryClient.setQueryData<InfiniteData<TransactionsDataType[]>>(
+            usedQuery,
+            (oldData) => {
+              if (!oldData) return oldData;
+
+              return {
+                ...oldData,
+                pages: oldData?.pages.map((page: any) => {
+                  const hasMore = page.hasMore;
+                  if (!hasMore) {
+                    return {
+                      ...page,
+                      data: [
+                        ...page.data,
+                        {
+                          id: mutate.id,
+                          refId: mutate.existId,
+                          information: mutate.information,
+                          nominal: mutate.nominal,
+                          createdAt: mutate.date,
+                          updatedAt: mutate.date,
+                          status: mutate.status,
+                          images: mutate.images,
+                        },
+                      ],
+                    };
+                  }
+                }),
+              };
+            },
+          );
+        }
+
+        return { prevTransactions, usedQuery, rf };
       },
       onSuccess: (data, variables, context) => {
+        if (!context) return;
+
         const newQuery = queryClient.getQueryData(context.usedQuery);
 
-        if (!newQuery) {
+        if (!newQuery || context.rf) {
           queryClient.invalidateQueries({
             queryKey: context.usedQuery,
           });
@@ -178,6 +202,10 @@ export const useMutationTransaction = ({
 
   return { postTransaction, isPendingPostTransaction };
 };
+
+
+// todo tomorrow !! if data.length === limit -> REFETCH !!!
+
 
 // * UPDATE TRANSACTIONS ======================
 type UseMutationPutTranscationProps = {

@@ -21,9 +21,6 @@ export async function GET(req: NextRequest) {
     const limit = Number(req.nextUrl.searchParams.get("limit"));
     const offset = (pageParam - 1) * limit;
 
-    const checkLimit = await RedisTransactionsLimit({ key, publicId });
-    if (checkLimit) return checkLimit;
-
     switch (key) {
       case "idTransactions": {
         const output = await GetIdTransactions({
@@ -49,6 +46,9 @@ export async function GET(req: NextRequest) {
         // }
       }
       case "transactions": {
+        // const checkLimit = await RedisTransactionsLimit({ key, publicId });
+        // if (checkLimit) return checkLimit;
+
         const output = await GetTransactionList({
           publicId,
           transactionName,

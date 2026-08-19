@@ -1,5 +1,6 @@
 import { prisma } from "@/_lib/prisma/prisma-client";
 import camelcaseKeys from "camelcase-keys";
+import { cacheTag } from "next/cache";
 
 // * ID TRANSACTION ====================
 type GetIdTransactionsProps = {
@@ -26,7 +27,7 @@ export const GetIdTransactions = async ({
   const queryCheck = await prisma.$queryRaw<{ amount_id: number }[]>`
     SELECT COALESCE(COUNT(id), 0) AS amount_id
       FROM initial_salary
-    WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND status != 'FINISH'::"IdStatus"`
+    WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId}) AND status != 'FINISH'::"IdStatus"`;
 
   const data = camelcaseKeys(query);
   const hasMore = Number(queryCheck[0].amount_id) > limit + offset;
@@ -82,6 +83,10 @@ export const GetTransactionList = async ({
   offset,
   limit,
 }: GetTransactionListProps) => {
+  // "use cache"
+
+  // cacheTag(`transactions:${publicId}`);
+
   const query = await prisma.$queryRaw<TGetTransactions[]>`
   SELECT s.status, t.id, t.ref_id, t.information, t.nominal, t.created_at, t.updated_at,
    COALESCE(
@@ -103,7 +108,10 @@ export const GetTransactionList = async ({
   WHERE t.created_at::date = ${convDate}::date
     AND t.ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
     AND s.initial_name = ${transactionName}
-  ORDER BY t.updated_at DESC`;
+    ORDER BY t.updated_at DESC
+    LIMIT ${limit}
+    OFFSET ${offset}
+  `;
 
   const queryMore = await prisma.$queryRaw<{ amount_transaction: number }[]>`
     SELECT COALESCE(COUNT(t.created_at), 0)::int AS amount_transaction

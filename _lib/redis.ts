@@ -6,13 +6,14 @@ export const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-export const ratelimit = new Ratelimit({
+// * AUTH ===============
+export const POSTRegister = new Ratelimit({
   redis: redis,
   limiter: Ratelimit.fixedWindow(2, "20 m"),
   analytics: true,
 });
 
-
+// * TRANSACTIONS ===============
 export const GETTransactionsLimit = new Ratelimit({
   redis: redis,
   limiter: Ratelimit.fixedWindow(20, "30 s"),

@@ -7,7 +7,8 @@ export const metadata: Metadata = {
     "Dokumentasi Monie untuk memahami fitur, cara kerja, dan penggunaan aplikasi keuangan.",
 };
 
-const DocsPage = () => {
+const DocsPage = async() => {
+  "use cache"
   return <DocsIndex />;
 };
 

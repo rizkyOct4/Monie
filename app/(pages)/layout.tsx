@@ -1,6 +1,6 @@
 import Footer from "./components/footer";
 import NewPostBtn from "./components/new-post-btn";
-import CookieBanner from "./auth/components/cookies-banner";
+// import CookieBanner from "./auth/components/cookies-banner";
 
 type RootLayoutProps = {
   children: React.ReactNode;

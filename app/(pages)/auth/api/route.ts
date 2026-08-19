@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CredentialRegister } from "@/_lib/services/auth/services-auth";
-import { ratelimit } from "@/_lib/redis";
+import { RedisAuthLimit } from "../redis/post-redis-limit";
 import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
@@ -9,25 +9,6 @@ export async function POST(req: NextRequest) {
 
     const clientId: string | undefined =
       cookieStore.get("register-client-id")?.value;
-    const { reset, remaining, success } = await ratelimit.limit(
-      `register:${clientId}`,
-    );
-
-    if (!success) {
-      return NextResponse.json(
-        {
-          message:
-            "Too many registration attempts. Please try again in a few minutes.",
-        },
-        {
-          status: 429,
-          headers: {
-            "X-RateLimit-Remaining": remaining.toString(),
-            "X-RateLimit-Reset": reset.toString(),
-          },
-        },
-      );
-    }
 
     const key = req.nextUrl.searchParams.get("key");
     const { name, email, password, userType, createdAt } = await req.json();
@@ -36,6 +17,9 @@ export async function POST(req: NextRequest) {
 
     switch (key) {
       case "register": {
+        const redis = RedisAuthLimit.POST({ key, clientId });
+        if (redis) return redis;
+
         await CredentialRegister({
           name,
           email,

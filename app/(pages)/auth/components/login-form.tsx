@@ -11,6 +11,7 @@ import { signIn } from "next-auth/react";
 import { Spokes } from "@/components/ui/spokes";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { toast } from 'sonner'
 
 type LoginFormSchema = z.infer<typeof zLoginFormSchema>;
 
@@ -39,6 +40,7 @@ const LoginForm = () => {
       } else {
         router.refresh();
         router.push(redirect);
+        toast.success('Login Success')
       }
     } catch (err) {
       console.error(err);

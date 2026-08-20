@@ -2,7 +2,6 @@
  * @jest-environment node
  */
 
-import { parsePeriod } from "@/app/(pages)/report/hook/query/query-index";
 import { NextRequest } from "next/server";
 import { MockUseQueryIdPeriodTransactions } from "@/app/__mocks__/(pages)/report/hook/hook.index.mock";
 
@@ -52,18 +51,21 @@ describe("GET /report/api", () => {
   });
 
   describe("CASE periodTransaction", () => {
-    const req = createRequest("key=periodTransactions&month=7&year=2026");
+    const req = createRequest(
+      new URLSearchParams({
+        key: "periodTransactions",
+        period: "2026-08",
+      }).toString(),
+    );
     const expectedPeriod = {
       publicId: "ss12",
-      month: 7,
-      year: 2026,
+      period: "2026-08",
     };
 
     it("should return 200 when data exists", async () => {
       // ? RETURN MOCK DATA =====
       mockedGetPeriodTransaction.mockResolvedValue([
         {
-          id: "period-1",
           initialName: "Asking",
         },
       ]);
@@ -79,7 +81,6 @@ describe("GET /report/api", () => {
 
       expect(body[0]).toEqual(
         expect.objectContaining({
-          id: expect.any(String),
           initialName: expect.any(String),
         }),
       );
@@ -108,7 +109,9 @@ describe("GET /report/api", () => {
       expect(mockedGetPeriodTransaction).toHaveBeenCalledWith(expectedPeriod);
     });
     it("should return 500 when service throws an error", async () => {
-      mockedGetPeriodTransaction.mockRejectedValue(new Error("Internal Server Error"));
+      mockedGetPeriodTransaction.mockRejectedValue(
+        new Error("Internal Server Error"),
+      );
 
       const res = await GET(req);
       const body = await res.json();
@@ -123,11 +126,17 @@ describe("GET /report/api", () => {
     });
   });
 
-  describe("CASE idPeriodTransaction", () => {
-    const req = createRequest("key=idPeriodTransactions&id-period=Ts13ss");
+  describe("CASE idPeriodTransactions", () => {
+    const req = createRequest(
+       new URLSearchParams({
+        key: "idPeriodTransactions",
+        "id-period": "yoink Master",
+      }).toString(),
+
+    );
     const expectedIdPeriod = {
       publicId: "ss12",
-      idPeriod: "Ts13ss",
+      idPeriod: "yoink Master",
     };
 
     it("should return 200 when data exists", async () => {
@@ -143,31 +152,6 @@ describe("GET /report/api", () => {
       expect(res.status).toBe(200);
       expect(body).toHaveLength(1);
 
-      // ! Memastikan hasil yang dikirim ke client benar
-      // expect(await res.json()).toEqual([
-      //   {
-      //     salaryIncome: 2000000,
-      //     salaryRemaining: 1800000,
-      //     createdAt: "2026-07-19T10:00:00.000Z",
-      //     updatedAt: "2026-07-19T12:00:00.000Z",
-      //     status: "ACTIVE",
-      //     insight: [
-      //       {
-      //         totalTransaction: 10,
-      //         biggestExpense: {
-      //           date: "2026-07-19T10:00:00.000Z",
-      //           amount: 500000,
-      //         },
-      //         averageExpense: 150000,
-      //         amountNominal: 1500000,
-      //         mostExpensiveDay: {
-      //           date: "2026-07-19T10:00:00.000Z",
-      //           amount: 800000,
-      //         },
-      //       },
-      //     ],
-      //   },
-      // ]);
 
       // ! Memastikan service dipanggil dengan parameter yang benar.
       expect(mockedGetIdPeriod).toHaveBeenCalledWith(expectedIdPeriod);
@@ -186,33 +170,6 @@ describe("GET /report/api", () => {
       expect(body).toEqual({
         message: "Data tidak ditemukan",
       });
-
-      // ! Memastikan hasil yang dikirim ke client benar
-      // expect(await res.json()).toEqual([
-      //   {
-      //     salaryIncome: 2000000,
-      //     salaryRemaining: 1800000,
-      //     createdAt: "2026-07-19T10:00:00.000Z",
-      //     updatedAt: "2026-07-19T12:00:00.000Z",
-      //     status: "ACTIVE",
-      //     insight: [
-      //       {
-      //         totalTransaction: 10,
-      //         biggestExpense: {
-      //           date: "2026-07-19T10:00:00.000Z",
-      //           amount: 500000,
-      //         },
-      //         averageExpense: 150000,
-      //         amountNominal: 1500000,
-      //         mostExpensiveDay: {
-      //           date: "2026-07-19T10:00:00.000Z",
-      //           amount: 800000,
-      //         },
-      //       },
-      //     ],
-      //   },
-      // ]);
-
       // ! Memastikan service dipanggil dengan parameter yang benar.
       expect(mockedGetIdPeriod).toHaveBeenCalledWith(expectedIdPeriod);
     });
@@ -229,16 +186,6 @@ describe("GET /report/api", () => {
       });
 
       expect(mockedGetIdPeriod).toHaveBeenCalledWith(expectedIdPeriod);
-    });
-  });
-});
-
-// * HELPER FUNCTION ================
-describe("parse period transactions", () => {
-  it("return Month and Year", () => {
-    expect(parsePeriod("2026-07")).toEqual({
-      month: "07",
-      year: "2026",
     });
   });
 });

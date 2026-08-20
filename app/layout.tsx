@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: "/logo2.png",
+  },
   title: {
     default: "Monie",
     template: "%s | Monie 1.0",

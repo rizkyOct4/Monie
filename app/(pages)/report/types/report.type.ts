@@ -1,5 +1,4 @@
 export type PeriodTransactionDataType = {
-  id: string;
   initialName: string;
 };
 

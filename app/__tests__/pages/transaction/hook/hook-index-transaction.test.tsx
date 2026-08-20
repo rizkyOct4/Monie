@@ -115,6 +115,7 @@ describe("Hook index Transactions", () => {
     });
     expect(mockedUseMutationTransaction).toHaveBeenCalledWith({
       publicId: "ss12",
+      transactionsLimit: MockQTransaction.transactionsLimit
     });
     expect(mockedUseMutationPutTransaction).toHaveBeenCalledWith({
       publicId: "ss12",

@@ -4,14 +4,11 @@ import {
   useQueryPeriodTransactions,
   useQueryPeriodIdTransactions,
 } from "./query/query-index";
-import { useSessionClient } from "@/_lib/c-session";
 
-export const useHookReport = () => {
-  const { publicId } = useSessionClient();
-
+export const useHookReport = (currentPath: string, publicId: string) => {
   // * GET PERIOD
-  const QGetPeriod = useQueryPeriodTransactions({ publicId });
-  const QGetIdPeriod = useQueryPeriodIdTransactions({ publicId });
+  const QGetPeriod = useQueryPeriodTransactions({ publicId, currentPath });
+  const QGetIdPeriod = useQueryPeriodIdTransactions({ publicId, currentPath });
 
   const values = {
     ...QGetPeriod,

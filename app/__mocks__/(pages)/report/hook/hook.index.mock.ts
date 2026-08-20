@@ -9,11 +9,10 @@ import {
 export const MockUseQueryPeriodTransactions = (): ReturnType<
   typeof useQueryPeriodTransactions
 > => ({
-  period: "2026-07",
+  period: "2026-08",
   setPeriod: jest.fn(),
   PeriodTransactionData: [
     {
-      id: "1",
       initialName: "Asking",
     },
   ],

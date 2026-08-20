@@ -4,23 +4,26 @@ import camelcaseKeys from "camelcase-keys";
 // * GET PERIOD TRANSACTION ====================
 type GetPeriodTransactionProps = {
   publicId: string;
-  month: number;
-  year: number;
+  period: string;
 };
 export const GetPeriodTransaction = async ({
   publicId,
-  month,
-  year,
+  period,
 }: GetPeriodTransactionProps) => {
-  const query = await prisma.$queryRaw<{ id: string; initial_name: string }[]>`
+  const startDate = new Date(period);
+  startDate.setDate(1);
+  const endDate = new Date(startDate);
+  endDate.setMonth(endDate.getMonth() + 1);
+
+  const query = await prisma.$queryRaw<{ initial_name: string }[]>`
         SELECT
-          id, initial_name
+          initial_name
         FROM initial_salary
           WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${publicId})
-          AND EXTRACT(YEAR FROM created_at) = ${year} AND EXTRACT(MONTH FROM created_at) = ${month}
+          AND created_at >= ${startDate}::date
+            AND created_at < ${endDate}::date
           AND status != 'FINISH'::"IdStatus"
         `;
-
   return camelcaseKeys(query);
 };
 
@@ -72,7 +75,9 @@ export const GetIdPeriodTransaction = async ({
                             'amount', MAX(nominal)
                           )
                           FROM transactions
-                          WHERE ref_id = ${idPeriod}
+                          WHERE ref_id = (
+                      SELECT id FROM initial_salary WHERE initial_name = ${idPeriod}
+                    )
                           GROUP BY DATE(created_at) 
                           ORDER BY MAX(nominal) DESC
                           LIMIT 1
@@ -90,7 +95,9 @@ export const GetIdPeriodTransaction = async ({
                             'amount', SUM(nominal)
                         )
                         FROM transactions
-                        WHERE ref_id = ${idPeriod}
+                        WHERE ref_id = (
+                      SELECT id FROM initial_salary WHERE initial_name = ${idPeriod}
+                    )
                         GROUP BY DATE(created_at) 
                         ORDER BY SUM(nominal) DESC
                         LIMIT 1
@@ -101,7 +108,9 @@ export const GetIdPeriodTransaction = async ({
                         )
                         )AS "mostExpensiveDay"
                     FROM transactions
-                    WHERE ref_id = ${idPeriod}
+                    WHERE ref_id = (
+                      SELECT id FROM initial_salary WHERE initial_name = ${idPeriod}
+                    )
                 ) result
             ) AS insight
         FROM initial_salary s
@@ -111,12 +120,10 @@ export const GetIdPeriodTransaction = async ({
                 FROM users
                 WHERE public_id = ${publicId}
             )
-        AND s.id = ${idPeriod};
+        AND s.initial_name = ${idPeriod};
         `;
 
   return camelcaseKeys(query);
 };
-
-
 
 // ! json_build_object(...) bertipe json, jika data yg ingin dikembalikan dalam bentuk ini harus berbentuk JSON juga !!!

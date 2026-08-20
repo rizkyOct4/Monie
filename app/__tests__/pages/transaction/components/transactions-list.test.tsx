@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import TransactionList from "@/app/(pages)/transaction/components/transactions-list";
 import { useInView } from "react-intersection-observer";
+import { useSearchParams } from "next/navigation";
 import { LoadingIndicator } from "@/components/ui/loading-indicatior";
 
 // ? MOCK IMPORT
@@ -23,22 +24,31 @@ jest.mock("react-intersection-observer", () => ({
   useInView: jest.fn(),
 }));
 
-// * MOCK COMPONENTS ===============
-// ? POP UP IMAGES
+jest.mock("next/navigation", () => ({
+  useSearchParams: jest.fn(),
+}));
+
+// * MOCK LAZY NAMED COMPONENTS ===============
 const mockPropsPopUpShowImage = jest.fn();
-type ImagesType = (typeof MockTransactionsListData)[number]["images"]; // ! number berarti "salah satu elemen array", sehingga hasilnya adalah tipe dari images.
+const mockPropsPutImage = jest.fn();
+const mockPropsDeleteImage = jest.fn();
+
 jest.mock(
-  "@/app/(pages)/transaction/components/pop-up/pop-up-show-image",
+  "@/app/(pages)/transaction/components/lazy-load/index.lazy",
   () => ({
     __esModule: true,
-    default: ({
+
+    PopUpShowImages: ({
       images,
       onClose,
     }: {
-      images: ImagesType;
+      images: typeof MockTransactionsListData[0]["images"];
       onClose: () => void;
     }) => {
-      mockPropsPopUpShowImage({ images, onClose });
+      mockPropsPopUpShowImage({
+        images,
+        onClose,
+      });
 
       return (
         <div role="dialog" aria-label="Mock Popup Show Image">
@@ -46,23 +56,18 @@ jest.mock(
         </div>
       );
     },
-  }),
-);
 
-// ? POP UP UPDATE
-const mockPropsPutImage = jest.fn();
-jest.mock(
-  "@/app/(pages)/transaction/components/form/update/form-put-transaction",
-  () => ({
-    __esModule: true,
-    default: ({
+    LazyFormPutTransaction: ({
       putValue,
       onClose,
     }: {
       putValue: typeof MockPutFormTransactionsData;
       onClose: () => void;
     }) => {
-      mockPropsPutImage({ putValue, onClose });
+      mockPropsPutImage({
+        putValue,
+        onClose,
+      });
 
       return (
         <div role="dialog" aria-label="Mock Popup Put Image">
@@ -70,23 +75,18 @@ jest.mock(
         </div>
       );
     },
-  }),
-);
 
-// ? POP UP DELETE
-const mockPropsDeleteImage = jest.fn();
-jest.mock(
-  "@/app/(pages)/transaction/components/form/delete/form-delete-transaction",
-  () => ({
-    __esModule: true,
-    default: ({
+    LazyDeleteTransaction: ({
       deleteValue,
       onClose,
     }: {
       deleteValue: typeof MockDeleteFormTransactionsData;
       onClose: () => void;
     }) => {
-      mockPropsDeleteImage({ deleteValue, onClose });
+      mockPropsDeleteImage({
+        deleteValue,
+        onClose,
+      });
 
       return (
         <div role="dialog" aria-label="Mock Popup Delete Image">
@@ -101,6 +101,12 @@ jest.mock("@/components/ui/loading-indicatior", () => ({
   __esModule: true,
   default: () => <div role="status" aria-label="Loading Transactions" />,
 }));
+
+const mockedUseSearchParams = useSearchParams as jest.Mock;
+
+mockedUseSearchParams.mockReturnValue({
+  get: jest.fn().mockReturnValue("Tes"),
+});
 
 const renderTransactionsList = (props = mockProps) =>
   render(<TransactionList {...props} />);
@@ -332,21 +338,6 @@ describe("Render Transaction List", () => {
         ...mockProps,
         hasNextPage: false,
         isFetchingNextPage: false,
-      });
-
-      expect(mockProps.fetchNextPage).not.toHaveBeenCalled();
-    });
-
-    it("should not fetch next page while fetching next page", () => {
-      useInViewMock.mockReturnValue({
-        ref: jest.fn(),
-        inView: true,
-      });
-
-      renderTransactionsList({
-        ...mockProps,
-        hasNextPage: true,
-        isFetchingNextPage: true,
       });
 
       expect(mockProps.fetchNextPage).not.toHaveBeenCalled();

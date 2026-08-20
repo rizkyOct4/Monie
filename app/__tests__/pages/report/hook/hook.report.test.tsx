@@ -48,10 +48,11 @@ describe("Hook index report", () => {
     mockedUseQueryPeriodTransactions.mockReturnValue(MockPeriod);
     mockedUseQueryPeriodIdTransactions.mockReturnValue(MockIdPeriod);
 
-    const { result } = renderHook(() => useHookReport());
+    const { result } = renderHook(() => useHookReport("report", "ss12"));
 
     expect(mockedUseQueryPeriodTransactions).toHaveBeenCalledWith({
       publicId: "ss12",
+      currentPath: "report",
     });
     expect(mockedUseQueryPeriodIdTransactions).toHaveBeenCalledWith({
       publicId: "ss12",

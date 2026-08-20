@@ -28,7 +28,7 @@ export const useQueryIdTransactions = ({
     data: fIdTransactionsList,
     refetch: idTransactionsListRefetch,
     isFetching: isFetchingIdTransactionsList,
-    isSuccess: isSuccessIdTransaction
+    isSuccess: isSuccessIdTransaction,
   } = useInfiniteQuery({
     queryKey: ["keyIdTransactionsList", publicId],
     queryFn: async ({ pageParam = 1 }) => {
@@ -132,17 +132,17 @@ export const useQueryTransactions = ({
   // * INITIAL STATE ============
   const [date, setDate] = useState(getToday());
 
+  const limit = 10;
   const {
     data: fTransactionsList,
     isFetching: isFTransactionsListData,
     refetch: TransactionsListRefetch,
     fetchNextPage: FNPTransactionsList,
     hasNextPage: HNPTransactionList,
-    isFetchingNextPage: IFNPTransactionList
+    isFetchingNextPage: IFNPTransactionList,
   } = useInfiniteQuery({
     queryKey: ["keyTransactionsList", publicId, transactionName, date],
     queryFn: async ({ pageParam = 1 }) => {
-      const limit = 8;
       const URL = ROUTES_TRANSACTION.GET({
         key: "transactions",
         currentPath: currentPath,
@@ -160,7 +160,7 @@ export const useQueryTransactions = ({
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 60,
     initialPageParam: 1,
-    enabled: !!date && !!transactionName,
+    enabled: !!date && !!transactionName && currentPath === "transaction",
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
@@ -187,5 +187,6 @@ export const useQueryTransactions = ({
       transactionName,
       date,
     ],
+    transactionsLimit: limit,
   };
 };

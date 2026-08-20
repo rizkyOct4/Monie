@@ -14,17 +14,24 @@ export default {
         if (!credentials.email || !credentials.password) {
           return null;
         }
-        const res = await CredentialsLogin({
-          email: credentials.email,
-          password: credentials.password,
-        });
 
-        const user: User = {
-          publicId: res.user.publicId,
-          name: res.user.name,
-        };
+        try {
+          const res = await CredentialsLogin({
+            email: credentials.email,
+            password: credentials.password,
+          });
 
-        return user;
+          const user: User = {
+            publicId: res.user.publicId,
+            name: res.user.name,
+          };
+
+          return user;
+        } catch (error) {
+          throw new Error(
+            error instanceof Error ? error.message : "INVALID_CREDENTIALS",
+          );
+        }
       },
     }),
   ],

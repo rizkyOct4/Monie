@@ -6,10 +6,12 @@ import {
   DeleteTransaction,
 } from "@/_lib/services/transaction/action/services-action-transaction-index";
 import GetSession from "@/_lib/session";
+import { REDIS_TRANSACTION_LIMIT } from "../../redis/ACTION-transaction.redis";
 
+type TPostKey = "newPostTransaction" | "postTransaction";
 export async function POST(req: NextRequest) {
   try {
-    const key = req.nextUrl.searchParams.get("key");
+    const key = req.nextUrl.searchParams.get("key") as TPostKey;
 
     const { publicId } = await GetSession();
 
@@ -29,6 +31,11 @@ export async function POST(req: NextRequest) {
 
     switch (key) {
       case "newPostTransaction": {
+        const checkLimit = await REDIS_TRANSACTION_LIMIT.POST({
+          key,
+          publicId,
+        });
+        if (checkLimit) return checkLimit;
         await PostNewTransaction({
           publicId,
           initialNominal,
@@ -41,6 +48,11 @@ export async function POST(req: NextRequest) {
         });
       }
       case "postTransaction": {
+        const checkLimit = await REDIS_TRANSACTION_LIMIT.POST({
+          key,
+          publicId,
+        });
+        if (checkLimit) return checkLimit;
         await PostCurrentTransaction({
           publicId,
           id,
@@ -64,9 +76,10 @@ export async function POST(req: NextRequest) {
   }
 }
 
+type TPutKey = "putTransaction";
 export async function PUT(req: NextRequest) {
   try {
-    const key = req.nextUrl.searchParams.get("key");
+    const key = req.nextUrl.searchParams.get("key") as TPutKey;
 
     const { publicId } = await GetSession();
 
@@ -102,17 +115,6 @@ export async function PUT(req: NextRequest) {
           message: "Update Transaction Success",
         });
       }
-      // case "deleteTransaction": {
-      //   await DeleteTransaction({
-      //     publicId,
-      //     refId,
-      //     id,
-      //     nominal,
-      //   });
-      //   return NextResponse.json({
-      //     message: "Delete Transaction Success",
-      //   });
-      // }
       default:
         return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
@@ -121,9 +123,10 @@ export async function PUT(req: NextRequest) {
   }
 }
 
+type TDeleteKey = "deleteTransaction";
 export async function DELETE(req: NextRequest) {
   try {
-    const key = req.nextUrl.searchParams.get("key");
+    const key = req.nextUrl.searchParams.get("key") as TDeleteKey;
 
     const { publicId } = await GetSession();
 

@@ -10,7 +10,7 @@ type OptionsFormPostProps = {
 };
 
 const OptionsFormPost = ({ onClose }: OptionsFormPostProps) => {
-  const [isNewTransaction, setIsNewTransaction] = useState("New");
+  const [isNewTransaction, setIsNewTransaction] = useState("Existed");
 
   const handleAction = useCallback((actionType: string) => {
     switch (actionType) {

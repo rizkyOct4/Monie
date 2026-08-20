@@ -20,6 +20,7 @@ const LoginForm = () => {
   const redirect = useSearchParams().get("redirect") ?? "/";
 
   const [isSubmit, setIsSubmit] = useState(false);
+  // const [loginError, setLoginError] = useState<string | null>(null);
 
   const { register, handleSubmit, formState } = useForm<LoginFormSchema>({
     // ? REGEXNYA DISINI TERJADI !!!!
@@ -30,20 +31,29 @@ const LoginForm = () => {
   const submit = handleSubmit(async (values) => {
     try {
       setIsSubmit(true);
+      // setLoginError(null);
       const res = await signIn("credentials", {
         email: values.email,
         password: values.password,
         redirect: false,
       });
       if (res?.error) {
-        console.log(res);
+        toast.error('Email or password was wrong')
+        // setLoginError(
+        //   res.code === "INVALID_EMAIL"
+        //     ? "Email tidak ditemukan."
+        //     : res.code === "INVALID_PASSWORD"
+        //       ? "Password salah."
+        //       : "Email atau password salah.",
+        // );
       } else {
         router.refresh();
         router.push(redirect);
         toast.success('Login Success')
       }
     } catch (err) {
-      console.error(err);
+      console.error(err)
+      // setLoginError("Email or password was wrong");
     } finally {
       setIsSubmit(false);
     }

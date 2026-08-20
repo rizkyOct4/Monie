@@ -27,7 +27,7 @@ const config: Config = {
     "!app/**/*.d.ts",
     "!<rootDir>/types/**",
     "!app/**/*.type.ts",
-    "!app/**/*.lazy.ts",
+    "!app/**/*.lazy.tsx",
     "!<rootDir>/.next/**",
     "!<rootDir>/coverage/**",
     "!<rootDir>/node_modules/**",

@@ -14,8 +14,23 @@ export const POSTRegister = new Ratelimit({
 });
 
 // * TRANSACTIONS ===============
+// ? GET
 export const GETTransactionsLimit = new Ratelimit({
   redis: redis,
   limiter: Ratelimit.fixedWindow(20, "30 s"),
+  analytics: true,
+});
+// ? POST
+export const POSTTransactionsLimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.fixedWindow(5, "30 s"),
+  analytics: true,
+});
+
+// * REPORT ===============
+// ? GET
+export const GETIDPeriodTransactions = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.fixedWindow(25, "30 s"),
   analytics: true,
 });

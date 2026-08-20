@@ -23,6 +23,7 @@ export const useHookTransaction = (publicId: string, currentPath: string) => {
   });
   const MPost = useMutationTransaction({
     publicId: publicId,
+    transactionsLimit: QGet.transactionsLimit
   });
   const MPut = useMutationPutTranscation({
     publicId,

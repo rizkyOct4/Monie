@@ -4,8 +4,15 @@ import { TransactionContext } from "@/app/context/context";
 import { MockTransactionsListData } from "@/app/__mocks__/(pages)/transaction/transaction.mock";
 import { MockUseQueryTransactions } from "@/app/__mocks__/(pages)/transaction/query/query-transactions.mock";
 
-const { date, setDate, TransactionsListData, isFTransactionsListData } =
-  MockUseQueryTransactions();
+const {
+  date,
+  setDate,
+  TransactionsListData,
+  isFTransactionsListData,
+  FNPTransactionsList,
+  HNPTransactionList,
+  IFNPTransactionList,
+} = MockUseQueryTransactions();
 
 const mockProps = jest.fn();
 jest.mock("@/app/(pages)/transaction/components/header", () => ({
@@ -28,6 +35,9 @@ jest.mock("@/app/(pages)/transaction/components/transactions-list", () => ({
   __esModule: true,
   default: (props: {
     TransactionsListData: typeof MockTransactionsListData;
+    fetchNextPage: typeof FNPTransactionsList;
+    hasNextPage: typeof HNPTransactionList;
+    isFetchingNextPage: typeof IFNPTransactionList;
   }) => {
     mockPropsTransactionList(props);
 
@@ -40,6 +50,9 @@ const mockContext = {
   setDate: setDate,
   TransactionsListData: TransactionsListData,
   isFTransactionsListData: isFTransactionsListData,
+  fetchNextPage: FNPTransactionsList,
+    hasNextPage: HNPTransactionList,
+    isFetchingNextPage: IFNPTransactionList,
 };
 
 const renderTransactions = (context = mockContext) =>

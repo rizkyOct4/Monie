@@ -99,9 +99,11 @@ const convertISOIntoNewDate = (values: Date) => {
 };
 type UseMutationTransactionProps = {
   publicId: string;
+  transactionsLimit: number;
 };
 export const useMutationTransaction = ({
   publicId,
+  transactionsLimit
 }: UseMutationTransactionProps) => {
   const queryClient = useQueryClient();
 
@@ -125,7 +127,6 @@ export const useMutationTransaction = ({
 
         await Promise.all([
           queryClient.cancelQueries({ queryKey: usedQuery }),
-          // queryClient.cancelQueries({ queryKey: queryKeyProjectList }),
         ]);
 
         const prevTransactions =
@@ -137,10 +138,9 @@ export const useMutationTransaction = ({
 
         let rf = false;
 
-        const limit = 8;
         const amountCacheData = prevTransactions.pageParams.length - 1;
         const lastPageIndex = prevTransactions.pages.findLastIndex(
-          (page: any) => page.data[amountCacheData].length === limit,
+          (page: any) => page.data?.[amountCacheData]?.length === transactionsLimit,
         );
 
         if (lastPageIndex) {
@@ -203,9 +203,7 @@ export const useMutationTransaction = ({
   return { postTransaction, isPendingPostTransaction };
 };
 
-
 // todo tomorrow !! if data.length === limit -> REFETCH !!!
-
 
 // * UPDATE TRANSACTIONS ======================
 type UseMutationPutTranscationProps = {

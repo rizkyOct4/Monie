@@ -17,8 +17,7 @@ export const OAuthRegister = async ({
   createdAt?: Date;
 }) => {
   const queryCheck = await prisma.$queryRaw<{ email: string }[]>`
-        SELECT email FROM users WHERE email = ${email}
-      `;
+        SELECT email FROM users WHERE email = ${email}`;
 
   const publicId = nanoid(8);
 
@@ -103,13 +102,14 @@ export const CredentialsLogin = async ({
       FROM users
     WHERE email = ${email}`;
 
+  if (userCheck.length === 0) {
+    throw new Error("INVALID_EMAIL");
+  }
+
   const passwordMatch = await bcrypt.compare(password, userCheck[0].password);
 
-  if (userCheck.length === 0) {
-    throw new Error("Invalid email or password");
-  }
   if (!passwordMatch) {
-    throw new Error("Invalid password");
+    throw new Error("INVALID_PASSWORD");
   }
 
   const rawData = {

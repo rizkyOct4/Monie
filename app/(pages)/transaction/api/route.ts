@@ -46,8 +46,8 @@ export async function GET(req: NextRequest) {
         // }
       }
       case "transactions": {
-        // const checkLimit = await RedisTransactionsLimit({ key, publicId });
-        // if (checkLimit) return checkLimit;
+        const checkLimit = await RedisTransactionsLimit({ key, publicId });
+        if (checkLimit) return checkLimit;
 
         const output = await GetTransactionList({
           publicId,

@@ -4,34 +4,45 @@ import { ChevronDown } from "lucide-react";
 import { useState, useContext, memo, useCallback } from "react";
 import { ReportContext } from "@/app/context/context";
 import { Spokes } from "@/components/ui/spokes";
+import { useRouter } from "next/navigation";
 
 const HeaderReport = () => {
   const {
+    period,
     setPeriod,
     PeriodTransactionData,
     isFetchingPeriodTransaction,
+    idPeriod,
     setIdPeriod,
   } = useContext(ReportContext);
+  const router = useRouter();
 
   const [transactionName, setTransactionName] = useState("");
   const [openTransaction, setOpenTransaction] = useState(false);
 
   const handleAction = useCallback(
-    (actionType: string, initialName: string, id: string) => {
+    (actionType: string, initialName: string) => {
       switch (actionType) {
         case "openTransaction": {
           setOpenTransaction((prev) => !prev);
           break;
         }
         case "selectTransaction": {
+          setIdPeriod(initialName);
+
           setTransactionName(initialName);
           setOpenTransaction(false);
-          setIdPeriod(id);
+
+          const params = new URLSearchParams({
+            p: period,
+            v: initialName,
+          });
+          router.push(`/report?${params.toString()}`);
           break;
         }
       }
     },
-    [setIdPeriod],
+    [setIdPeriod, router],
   );
 
   return (
@@ -67,12 +78,13 @@ const HeaderReport = () => {
             data-testid="period-input"
             id="period-input"
             type="month"
+            value={period}
             className="h-11 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-sm font-medium text-zinc-200 outline-none transition placeholder:text-zinc-600 hover:border-zinc-700 focus:border-emerald-500/50 focus:bg-zinc-950 focus:ring-2 focus:ring-emerald-500/10"
             onChange={(e) => {
               setPeriod(e.target.value);
-              setIdPeriod("")
               setTransactionName("");
-              setOpenTransaction(true)
+              setIdPeriod("");
+              setOpenTransaction(true);
             }}
           />
         </div>
@@ -90,7 +102,7 @@ const HeaderReport = () => {
             aria-label="ID Transaction Button"
             id="transaction-button"
             type="button"
-            onClick={() => handleAction("openTransaction", "", "")}
+            onClick={() => handleAction("openTransaction", "")}
             className="flex h-11 w-full items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 text-sm font-medium text-zinc-200 outline-none transition hover:border-zinc-700 hover:bg-zinc-900 focus:border-emerald-500/50 focus:bg-zinc-950 focus:ring-2 focus:ring-emerald-500/10"
           >
             <span className="truncate">{transactionName}</span>
@@ -107,7 +119,6 @@ const HeaderReport = () => {
             <div
               role="dialog"
               aria-label="Transaction ID Dropdown"
-              // data-testid="transaction-dropdown"
               className="absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl shadow-black/30"
             >
               {isFetchingPeriodTransaction && (
@@ -121,24 +132,22 @@ const HeaderReport = () => {
                 </div>
               )}
               {Array.isArray(PeriodTransactionData) ? (
-                PeriodTransactionData.map(
-                  (i: { id: string; initialName: string }) => (
-                    <button
-                      aria-label={`ID Transaction Items ${i.id}`}
-                      key={i.id}
-                      type="button"
-                      onClick={() =>
-                        handleAction("selectTransaction", i.initialName, i.id)
-                      }
-                      className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-zinc-400 transition hover:bg-zinc-800 hover:text-white"
-                    >
-                      {i.initialName}
-                    </button>
-                  ),
-                )
+                PeriodTransactionData.map((i: { initialName: string }, idx) => (
+                  <button
+                    aria-label={`ID Transaction Items ${i.initialName}`}
+                    key={idx}
+                    type="button"
+                    onClick={() =>
+                      handleAction("selectTransaction", i.initialName)
+                    }
+                    className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-zinc-400 transition hover:bg-zinc-800 hover:text-white"
+                  >
+                    {i.initialName}
+                  </button>
+                ))
               ) : (
                 <p className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-zinc-400 transition hover:bg-zinc-800 hover:text-white">
-                  data tidak ditemukan.
+                  Data not found.
                 </p>
               )}
             </div>

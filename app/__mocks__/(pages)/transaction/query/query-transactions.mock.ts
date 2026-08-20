@@ -84,4 +84,5 @@ export const MockUseQueryTransactions = (): ReturnType<
     "random search params",
     "2026-08-01",
   ],
+    transactionsLimit: 10,
 });

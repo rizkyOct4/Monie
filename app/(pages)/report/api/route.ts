@@ -12,8 +12,7 @@ export async function GET(req: NextRequest) {
     const key = req.nextUrl.searchParams.get("key");
 
     // ? PERIOD TRANSACTION =========
-    const month = Number(req.nextUrl.searchParams.get("month"));
-    const year = Number(req.nextUrl.searchParams.get("year"));
+    const period = req.nextUrl.searchParams.get("period") ?? "";
 
     // ? ID PERIOD TRANSACTION =========
     const idPeriod = req.nextUrl.searchParams.get("id-period") ?? "";
@@ -26,8 +25,7 @@ export async function GET(req: NextRequest) {
       case "periodTransactions": {
         const output = await GetPeriodTransaction({
           publicId,
-          month,
-          year,
+          period,
         });
 
         if (!output.length) {
@@ -57,7 +55,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ message: "Invalid key" }, { status: 400 });
     }
   } catch (err) {
-    // console.error(err);
+    console.error(err);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -7,11 +7,11 @@ import {
   GetSearchIdTransactions,
   GetTransactionList,
 } from "@/_lib/services/transaction/services-transaction-index";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import GetSession from "@/_lib/session";
 import { GET } from "@/app/(pages)/transaction/api/route";
-import { RedisTransactionsLimit } from "@/app/(pages)/transaction/redis/transaction-limit";
 import { GETTransactionsLimit } from "@/_lib/redis";
+import { MockRedisSuccess, MockRedisLimit,  MockRedisServerFail} from "@/app/__mocks__/redis.mock";
 
 jest.mock("@/_lib/services/transaction/services-transaction-index", () => ({
   GetIdTransactions: jest.fn(),
@@ -30,16 +30,9 @@ jest.mock("@/_lib/redis", () => ({
     limit: jest.fn(),
   },
 }));
-// const MockRedisTransactions = jest.fn();
-// jest.mock("@/app/(pages)/transaction/redis/transaction-limit", () => ({
-//   __esModule: true,
-//   default: ({ key, publicId }: { key: string; publicId: string }) => {
-//     MockRedisTransactions({ key, publicId });
-//   },
-// }));
 
 const mockedSession = GetSession as jest.MockedFunction<typeof GetSession>;
-const mockedRedis = GETTransactionsLimit.limit as jest.MockedFunction<
+const MockedRedis = GETTransactionsLimit.limit as jest.MockedFunction<
   typeof GETTransactionsLimit.limit
 >;
 const mockedGetIdTransactions = GetIdTransactions as jest.MockedFunction<
@@ -190,137 +183,6 @@ describe("GET /transaction/api", () => {
         );
       });
     });
-    // describe("transactions", () => {
-    //   beforeEach(() => {
-    //     jest.clearAllMocks();
-    //   });
-
-    //   const RedisSuccess = async () => {
-    //     mockedRedis.mockResolvedValue({
-    //       limit: 20,
-    //       remaining: 19,
-    //       reset: 1750000000,
-    //       success: true,
-    //       pending: Promise.resolve(),
-    //     });
-
-    //     const result = await RedisTransactionsLimit({
-    //       key: "transactions",
-    //       publicId: "ss12",
-    //     });
-
-    //     expect(result).toBeUndefined();
-
-    //     expect(mockedRedis).toHaveBeenCalledTimes(1);
-
-    //     expect(mockedRedis).toHaveBeenCalledWith(
-    //       "Get key:transactions, publicId:ss12",
-    //     );
-    //   };
-    //   const RedisLimit = async () => {
-    //     mockedRedis.mockResolvedValue({
-    //       limit: 20,
-    //       remaining: 0,
-    //       reset: 1750000000,
-    //       success: false,
-    //       pending: Promise.resolve(),
-    //     });
-
-    //     const result = await RedisTransactionsLimit({
-    //       key: "transactions",
-    //       publicId: "ss12",
-    //     });
-
-    //     expect(result).toBeInstanceOf(NextResponse);
-
-    //     expect(result?.status).toBe(429);
-
-    //     expect(result?.headers.get("X-RateLimit-Remaining")).toBe("0");
-
-    //     expect(result?.headers.get("X-RateLimit-Reset")).toBe("1750000000");
-    //   };
-    //   const RedisServerFail = async () => {
-    //     mockedRedis.mockRejectedValue(new Error("Redis connection failed"));
-
-    //     await expect(
-    //       RedisTransactionsLimit({
-    //         key: "transactions",
-    //         publicId: "ss12",
-    //       }),
-    //     ).rejects.toThrow("Redis connection failed");
-    //   };
-
-    //   const req = createRequest(
-    //     new URLSearchParams({
-    //       key: "transactions",
-    //       "transaction-date": "2026-08-10",
-    //       "transaction-name": "random search params",
-    //       "page-param": "1",
-    //       limit: "15",
-    //     }).toString(),
-    //   );
-    //   const expectedCalled = {
-    //     publicId: "ss12",
-    //     transactionName: "random search params",
-    //     convDate: new Date("2026-08-10"),
-    //     offset: 0,
-    //     limit: 15,
-    //   };
-    //   it("should return 200 when data exists", async () => {
-    //     // ? RETURN MOCK DATA =====
-    //     mockedGetTransationList.mockResolvedValue({
-    //       data: [
-    //         {
-    //           id: "random-1",
-    //           status: "ACTIVE",
-    //           refId: "s012",
-    //           information: "Lorem123",
-    //           nominal: 4000,
-    //           createdAt: new Date("2026-08-10"),
-    //           updatedAt: new Date("2026-08-07"),
-    //           images: [
-    //             {
-    //               id: "random-id-image-1",
-    //               imageName: "random-imageName-1",
-    //               imageUrl: "random-imageUrl-1",
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //       hasMore: true,
-    //     });
-
-    //     const res = await GET(req);
-
-    //     // ? MENGECEK BODY
-    //     const body = await res.json();
-
-    //     // console.log(body)
-
-    //     // ! Memastikan ada tidaknya data dari services
-    //     expect(res.status).toBe(200);
-    //     expect(body.data).toHaveLength(1);
-
-    //     // ! Memastikan service dipanggil dengan parameter yang benar.
-    //     expect(mockedGetTransationList).toHaveBeenCalledWith(expectedCalled);
-    //   });
-    //   it("should return 500 when service throws an error", async () => {
-    //     mockedGetTransationList.mockRejectedValue(
-    //       new Error("Internal Server Error"),
-    //     );
-
-    //     const res = await GET(req);
-    //     const body = await res.json();
-
-    //     expect(res.status).toBe(500);
-
-    //     expect(body).toEqual({
-    //       message: "Internal Server Error",
-    //     });
-
-    //     expect(mockedGetTransationList).toHaveBeenCalledWith(expectedCalled);
-    //   });
-    // });
     describe("transactions", () => {
       const req = createRequest(
         new URLSearchParams({
@@ -344,29 +206,6 @@ describe("GET /transaction/api", () => {
       // MOCK HELPER
       // =========================================================
 
-      const mockRedisSuccess = () => {
-        mockedRedis.mockResolvedValue({
-          limit: 20,
-          remaining: 19,
-          reset: 1750000000,
-          success: true,
-          pending: Promise.resolve(),
-        });
-      };
-
-      const mockRedisLimit = () => {
-        mockedRedis.mockResolvedValue({
-          limit: 20,
-          remaining: 0,
-          reset: 1750000000,
-          success: false,
-          pending: Promise.resolve(),
-        });
-      };
-
-      const mockRedisServerFail = () => {
-        mockedRedis.mockRejectedValue(new Error("Redis connection failed"));
-      };
 
       const mockTransactionData = () => {
         mockedGetTransationList.mockResolvedValue({
@@ -406,7 +245,7 @@ describe("GET /transaction/api", () => {
 
       describe("Rate Limit", () => {
         it("should continue request when rate limit is successful", async () => {
-          mockRedisSuccess();
+          MockRedisSuccess({ mock: MockedRedis, limit: 20, remaining: 19 });
           mockTransactionData();
 
           const res = await GET(req);
@@ -416,9 +255,9 @@ describe("GET /transaction/api", () => {
 
           expect(body.data).toHaveLength(1);
 
-          expect(mockedRedis).toHaveBeenCalledTimes(1);
+          expect(MockedRedis).toHaveBeenCalledTimes(1);
 
-          expect(mockedRedis).toHaveBeenCalledWith(
+          expect(MockedRedis).toHaveBeenCalledWith(
             "Get key:transactions, publicId:ss12",
           );
 
@@ -426,7 +265,7 @@ describe("GET /transaction/api", () => {
         });
 
         it("should return 429 when rate limit is exceeded", async () => {
-          mockRedisLimit();
+          MockRedisLimit({ mock: MockedRedis, limit: 20, remaining: 0 });
 
           const res = await GET(req);
           const body = await res.json();
@@ -447,7 +286,7 @@ describe("GET /transaction/api", () => {
         });
 
         it("should return 500 when Redis throws an error", async () => {
-          mockRedisServerFail();
+          MockRedisServerFail({ mock: MockedRedis });
 
           const res = await GET(req);
           const body = await res.json();
@@ -470,7 +309,7 @@ describe("GET /transaction/api", () => {
       describe("Transaction Service", () => {
         beforeEach(() => {
           // Semua test service harus melewati rate limit
-          mockRedisSuccess();
+          MockRedisSuccess({ mock: MockedRedis, limit: 20, remaining: 19 });
         });
 
         it("should return 200 when data exists", async () => {

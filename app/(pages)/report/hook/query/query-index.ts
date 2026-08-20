@@ -12,35 +12,37 @@ import type {
   PeriodTransactionDataType,
   IdPeriodTransactionDataType,
 } from "../../types/report.type";
+import { useSearchParams } from "next/navigation";
 
 // * PERIOD TRANSACTIONS ======================
-export const parsePeriod = (period: string) => {
-  const result = period.split("-").reverse().join("-");
-  const [month, year] = result.split("-");
-  return { month, year };
+export const getCurrentPeriod = () => {
+  const date = new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+    2,"0",
+  )}`;
 };
 export const useQueryPeriodTransactions = ({
   publicId,
+  currentPath,
 }: {
   publicId: string;
+  currentPath: string
 }) => {
-  const [period, setPeriod] = useState("");
-  const { month, year } = parsePeriod(period);
+  const [period, setPeriod] = useState(getCurrentPeriod());
 
   const { data: periodTransaction, isFetching: isFetchingPeriodTransaction } =
     useQuery({
-      queryKey: ["keyPeriodTransaction", publicId, month, year],
+      queryKey: ["keyPeriodTransaction", publicId, period],
       queryFn: async () => {
         const URL = ROUTES_REPORT.GET({
           key: "periodTransactions",
-          currentPath: "/report",
-          month: month,
-          year: year,
+          currentPath: currentPath,
+          period: period,
         });
         const { data } = await axios.get(URL);
         return data;
       },
-      enabled: !!month && !!year,
+      enabled: !!period,
       refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
       refetchOnMount: false, // "always" => refetch jika stale saja
     });
@@ -61,26 +63,32 @@ export const useQueryPeriodTransactions = ({
 // * ID PERIOD TRANSACTIONS ======================
 export const useQueryPeriodIdTransactions = ({
   publicId,
+  currentPath,
 }: {
   publicId: string;
+  currentPath: string
+
 }) => {
+  const pSearchParams = useSearchParams().get("p") ?? "";
+  const searchParams = useSearchParams().get("v") ?? "";
+
   const [idPeriod, setIdPeriod] = useState("");
 
   const {
     data: idPeriodTransaction,
     isFetching: isFetchingIdPeriodTransaction,
   } = useQuery({
-    queryKey: ["keyIdPeriodTransaction", publicId, idPeriod],
+    queryKey: ["keyIdPeriodTransaction", publicId, pSearchParams, searchParams],
     queryFn: async () => {
       const URL = ROUTES_REPORT.GET({
         key: "idPeriodTransactions",
-        currentPath: "/report",
-        idPeriod: idPeriod,
+        currentPath: currentPath,
+        idPeriod: searchParams,
       });
       const { data } = await axios.get(URL);
       return data;
     },
-    enabled: !!idPeriod,
+    enabled: !!searchParams && currentPath === "report",
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
     retry: false,

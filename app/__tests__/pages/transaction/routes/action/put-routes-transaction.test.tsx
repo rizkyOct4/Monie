@@ -50,7 +50,9 @@ describe("PUT /transaction/api/action", () => {
     describe("putTransaction", () => {
       const reRequest = () => {
         // ! JSON value !!
-        const req = createPUTRequest("key=putTransaction", {
+        const req = createPUTRequest(new URLSearchParams({
+          key: "putTransaction",
+        }).toString(), {
           ...MockValuePutTransaction,
           date: String(MockValuePutTransaction.date),
         });

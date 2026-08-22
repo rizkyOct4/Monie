@@ -1,47 +1,54 @@
 "use client";
 
 import { FormatCurrency } from "@/_utils/format-currency";
+import { ReportSkeleton } from "../skeleton/report-skeleton";
 
 type FinanceHealthProps = {
   salaryIncome: number;
   salaryRemaining: number;
+  isFetchingIdPeriodTransaction: boolean;
 };
 
 const FinanceHealth = ({
   salaryIncome,
   salaryRemaining,
+  isFetchingIdPeriodTransaction,
 }: FinanceHealthProps) => {
-
   const savingPercentage = Math.round((salaryRemaining / salaryIncome) * 100);
   const usedMoney = salaryIncome - salaryRemaining;
   const expensePercentage = 100 - savingPercentage;
 
-  let status = "";
-  let statusColor = "";
+  const getSavingStatus = (savingPercentage: number) => {
+    switch (true) {
+      case savingPercentage >= 70:
+        return {
+          status: "Sangat Baik",
+          statusColor: "text-emerald-600",
+        };
 
-  switch (true) {
-    case savingPercentage >= 70:
-      status = "Sangat Baik";
-      statusColor = "text-emerald-600";
-      break;
+      case savingPercentage >= 50:
+        return {
+          status: "Baik",
+          statusColor: "text-green-500",
+        };
 
-    case savingPercentage >= 50:
-      status = "Baik";
-      statusColor = "text-green-500";
-      break;
+      case savingPercentage >= 30:
+        return {
+          status: "Cukup",
+          statusColor: "text-yellow-500",
+        };
 
-    case savingPercentage >= 30:
-      status = "Cukup";
-      statusColor = "text-yellow-500";
-      break;
+      default:
+        return {
+          status: "Buruk",
+          statusColor: "text-red-500",
+        };
+    }
+  };
 
-    default:
-      status = "Buruk";
-      statusColor = "text-red-500";
-  }
-
+  const { status, statusColor } = getSavingStatus(savingPercentage);
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm">
+    <section className="rounded-2xl border border-zinc-800 p-5 shadow-sm">
       {/* Header */}
       <div className="mb-6">
         <div className="mb-2 flex items-center gap-3">
@@ -76,21 +83,31 @@ const FinanceHealth = ({
             </div>
 
             <div className="text-right">
-              <span className="font-semibold text-emerald-400">
-                {savingPercentage}%
-              </span>
+              {isFetchingIdPeriodTransaction ? (
+                <ReportSkeleton type="salaryRemaining" />
+              ) : (
+                <>
+                  <span className="font-semibold text-emerald-400">
+                    {savingPercentage}%
+                  </span>
 
-              <p className="mt-1 text-xs text-zinc-500">
-                {FormatCurrency(salaryRemaining)}
-              </p>
+                  <p className="mt-1 text-xs text-zinc-500">
+                    {FormatCurrency(salaryRemaining)}
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-800">
-            <div
-              className="h-full rounded-full bg-emerald-500 transition-all"
-              style={{ width: `${savingPercentage}%` }}
-            />
+            {isFetchingIdPeriodTransaction ? (
+              <ReportSkeleton type="percentage" />
+            ) : (
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-all"
+                style={{ width: `${savingPercentage}%` }}
+              />
+            )}
           </div>
         </div>
 
@@ -108,21 +125,31 @@ const FinanceHealth = ({
             </div>
 
             <div className="text-right">
-              <span className="font-semibold text-red-400">
-                {expensePercentage}%
-              </span>
+              {isFetchingIdPeriodTransaction ? (
+                <ReportSkeleton type="expensePercentage" />
+              ) : (
+                <>
+                  <span className="font-semibold text-red-400">
+                    {expensePercentage}%
+                  </span>
 
-              <p className="mt-1 text-xs text-zinc-500">
-                {FormatCurrency(usedMoney)}
-              </p>
+                  <p className="mt-1 text-xs text-zinc-500">
+                    {FormatCurrency(usedMoney)}
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-800">
-            <div
-              className="h-full rounded-full bg-red-500 transition-all"
-              style={{ width: `${expensePercentage}%` }}
-            />
+            {isFetchingIdPeriodTransaction ? (
+              <ReportSkeleton type="percentage" />
+            ) : (
+              <div
+                className="h-full rounded-full bg-red-500 transition-all"
+                style={{ width: `${expensePercentage}%` }}
+              />
+            )}
           </div>
         </div>
 

@@ -8,6 +8,14 @@ export type GetProps =
       key: "idPeriodTransactions";
       currentPath: string;
       idPeriod: string;
+    }
+  | {
+      key: "viewTotalTransactions";
+      currentPath: string;
+      pageParam: number;
+      limit: number;
+      view: string;
+      id: string;
     };
 
 export const ROUTES_REPORT = {
@@ -23,6 +31,12 @@ export const ROUTES_REPORT = {
         break;
       case "idPeriodTransactions":
         params.set("id-period", String(props.idPeriod));
+        break;
+      case "viewTotalTransactions":
+        params.set("view", String(props.view));
+        params.set("id", String(props.id));
+        params.set("page-param", String(props.pageParam));
+        params.set("limit", String(props.limit));
         break;
       default:
         return "";

@@ -1,32 +1,59 @@
 "use client";
 
-import HeaderReport from "./header";
 import FinanceHealth from "./finance-health";
 import ReportInsight from "./insight";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { ReportContext } from "@/app/context/context";
+import { useSearchParams } from "next/navigation";
+import TotalTransaction from "../(v)/total-transactions/total-transaction";
 
 const ReportClient = () => {
-  const { IdPeriodTransactionData, idPeriod } = useContext(ReportContext);
+  const {
+    IdPeriodTransactionData,
+    idPeriod,
+    isFetchingIdPeriodTransaction,
+    VTotalTransactionsData,
+  } = useContext(ReportContext);
 
-  const salaryIncome = idPeriod ? IdPeriodTransactionData[0]?.salaryIncome : 0;
-  const salaryRemaining = idPeriod
-    ? IdPeriodTransactionData[0]?.salaryRemaining
-    : 0;
-  const insightData = idPeriod ? IdPeriodTransactionData[0]?.insight : [];
+  const searchParams = useSearchParams().get("v") ?? "";
 
-  return (
-    <main className="flex flex-col p-6 w-full min-h-screen relative gap-4">
-      <HeaderReport />
+  const Render = useMemo(() => {
+    switch (searchParams) {
+      case "total-transaction":
+        return <TotalTransaction data={VTotalTransactionsData}/>;
+      default:
+        const salaryIncome = idPeriod
+          ? IdPeriodTransactionData[0]?.salaryIncome
+          : 0;
+        const salaryRemaining = idPeriod
+          ? IdPeriodTransactionData[0]?.salaryRemaining
+          : 0;
+        const insightData = idPeriod
+          ? IdPeriodTransactionData[0]?.insight[0]
+          : {};
+        return (
+          <>
+            <FinanceHealth
+              salaryIncome={salaryIncome}
+              salaryRemaining={salaryRemaining}
+              isFetchingIdPeriodTransaction={isFetchingIdPeriodTransaction}
+            />
 
-      <FinanceHealth
-        salaryIncome={salaryIncome}
-        salaryRemaining={salaryRemaining}
-      />
+            <ReportInsight
+              insightData={insightData}
+              isFetchingIdPeriodTransaction={isFetchingIdPeriodTransaction}
+            />
+          </>
+        );
+    }
+  }, [
+    IdPeriodTransactionData,
+    idPeriod,
+    isFetchingIdPeriodTransaction,
+    searchParams,
+  ]);
 
-      <ReportInsight insightData={insightData} />
-    </main>
-  );
+  return Render;
 };
 
 export default ReportClient;

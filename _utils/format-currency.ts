@@ -1,6 +1,6 @@
-export const FormatCurrency = (value: number) =>
+export const FormatCurrency = (value: number | null) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
-  }).format(value).replace(/\s/g, "");
+  }).format(value || 0).replace(/\s/g, "");

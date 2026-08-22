@@ -2,6 +2,28 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import HeaderReport from "@/app/(pages)/report/components/header";
 import { ReportContext } from "@/app/context/context";
 
+const mockPush = jest.fn();
+const mockReplace = jest.fn();
+
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: mockReplace,
+    back: jest.fn(),
+  }),
+
+  useSearchParams: () => ({
+    get: jest.fn((key: string) => {
+      const params: Record<string, string> = {
+        id: "PA5joHul",
+        v: "total-transaction",
+      };
+
+      return params[key] ?? null;
+    }),
+  }),
+}));
+
 const mockContext = {
   setPeriod: jest.fn(),
   setIdPeriod: jest.fn(),

@@ -160,7 +160,7 @@ export const useQueryTransactions = ({
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 60,
     initialPageParam: 1,
-    enabled: !!date && !!transactionName && currentPath === "transaction",
+    enabled: !!date && !!transactionName && currentPath === "/transaction",
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja

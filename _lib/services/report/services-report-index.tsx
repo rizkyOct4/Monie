@@ -28,6 +28,27 @@ export const GetPeriodTransaction = async ({
 };
 
 // * GET ID PERIOD TRANSACTION ====================
+type TGetIdPeriodTransaction = {
+  salary_income: number;
+  salary_remaining: number;
+  created_at: Date;
+  updated_at: Date;
+  status: string;
+  insight: {
+    totalTransaction: number;
+    biggestExpense: {
+      date: Date;
+      amount: number;
+    };
+    averageExpense: number;
+    amountNominal: number;
+    mostExpensiveDay: {
+      date: Date;
+      amount: number;
+    };
+  }[];
+};
+
 type GetIdPeriodTransactionProps = {
   publicId: string;
   idPeriod: string;
@@ -36,28 +57,7 @@ export const GetIdPeriodTransaction = async ({
   publicId,
   idPeriod,
 }: GetIdPeriodTransactionProps) => {
-  const query = await prisma.$queryRaw<
-    {
-      salary_income: number;
-      salary_remaining: number;
-      created_at: Date;
-      updated_at: Date;
-      status: string;
-      insight: {
-        totalTransaction: number;
-        biggestExpense: {
-          date: Date;
-          amount: number;
-        };
-        averageExpense: number;
-        amountNominal: number;
-        mostExpensiveDay: {
-          date: Date;
-          amount: number;
-        };
-      }[];
-    }[]
-  >`
+  const query = await prisma.$queryRaw<TGetIdPeriodTransaction[]>`
         SELECT
             s.salary_income,
             s.salary_remaining,
@@ -76,17 +76,12 @@ export const GetIdPeriodTransaction = async ({
                           )
                           FROM transactions
                           WHERE ref_id = (
-                      SELECT id FROM initial_salary WHERE initial_name = ${idPeriod}
-                    )
+                              SELECT id FROM initial_salary WHERE initial_name = ${idPeriod}
+                          )
                           GROUP BY DATE(created_at) 
                           ORDER BY MAX(nominal) DESC
                           LIMIT 1
-                        ),
-                         json_build_object(
-                          'date', NULL,
-                          'amount', 0
-                        )
-                        )AS "biggestExpense",
+                        )) AS "biggestExpense",
                         COALESCE(AVG(nominal), 0) AS "averageExpense",
                         COALESCE(SUM(nominal), 0) AS "amountNominal",
                         COALESCE((
@@ -96,17 +91,12 @@ export const GetIdPeriodTransaction = async ({
                         )
                         FROM transactions
                         WHERE ref_id = (
-                      SELECT id FROM initial_salary WHERE initial_name = ${idPeriod}
-                    )
+                          SELECT id FROM initial_salary WHERE initial_name = ${idPeriod}
+                        )
                         GROUP BY DATE(created_at) 
                         ORDER BY SUM(nominal) DESC
                         LIMIT 1
-                        ), 
-                           json_build_object(
-                          'date', NULL,
-                          'amount', 0
-                        )
-                        )AS "mostExpensiveDay"
+                        ))AS "mostExpensiveDay"
                     FROM transactions
                     WHERE ref_id = (
                       SELECT id FROM initial_salary WHERE initial_name = ${idPeriod}

@@ -3,7 +3,7 @@ import ReportClient from "@/app/(pages)/report/components";
 import { ReportContext } from "@/app/context/context";
 import { MockUseQueryIdPeriodTransactions } from "@/app/__mocks__/(pages)/report/hook/hook.index.mock";
 
-const { IdPeriodTransactionData, idPeriod } =
+const { IdPeriodTransactionData, idPeriod, isFetchingIdPeriodTransaction } =
   MockUseQueryIdPeriodTransactions();
 
 const mockReportInsight = jest.fn();
@@ -19,11 +19,17 @@ jest.mock("@/app/(pages)/report/components/finance-health", () => ({
   default: ({
     salaryIncome,
     salaryRemaining,
+    isFetchingIdPeriodTransaction,
   }: {
     salaryIncome: number;
     salaryRemaining: number;
+    isFetchingIdPeriodTransaction: boolean;
   }) => {
-    mockReportFinanceHealth({ salaryIncome, salaryRemaining });
+    mockReportFinanceHealth({
+      salaryIncome,
+      salaryRemaining,
+      isFetchingIdPeriodTransaction,
+    });
 
     return <div data-testid="finance-health-report" />;
   },
@@ -31,22 +37,26 @@ jest.mock("@/app/(pages)/report/components/finance-health", () => ({
 
 jest.mock("@/app/(pages)/report/components/insight", () => ({
   __esModule: true,
-  default: (
+  default: ({
+    insightData,
+    isFetchingIdPeriodTransaction,
+  }: {
     insightData: {
       totalTransaction: number;
       biggestExpense: {
         date: Date;
         amount: number;
-      };
+      } | null;
       averageExpense: number;
       amountNominal: number;
       mostExpensiveDay: {
         date: Date;
         amount: number;
-      };
-    }[],
-  ) => {
-    mockReportInsight(insightData);
+      } | null;
+    };
+    isFetchingIdPeriodTransaction: boolean;
+  }) => {
+    mockReportInsight({ insightData, isFetchingIdPeriodTransaction });
 
     return <div data-testid="insight-report" />;
   },
@@ -55,22 +65,40 @@ jest.mock("@/app/(pages)/report/components/insight", () => ({
 const mockContext = {
   IdPeriodTransactionData: IdPeriodTransactionData,
   idPeriod: idPeriod,
+  isFetchingIdPeriodTransaction: isFetchingIdPeriodTransaction,
+};
+
+const RenderReportClient = (context = mockContext) => {
+  return render(
+    <ReportContext.Provider value={context}>
+      <ReportClient />
+    </ReportContext.Provider>,
+  );
 };
 
 describe("Render ReportClient", () => {
   beforeEach(() => {
-    mockReportInsight.mockClear();
+    jest.clearAllMocks();
+    RenderReportClient();
   });
 
   it("should render all child components", () => {
-    render(
-      <ReportContext.Provider value={mockContext}>
-        <ReportClient />
-      </ReportContext.Provider>,
-    );
-
     expect(screen.getByTestId("header-report")).toBeInTheDocument(); // ! CHECK IF data-testId -> exists
     expect(screen.getByTestId("finance-health-report")).toBeInTheDocument();
     expect(screen.getByTestId("insight-report")).toBeInTheDocument();
+  });
+  it("should send correct props to FinanceHealth", () => {
+    expect(mockReportFinanceHealth).toHaveBeenCalledWith({
+      salaryIncome: IdPeriodTransactionData[0].salaryIncome,
+      salaryRemaining: IdPeriodTransactionData[0].salaryRemaining,
+      isFetchingIdPeriodTransaction: false,
+    });
+  });
+
+  it("should send correct props to ReportInsight", () => {
+    expect(mockReportInsight).toHaveBeenCalledWith({
+      insightData: mockContext.IdPeriodTransactionData[0].insight[0],
+      isFetchingIdPeriodTransaction: false,
+    });
   });
 });

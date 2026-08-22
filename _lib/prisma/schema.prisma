@@ -23,6 +23,12 @@ enum TransactionStatus {
   DELETED
 }
 
+enum TransactionModel {
+  INCOME
+  NORMAL
+}
+
+
 model User {
   id        String   @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   public_id      String   @unique
@@ -70,6 +76,7 @@ model Transaction {
   created_at DateTime @default(now())
   updated_at DateTime? @updatedAt
   status      TransactionStatus     @default(AVAILABLE)
+  transaction_model      TransactionModel     @default(NORMAL)
 
   user      User     @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
   initialSalary      InitialSalary     @relation(fields: [ref_id], references: [id], onDelete: Cascade)

@@ -1,10 +1,12 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useState, useContext, memo, useCallback } from "react";
+import { useState, useContext, useCallback, useEffect } from "react";
 import { ReportContext } from "@/app/context/context";
 import { Spokes } from "@/components/ui/spokes";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { RefreshCw } from "lucide-react";
 
 const HeaderReport = () => {
   const {
@@ -14,10 +16,13 @@ const HeaderReport = () => {
     isFetchingPeriodTransaction,
     idPeriod,
     setIdPeriod,
+    refetchPeriodTransaction,
+    refetchPeriodIdTransaction,
   } = useContext(ReportContext);
   const router = useRouter();
+  const searchParams = useSearchParams().get("id") ?? "";
+  const v = useSearchParams().get("v") ?? "";
 
-  const [transactionName, setTransactionName] = useState("");
   const [openTransaction, setOpenTransaction] = useState(false);
 
   const handleAction = useCallback(
@@ -28,43 +33,75 @@ const HeaderReport = () => {
           break;
         }
         case "selectTransaction": {
-          setIdPeriod(initialName);
-
-          setTransactionName(initialName);
-          setOpenTransaction(false);
-
-          const params = new URLSearchParams({
-            p: period,
-            v: initialName,
-          });
-          router.push(`/report?${params.toString()}`);
-          break;
+          if (v) {
+            setOpenTransaction(false);
+            const params = new URLSearchParams({
+              p: period,
+              id: initialName,
+              v: v,
+            });
+            router.push(`/report?${params.toString()}`);
+            break;
+          } else {
+            setOpenTransaction(false);
+            const params = new URLSearchParams({
+              p: period,
+              id: initialName,
+            });
+            router.push(`/report?${params.toString()}`);
+            break;
+          }
+        }
+        case "refetch": {
+          refetchPeriodTransaction();
+          refetchPeriodIdTransaction();
         }
       }
     },
-    [setIdPeriod, router],
+    [v, period, refetchPeriodIdTransaction, refetchPeriodTransaction, router],
   );
 
+  useEffect(() => {
+    if (searchParams) {
+      setIdPeriod(searchParams);
+    } else {
+      setIdPeriod("");
+    }
+  }, [searchParams, setIdPeriod]);
+
   return (
-    <section className="w-full sm:flex max-sm:flex-col rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm sticky top-6 backdrop-blur-sm">
+    <section className="sticky top-6 flex w-full flex-col gap-5 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-sm backdrop-blur-sm sm:flex-row sm:items-end">
       {/* Header */}
-      <div className="sm:w-[30%] max-sm:w-full max-sm:mb-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
-            <span className="text-sm font-semibold text-emerald-400">Rp</span>
-          </div>
+      <div className="flex w-full items-center gap-4 sm:w-[40%] sm:pl-6">
+        <div className="flex w-full items-center justify-between gap-4 sm:w-[80%]">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
+              <span className="text-sm font-semibold text-emerald-400">Rp</span>
+            </div>
 
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight text-white">
-              Laporan
-            </h1>
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight text-white">
+                Laporan
+              </h1>
 
-            <p className="mt-1 text-sm text-zinc-500">Analisis Keuangan</p>
+              <p className="mt-1 text-sm text-zinc-500">Analisis Keuangan</p>
+            </div>
           </div>
         </div>
+
+        {/* Refetch */}
+        <button
+          type="button"
+          aria-label="Refresh laporan"
+          onClick={() => handleAction("refetch", "")}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-400 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </button>
       </div>
 
-      <div className="flex gap-4 sm:items-end w-full">
+      {/* Filters */}
+      <div className="flex w-full gap-4 sm:items-end">
         {/* PERIODE */}
         <div className="relative w-[50%]">
           <label
@@ -81,10 +118,17 @@ const HeaderReport = () => {
             value={period}
             className="h-11 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-sm font-medium text-zinc-200 outline-none transition placeholder:text-zinc-600 hover:border-zinc-700 focus:border-emerald-500/50 focus:bg-zinc-950 focus:ring-2 focus:ring-emerald-500/10"
             onChange={(e) => {
-              setPeriod(e.target.value);
-              setTransactionName("");
+              const value = e.target.value;
+
+              setPeriod(value);
               setIdPeriod("");
               setOpenTransaction(true);
+
+              const url = new URL(window.location.href);
+              url.searchParams.set("p", value);
+              url.searchParams.delete("id");
+
+              window.history.replaceState(null, "", url);
             }}
           />
         </div>
@@ -105,7 +149,7 @@ const HeaderReport = () => {
             onClick={() => handleAction("openTransaction", "")}
             className="flex h-11 w-full items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 text-sm font-medium text-zinc-200 outline-none transition hover:border-zinc-700 hover:bg-zinc-900 focus:border-emerald-500/50 focus:bg-zinc-950 focus:ring-2 focus:ring-emerald-500/10"
           >
-            <span className="truncate">{transactionName}</span>
+            <span className="truncate">{idPeriod}</span>
 
             <ChevronDown
               size={18}
@@ -128,9 +172,11 @@ const HeaderReport = () => {
                   className="flex items-center gap-2 px-3 py-3 text-sm text-zinc-500"
                 >
                   <Spokes className="size-4 animate-spin text-emerald-400" />
+
                   <span>Dalam Progres...</span>
                 </div>
               )}
+
               {Array.isArray(PeriodTransactionData) ? (
                 PeriodTransactionData.map((i: { initialName: string }, idx) => (
                   <button
@@ -158,4 +204,4 @@ const HeaderReport = () => {
   );
 };
 
-export default memo(HeaderReport);
+export default HeaderReport;
